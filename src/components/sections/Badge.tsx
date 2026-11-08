@@ -32,8 +32,8 @@ export function Badge({ className = "" }: { className?: string }) {
         </defs>
         <circle cx="100" cy="100" r="98" fill="#89e900" />
         <g ref={ring}>
-          <text fontFamily="var(--font-mono)" fontSize="12.4" letterSpacing="2.6" fill="#222">
-            <textPath href="#badge-circle">{TEXT + TEXT}</textPath>
+          <text fontFamily="var(--font-mono)" fontSize="12.4" fill="#222" textLength="486" lengthAdjust="spacing">
+            <textPath href="#badge-circle" textLength="486" lengthAdjust="spacing">{TEXT}</textPath>
           </text>
         </g>
       </svg>
