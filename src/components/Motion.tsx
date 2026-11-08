@@ -5,85 +5,84 @@ import Lenis from "lenis";
 import { gsap, ScrollTrigger, prefersReduced, onReady } from "@/lib/gsap";
 
 /**
- * Global motion layer: Lenis smooth scroll wired into GSAP's ticker,
- * plus declarative scroll reveals for [data-lines="auto"], [data-fade], [data-clip], [data-parallax].
+ * Lenis smooth scroll on GSAP's ticker + declarative reveals:
+ *  [data-rise]  — each child rises out of a clipped baseline (staggered)
+ *  [data-fade]  — soft lift-in (value = delay)
+ *  [data-theme] — tells the nav whether it sits on night or kiwi
  */
 export function Motion() {
   useEffect(() => {
     const reduced = prefersReduced();
     let lenis: Lenis | null = null;
+    const w = window as unknown as { __lenis?: Lenis; __hrvtReady?: boolean };
 
     if (!reduced) {
-      lenis = new Lenis({ lerp: 0.095, wheelMultiplier: 0.95, touchMultiplier: 1.4 });
-      (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
+      lenis = new Lenis({ lerp: 0.1, wheelMultiplier: 1, touchMultiplier: 1.3 });
+      w.__lenis = lenis;
       lenis.on("scroll", ScrollTrigger.update);
-      const raf = (time: number) => lenis!.raf(time * 1000);
-      gsap.ticker.add(raf);
+      gsap.ticker.add((t) => lenis!.raf(t * 1000));
       gsap.ticker.lagSmoothing(0);
-      if (!(window as unknown as { __hrvtReady?: boolean }).__hrvtReady) lenis.stop();
-      onReady(() => lenis?.start());
+      if (!w.__hrvtReady) lenis.stop();
     }
 
     let ctx: gsap.Context | null = null;
     const off = onReady(() => {
+      lenis?.start();
       ctx = gsap.context(() => {
-        if (reduced) return;
-
-        gsap.utils.toArray<HTMLElement>('[data-lines="auto"]').forEach((el) => {
-          gsap.to(el.querySelectorAll(".line-inner[data-hide]"), {
-            yPercent: 0,
-            y: 0,
-            duration: 1.25,
-            stagger: 0.08,
-            scrollTrigger: { trigger: el, start: "top 88%" },
+        // Nav theme follows whichever section sits under it.
+        gsap.utils.toArray<HTMLElement>("[data-theme]").forEach((sec) => {
+          ScrollTrigger.create({
+            trigger: sec,
+            start: "top 40px",
+            end: "bottom 40px",
+            onToggle: (s) => s.isActive && document.documentElement.setAttribute("data-nav", sec.dataset.theme!),
           });
         });
+        if (reduced) return;
 
+        gsap.utils.toArray<HTMLElement>("[data-rise]").forEach((el) => {
+          gsap.to(el.querySelectorAll(".ri"), {
+            y: 0,
+            duration: 1.1,
+            ease: "expo.out",
+            stagger: 0.07,
+            delay: Number(el.dataset.rise || 0),
+            scrollTrigger: { trigger: el, start: "top 90%" },
+          });
+        });
         gsap.utils.toArray<HTMLElement>("[data-fade]").forEach((el) => {
           gsap.to(el, {
             opacity: 1,
             y: 0,
-            duration: 1.2,
+            duration: 1,
+            ease: "power3.out",
             delay: Number(el.dataset.fade || 0),
             scrollTrigger: { trigger: el, start: "top 92%" },
           });
-        });
-
-        gsap.utils.toArray<HTMLElement>("[data-clip]").forEach((el) => {
-          gsap.to(el, {
-            clipPath: "inset(0% 0 0 0)",
-            duration: 1.6,
-            ease: "expo.inOut",
-            scrollTrigger: { trigger: el, start: "top 85%" },
-          });
-        });
-
-        gsap.utils.toArray<HTMLElement>("[data-parallax]").forEach((el) => {
-          const amt = Number(el.dataset.parallax || 0.15);
-          gsap.fromTo(
-            el,
-            { yPercent: -amt * 50 },
-            {
-              yPercent: amt * 50,
-              ease: "none",
-              scrollTrigger: { trigger: el.parentElement, start: "top bottom", end: "bottom top", scrub: true },
-            },
-          );
         });
       });
       requestAnimationFrame(() => ScrollTrigger.refresh());
     });
 
-    const onResize = () => ScrollTrigger.refresh();
-    window.addEventListener("load", onResize);
+    // Re-measure triggers whenever the document height changes (fonts, images, lazy content).
+    let h = 0;
+    let to: ReturnType<typeof setTimeout>;
+    const ro = new ResizeObserver(() => {
+      const nh = document.body.scrollHeight;
+      if (Math.abs(nh - h) < 2) return;
+      h = nh;
+      clearTimeout(to);
+      to = setTimeout(() => ScrollTrigger.refresh(), 150);
+    });
+    ro.observe(document.body);
 
     return () => {
+      ro.disconnect();
+      clearTimeout(to);
       off();
       ctx?.revert();
       lenis?.destroy();
-      window.removeEventListener("load", onResize);
     };
   }, []);
-
   return null;
 }

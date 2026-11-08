@@ -1,34 +1,31 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/archivo/wdth.css";
-import "@fontsource/instrument-serif/400-italic.css";
+import "@fontsource-variable/big-shoulders-display";
 import "@fontsource-variable/geist/index.css";
 import "@fontsource-variable/geist-mono/index.css";
 import "./globals.css";
 import { Motion } from "@/components/Motion";
 import { Cursor } from "@/components/Cursor";
-import { Preloader } from "@/components/Preloader";
+import { Intro } from "@/components/Intro";
 import { Nav } from "@/components/Nav";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://hrvt.vercel.app"),
-  title: "HRVT — Digital products with gravity",
+  title: "HRVT — AI, automatizálás, szoftver és 3D",
   description:
-    "HRVT designs and engineers AI systems, intelligent automations, cinematic websites and real-time 3D software — end to end.",
+    "AI-rendszerek, automatizálás, egyedi szoftver, prémium weboldalak és interaktív 3D — tervezéstől az élesítésig, egy kézben.",
   openGraph: {
-    title: "HRVT — Digital products with gravity",
-    description: "AI systems, automations, high-end websites and real-time 3D software. Designed and engineered end to end.",
+    title: "HRVT — Szoftvert építek, ami dolgozik.",
+    description: "AI-rendszerek, automatizálás, egyedi szoftver, prémium weboldalak és interaktív 3D.",
     type: "website",
+    locale: "hu_HU",
   },
 };
 
-export const viewport: Viewport = {
-  themeColor: "#080807",
-  colorScheme: "dark",
-};
+export const viewport: Viewport = { themeColor: "#222222", colorScheme: "dark" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="hu" data-nav="night" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -37,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <Preloader />
+        <Intro />
         <Nav />
         <main>{children}</main>
         <div className="grain" aria-hidden />

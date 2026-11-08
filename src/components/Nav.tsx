@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gsap, ScrollTrigger, onReady, scrollToHash } from "@/lib/gsap";
+import { gsap, onReady, scrollToHash } from "@/lib/gsap";
 import { NAV, EMAIL } from "@/lib/content";
-import { Clock } from "./Clock";
+import { Wordmark } from "./Logo";
+import { Scramble } from "./Scramble";
 
 export function Nav() {
   const bar = useRef<HTMLElement>(null);
@@ -11,140 +12,90 @@ export function Nav() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const el = bar.current!;
-    gsap.set(el, { yPercent: -120 });
-    const off = onReady(() => gsap.to(el, { yPercent: 0, duration: 1.2, delay: 0.5 }));
-    let hidden = false;
-    const st = ScrollTrigger.create({
-      start: 0,
-      end: "max",
-      onUpdate: (self) => {
-        const y = self.scroll();
-        const hide = self.direction === 1 && y > 240;
-        if (hide !== hidden) {
-          hidden = hide;
-          gsap.to(el, { yPercent: hide ? -120 : 0, duration: 0.7, ease: "expo.out" });
-        }
-      },
-    });
-    return () => {
-      off();
-      st.kill();
-    };
+    gsap.set(bar.current, { yPercent: -100 });
+    return onReady(() => gsap.to(bar.current, { yPercent: 0, duration: 1, delay: 0.6, ease: "expo.out" }));
   }, []);
 
   useEffect(() => {
-    const m = menu.current;
-    if (!m) return;
+    const m = menu.current!;
     const lenis = (window as unknown as { __lenis?: { stop(): void; start(): void } }).__lenis;
     if (open) {
       lenis?.stop();
       gsap.set(m, { display: "flex" });
-      gsap.fromTo(m, { clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0% 0)", duration: 0.9, ease: "expo.inOut" });
-      gsap.fromTo(
-        m.querySelectorAll("[data-mi]"),
-        { yPercent: 110 },
-        { yPercent: 0, duration: 1, stagger: 0.06, delay: 0.35 },
-      );
-    } else {
+      gsap.fromTo(m, { clipPath: "circle(0% at 100% 0%)" }, { clipPath: "circle(150% at 100% 0%)", duration: 0.9, ease: "expo.inOut" });
+      gsap.fromTo(m.querySelectorAll("[data-mi]"), { yPercent: 100 }, { yPercent: 0, duration: 0.9, stagger: 0.05, delay: 0.3, ease: "expo.out" });
+    } else if (m.style.display === "flex") {
       lenis?.start();
-      gsap.to(m, {
-        clipPath: "inset(0 0 100% 0)",
-        duration: 0.7,
-        ease: "expo.inOut",
-        onComplete: () => {
-          gsap.set(m, { display: "none" });
-        },
-      });
+      gsap.to(m, { clipPath: "circle(0% at 100% 0%)", duration: 0.6, ease: "expo.inOut", onComplete: () => void gsap.set(m, { display: "none" }) });
     }
   }, [open]);
 
   const go = (href: string) => (e: React.MouseEvent) => {
     e.preventDefault();
+    const wasOpen = open;
     setOpen(false);
-    setTimeout(() => scrollToHash(href), open ? 450 : 0);
+    setTimeout(() => scrollToHash(href), wasOpen ? 500 : 0);
   };
 
   return (
     <>
       <header
         ref={bar}
-        className="wrap fixed inset-x-0 top-0 z-[80] flex h-20 items-center justify-between text-bone mix-blend-difference"
+        className="wrap fixed inset-x-0 top-0 z-[80] flex h-[72px] items-center justify-between text-paper transition-colors duration-500 [html[data-nav=kiwi]_&]:text-night"
       >
-        <a href="#top" onClick={go("#top")} className="group flex items-center gap-3" aria-label="HRVT — home">
-          <Mark />
-          <span className="font-display text-[1.05rem] font-[760] tracking-[-0.04em]">HRVT</span>
+        <a href="#top" onClick={go("#top")} aria-label="HRVT — vissza a tetejére" data-cursor="Fel">
+          <Wordmark className="h-[22px] w-auto" />
         </a>
-
-        <nav className="hidden items-center gap-9 md:flex" aria-label="Primary">
-          {NAV.map((n, i) => (
-            <a key={n.href} href={n.href} onClick={go(n.href)} className="t-meta link-u pb-0.5 text-bone">
-              <span className="mr-1.5 text-bone-3">0{i + 1}</span>
-              {n.label}
+        <nav className="hidden items-center gap-1 rounded-full p-1 lg:flex" aria-label="Fő navigáció">
+          {NAV.map((n) => (
+            <a
+              key={n.href}
+              href={n.href}
+              onClick={go(n.href)}
+              className="t-meta rounded-full px-4 py-2.5 transition-colors duration-300 hover:bg-paper/10 [html[data-nav=kiwi]_&]:hover:bg-night/10"
+            >
+              <Scramble text={n.label} />
             </a>
           ))}
         </nav>
-
-        <div className="hidden items-center gap-6 md:flex">
-          <span className="t-meta text-bone-2">
-            <Clock />
-          </span>
-          <a href="#contact" onClick={go("#contact")} className="t-meta link-u pb-0.5">
-            Start a project
+        <div className="flex items-center gap-2">
+          <a
+            href="#kapcsolat"
+            onClick={go("#kapcsolat")}
+            className="t-meta hidden h-10 items-center rounded-full bg-kiwi px-5 text-night transition-colors duration-300 hover:bg-paper sm:inline-flex [html[data-nav=kiwi]_&]:bg-night [html[data-nav=kiwi]_&]:text-kiwi"
+          >
+            <Scramble text="Beszéljünk" />
           </a>
+          <button
+            className="relative z-[85] grid h-10 w-10 place-items-center rounded-full bg-paper text-night lg:hidden"
+            onClick={() => setOpen((o) => !o)}
+            aria-expanded={open}
+            aria-controls="menu"
+            aria-label={open ? "Menü bezárása" : "Menü"}
+          >
+            <span className="relative block h-2.5 w-4">
+              <i className="absolute left-0 top-0 h-[1.5px] w-full bg-current transition-transform duration-500" style={{ transform: open ? "translateY(4.5px) rotate(45deg)" : "none" }} />
+              <i className="absolute bottom-0 left-0 h-[1.5px] w-full bg-current transition-transform duration-500" style={{ transform: open ? "translateY(-4.5px) rotate(-45deg)" : "none" }} />
+            </span>
+          </button>
         </div>
-
-        <button
-          className="t-meta relative z-[85] flex h-11 items-center gap-3 md:hidden"
-          onClick={() => setOpen((o) => !o)}
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-        >
-          {open ? "Close" : "Menu"}
-          <span className="relative block h-2.5 w-5">
-            <span
-              className="absolute left-0 top-0 h-px w-full bg-current transition-transform duration-500"
-              style={{ transform: open ? "translateY(5px) rotate(45deg)" : "none" }}
-            />
-            <span
-              className="absolute bottom-0 left-0 h-px w-full bg-current transition-transform duration-500"
-              style={{ transform: open ? "translateY(-4px) rotate(-45deg)" : "none" }}
-            />
-          </span>
-        </button>
       </header>
 
-      <div
-        ref={menu}
-        id="mobile-menu"
-        className="wrap fixed inset-0 z-[79] hidden flex-col justify-between bg-ink-900 pb-10 pt-28"
-        style={{ clipPath: "inset(0 0 100% 0)" }}
-      >
-        <nav className="flex flex-col gap-1" aria-label="Mobile">
-          {[...NAV, { label: "Contact", href: "#contact" }].map((n, i) => (
-            <a key={n.href} href={n.href} onClick={go(n.href)} className="block overflow-hidden">
-              <span data-mi="" className="t-display-l flex items-baseline gap-4" style={{ fontSize: "clamp(2.8rem,13vw,5rem)" }}>
-                <span className="t-meta text-bone-3">0{i + 1}</span>
+      <div ref={menu} id="menu" className="wrap fixed inset-0 z-[79] hidden flex-col justify-between bg-kiwi pb-8 pt-28 text-night">
+        <nav className="flex flex-col" aria-label="Mobil navigáció">
+          {[...NAV, { label: "Kapcsolat", href: "#kapcsolat" }].map((n, i) => (
+            <a key={n.href} href={n.href} onClick={go(n.href)} className="block overflow-hidden border-b border-line-ink py-1">
+              <span data-mi="" className="t-l flex items-baseline justify-between" style={{ fontSize: "clamp(3rem,15vw,5.5rem)" }}>
                 {n.label}
+                <span className="t-meta">0{i + 1}</span>
               </span>
             </a>
           ))}
         </nav>
-        <div className="t-meta flex items-end justify-between text-bone-2">
-          <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
-          <Clock />
-        </div>
+        <a href={`mailto:${EMAIL}`} className="t-meta">
+          {EMAIL}
+        </a>
       </div>
     </>
-  );
-}
-
-export function Mark({ className = "h-[22px] w-[22px]" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden>
-      <rect x="1" y="1" width="22" height="22" rx="2" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M7 6v12M17 6v12M7 12h10" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="17" cy="6" r="1.6" fill="#ff5a1f" />
-    </svg>
   );
 }

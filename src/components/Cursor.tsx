@@ -3,73 +3,69 @@
 import { useEffect, useRef } from "react";
 import { gsap, isFinePointer } from "@/lib/gsap";
 
-/** Lerped dot that grows into a labelled disc over [data-cursor] targets. */
+/** Engineering crosshair with live coordinates; becomes a labelled kiwi tag over [data-cursor]. */
 export function Cursor() {
-  const dot = useRef<HTMLDivElement>(null);
-  const label = useRef<HTMLSpanElement>(null);
+  const root = useRef<HTMLDivElement>(null);
+  const tag = useRef<HTMLSpanElement>(null);
+  const coords = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     if (!isFinePointer()) return;
     document.documentElement.classList.add("has-cursor");
-    const el = dot.current!;
-    gsap.set(el, { xPercent: -50, yPercent: -50, opacity: 0 });
-    const xTo = gsap.quickTo(el, "x", { duration: 0.45, ease: "power3" });
-    const yTo = gsap.quickTo(el, "y", { duration: 0.45, ease: "power3" });
-    let active: string | null = null;
+    const el = root.current!;
+    const xTo = gsap.quickTo(el, "x", { duration: 0.25, ease: "power3" });
+    const yTo = gsap.quickTo(el, "y", { duration: 0.25, ease: "power3" });
+    let label: string | null = null;
     let shown = false;
 
     const move = (e: PointerEvent) => {
       if (!shown) {
         gsap.set(el, { x: e.clientX, y: e.clientY });
-        gsap.to(el, { opacity: 1, duration: 0.4 });
+        gsap.to(el, { autoAlpha: 1, duration: 0.3 });
         shown = true;
       }
       xTo(e.clientX);
       yTo(e.clientY);
-      const t = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-cursor], a, button");
-      const next = t ? t.dataset.cursor ?? "" : null;
-      if (next !== active) {
-        active = next;
-        if (next) {
-          label.current!.textContent = next;
-          gsap.to(el, { width: 92, height: 92, backgroundColor: "#ece9e2", duration: 0.5, ease: "expo.out" });
-          gsap.to(label.current, { opacity: 1, scale: 1, duration: 0.35, delay: 0.05 });
-        } else if (next === "") {
-          gsap.to(el, { width: 44, height: 44, backgroundColor: "rgba(236,233,226,0.12)", duration: 0.5, ease: "expo.out" });
-          gsap.to(label.current, { opacity: 0, scale: 0.6, duration: 0.2 });
-        } else {
-          gsap.to(el, { width: 8, height: 8, backgroundColor: "#ece9e2", duration: 0.5, ease: "expo.out" });
-          gsap.to(label.current, { opacity: 0, scale: 0.6, duration: 0.2 });
-        }
+      coords.current!.textContent = `${String(Math.round(e.clientX)).padStart(4, "0")} · ${String(Math.round(e.clientY + window.scrollY)).padStart(5, "0")}`;
+      const t = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-cursor]");
+      const next = t ? t.dataset.cursor || "→" : null;
+      if (next !== label) {
+        label = next;
+        el.dataset.mode = next ? "tag" : "cross";
+        if (next) tag.current!.textContent = next;
       }
     };
-    const leave = () => gsap.to(el, { opacity: 0, duration: 0.3 });
-    const enter = () => shown && gsap.to(el, { opacity: 1, duration: 0.3 });
-    const down = () => gsap.to(el, { scale: 0.8, duration: 0.2 });
-    const up = () => gsap.to(el, { scale: 1, duration: 0.4, ease: "back.out(3)" });
-
+    const hide = () => gsap.to(el, { autoAlpha: 0, duration: 0.2 });
     window.addEventListener("pointermove", move);
-    document.addEventListener("pointerleave", leave);
-    document.addEventListener("pointerenter", enter);
-    window.addEventListener("pointerdown", down);
-    window.addEventListener("pointerup", up);
+    document.documentElement.addEventListener("pointerleave", hide);
     return () => {
       window.removeEventListener("pointermove", move);
-      document.removeEventListener("pointerleave", leave);
-      document.removeEventListener("pointerenter", enter);
-      window.removeEventListener("pointerdown", down);
-      window.removeEventListener("pointerup", up);
+      document.documentElement.removeEventListener("pointerleave", hide);
       document.documentElement.classList.remove("has-cursor");
     };
   }, []);
 
   return (
     <div
-      ref={dot}
+      ref={root}
+      data-mode="cross"
       aria-hidden
-      className="pointer-events-none fixed left-0 top-0 z-[95] hidden h-2 w-2 items-center justify-center rounded-full bg-bone mix-blend-difference [@media(hover:hover)_and_(pointer:fine)]:flex"
+      className="group pointer-events-none invisible fixed left-0 top-0 z-[95] opacity-0 [@media(hover:none)]:hidden"
     >
-      <span ref={label} className="t-meta scale-50 text-[0.62rem] text-ink-950 opacity-0" />
+      {/* crosshair */}
+      <span className="absolute inset-0 mix-blend-difference">
+      <span className="absolute left-[-10px] top-0 h-px w-5 bg-paper transition-transform duration-300 group-data-[mode=tag]:scale-0" />
+      <span className="absolute left-0 top-[-10px] h-5 w-px bg-paper transition-transform duration-300 group-data-[mode=tag]:scale-0" />
+      <span
+        ref={coords}
+        className="t-meta absolute left-3 top-3 whitespace-nowrap text-[0.6rem] text-paper/70 transition-opacity duration-300 group-data-[mode=tag]:opacity-0"
+      />
+      </span>
+      {/* tag */}
+      <span
+        ref={tag}
+        className="t-meta absolute left-0 top-0 origin-top-left -translate-x-1/2 -translate-y-1/2 scale-0 whitespace-nowrap rounded-full bg-kiwi px-3.5 py-2 text-[0.66rem] text-night transition-transform duration-300 ease-[cubic-bezier(.7,0,.2,1)] group-data-[mode=tag]:scale-100"
+      />
     </div>
   );
 }

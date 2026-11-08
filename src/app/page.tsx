@@ -1,21 +1,17 @@
-import { Hero } from "@/components/Hero";
-import { Manifesto } from "@/components/Manifesto";
-import { Marquee } from "@/components/Marquee";
-import { Work } from "@/components/work/Work";
-import { Capabilities } from "@/components/Capabilities";
-import { Approach } from "@/components/Approach";
-import { About } from "@/components/About";
-import { Contact } from "@/components/Contact";
+import { Hero } from "@/components/sections/Hero";
+import { Services } from "@/components/sections/Services";
+import { Work } from "@/components/sections/Work";
+import { Process } from "@/components/sections/Process";
+import { About } from "@/components/sections/About";
+import { Contact } from "@/components/sections/Contact";
 
 export default function Page() {
   return (
     <>
       <Hero />
-      <Manifesto />
-      <Marquee />
+      <Services />
       <Work />
-      <Capabilities />
-      <Approach />
+      <Process />
       <About />
       <Contact />
     </>
