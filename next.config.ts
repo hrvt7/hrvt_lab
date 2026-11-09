@@ -11,6 +11,8 @@ const config: NextConfig = {
       { source: "/xkft/", destination: "/xkft/index.html" },
       { source: "/sportpresszo", destination: "/sportpresszo/index.html" },
       { source: "/sportpresszo/", destination: "/sportpresszo/index.html" },
+      { source: "/novodom", destination: "/novodom/index.html" },
+      { source: "/novodom/", destination: "/novodom/index.html" },
     ];
   },
 };
