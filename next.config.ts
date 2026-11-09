@@ -7,6 +7,8 @@ const config: NextConfig = {
     return [
       { source: "/zolla", destination: "/zolla/index.html" },
       { source: "/zolla/", destination: "/zolla/index.html" },
+      { source: "/xkft", destination: "/xkft/index.html" },
+      { source: "/xkft/", destination: "/xkft/index.html" },
     ];
   },
 };
