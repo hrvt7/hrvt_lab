@@ -72,7 +72,7 @@ export function Work() {
             data-cursor="Kipróbálom"
           >
             <PixelReveal
-              src="/work/lamelix.webp"
+              src="/work/lamelix"
               alt="A Lamelix konfigurátor: lépésenkénti beállítópanel, valós idejű 3D pergola és azonnali árkalkuláció."
             />
           </a>
@@ -86,29 +86,19 @@ export function Work() {
               <Rise as="h3" className="t-l" lines={[<>Szétszedhető</>, <>termékek</>]} />
             </div>
             <p className="max-w-[46ch] self-end text-smoke md:col-span-5 md:col-start-8" data-fade="">
-              Gyári CAD-fájlokból és nyilvános műszaki adatokból épített, böngészőben futó 3D bemutatók. A mozgás
-              számolt, nem animált — a látogató forgatja, elindítja, metszetben és szétszedve is megnézi a terméket.
-              Mindkettő koncept demó, nem megrendelésre készült.
+              Gyártói műszaki adatokból épített, böngészőben futó 3D bemutató. A mozgás számolt, nem animált — a
+              látogató forgatja, elindítja, metszetben és szétszedve is megnézi a terméket. Koncept demó, nem
+              megrendelésre készült.
             </p>
           </div>
           <DemoStage
             demos={[
               {
-                id: "hd",
-                tab: "Hullámhajtómű",
-                title: "Harmonic Drive CSG-32-100",
-                src: "/demos/harmonic-drive-csg32.html",
-                poster: "/work/teardown-hd.webp",
-                alt: "Interaktív 3D hullámhajtómű-szimulátor: középen a hajtómű metszetben, körülötte vezérlőpanelek a fordulatszámmal, nézetekkel és katalógusadatokkal.",
-                body: "Ipari hullámhajtómű a gyártó STEP-fájljaiból. A hullámgenerátor élőben hajlítja a rugalmas fogaskereket, 200 fog kapcsolódik 202-be, a kimenet fordulatonként két fognyit lép. Metszet, röntgen, szétszedés, katalógusadatok.",
-                facts: [["Alap", "Gyári STEP"], ["Áttétel", "100 : 1"], ["Fogszám", "200 / 202"], ["Nézetek", "Metszet, röntgen, szétszedés"]],
-              },
-              {
                 id: "sb400",
-                tab: "Lamellás pergola",
+                tab: "Bioklimatikus pergola — élő demó",
                 title: "Bioklimatikus pergola — SB 400",
                 src: "/demos/pergola-sb400.html",
-                poster: "/work/teardown-sb400.webp",
+                poster: "/work/teardown-sb400",
                 alt: "Interaktív 3D lamellás pergola-szimulátor: terasz bútorokkal, nyitható lamellás tetővel, körülötte mechanika-, klíma- és nézetpanelek.",
                 body: "Bioklimatikus lamellás pergola a gyártó nyilvános műszaki mellékletéből. Lineáris motor és hajtórúd, 19 lamella nyílik 0–110° között, napfény- és árnyékszimulációval, metszettel és szétszedett nézettel.",
                 facts: [["Alap", "Műszaki melléklet"], ["Lamellák", "19 db, 0–110°"], ["Hajtás", "Lineáris motor"], ["Nézetek", "Metszet, szétszedés, LED"]],

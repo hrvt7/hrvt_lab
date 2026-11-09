@@ -74,13 +74,16 @@ export function Hero() {
       raf = requestAnimationFrame(tick);
       if (!live) return;
       const R = Math.max(220, window.innerWidth * 0.2);
+      if (window.scrollY > window.innerHeight) return; // hero off-screen: nothing to do
       chars.forEach((c, i) => {
         const r = rects[i];
         const d = Math.hypot(r.x - p.x, (r.y - p.y) * 1.4);
         const k = Math.max(0, 1 - d / R);
         const target = 800 - 640 * k * k * (3 - 2 * k);
+        const prev = Math.round(cur[i]);
         cur[i] += (target - cur[i]) * 0.14;
-        c.style.setProperty("--w", cur[i].toFixed(0));
+        const next = Math.round(cur[i]);
+        if (next !== prev) c.style.setProperty("--w", String(next)); // only touch letters that changed
       });
     };
     raf = requestAnimationFrame(tick);
@@ -165,7 +168,7 @@ export function Hero() {
           <Badge className="aspect-square" />
         </div>
 
-        <h1 data-hhead="" className="t-mega mt-auto pt-10" style={{ fontSize: "clamp(3.6rem, min(12.6vw, 16.5vh), 16rem)" }}>
+        <h1 data-hhead="" className="t-mega mt-auto pt-10 [contain:layout_style]" style={{ fontSize: "clamp(3.6rem, min(12.6vw, 16.5vh), 16rem)" }}>
           {LINES.map((l) => (
             <span key={l} className="rl">
               <Letters text={l} />

@@ -133,7 +133,7 @@ export function Contact() {
                 ["Válaszidő", "1 munkanap"],
               ].map(([k, v]) => (
                 <div key={k}>
-                  <dt className="t-meta mb-1.5 text-[0.62rem] text-night/55">{k}</dt>
+                  <dt className="t-meta mb-1.5 text-[0.62rem] text-night/75">{k}</dt>
                   <dd>{v}</dd>
                 </div>
               ))}
@@ -156,7 +156,7 @@ export function Contact() {
                 </a>
               ))}
             </nav>
-            <p className="t-meta text-night/60">© 2026 HRVT — tervezve és fejlesztve házon belül</p>
+            <p className="t-meta text-night/75">© 2026 HRVT — tervezve és fejlesztve házon belül</p>
           </div>
           <div data-wm-wrap="" className="overflow-hidden pb-[2.4vw]" aria-hidden>
             <div data-wm-foot="">

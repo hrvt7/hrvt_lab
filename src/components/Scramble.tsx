@@ -47,7 +47,7 @@ export function Scramble({ text, className = "", as: Tag = "span" }: { text: str
 
 export function Meta({ n, children, className = "", dark = false }: { n?: string; children: string; className?: string; dark?: boolean }) {
   return (
-    <p className={`t-meta flex items-center gap-3 ${dark ? "text-night/60" : "text-smoke"} ${className}`}>
+    <p className={`t-meta flex items-center gap-3 ${dark ? "text-night/80" : "text-smoke"} ${className}`}>
       {n && <span className={dark ? "text-night" : "text-kiwi"}>[{n}]</span>}
       <Scramble text={children} />
     </p>

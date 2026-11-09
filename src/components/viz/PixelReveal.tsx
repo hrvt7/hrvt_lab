@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { ScrollTrigger, prefersReduced } from "@/lib/gsap";
 
 /** Image resolves from coarse kiwi-tinted pixels to full resolution as it scrolls into view. */
+/** src = base path without extension, e.g. "/work/lamelix" (expects -800 / -1400 / full .webp variants) */
 export function PixelReveal({ src, alt, ratio = 1.6 }: { src: string; alt: string; ratio?: number }) {
   const wrap = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -15,7 +16,7 @@ export function PixelReveal({ src, alt, ratio = 1.6 }: { src: string; alt: strin
     const small = document.createElement("canvas");
     const sctx = small.getContext("2d")!;
     const im = new Image();
-    im.src = src;
+    im.src = `${src}-800.webp`; // the pixel stage only ever needs a small source
     let block = 64;
     let st: ScrollTrigger | null = null;
 
@@ -79,7 +80,7 @@ export function PixelReveal({ src, alt, ratio = 1.6 }: { src: string; alt: strin
     <div ref={wrap} className="relative w-full overflow-hidden" style={{ aspectRatio: String(ratio) }}>
       <canvas ref={canvas} className="absolute inset-0 h-full w-full" aria-hidden />
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img ref={img} src={src} alt={alt} className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300" loading="lazy" />
+      <img ref={img} src={`${src}-1400.webp`} srcSet={`${src}-800.webp 800w, ${src}-1400.webp 1400w, ${src}.webp 2400w`} sizes="(min-width: 768px) 62vw, 100vw" alt={alt} decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300" loading="lazy" />
     </div>
   );
 }

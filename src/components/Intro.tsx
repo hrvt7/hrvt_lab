@@ -33,12 +33,12 @@ export function Intro() {
     gsap.set(path, { strokeDasharray: len, strokeDashoffset: len, fillOpacity: 0, stroke: "#222222", strokeWidth: 10 });
 
     const tl = gsap.timeline({ onComplete: () => setShow(false) });
-    tl.to(path, { strokeDashoffset: 0, duration: 1.3, ease: "power2.inOut" })
-      .to(o, { v: 100, duration: 1.5, ease: "power2.inOut", onUpdate: () => (count.textContent = String(Math.round(o.v)).padStart(3, "0")) }, 0)
-      .to(path, { fillOpacity: 1, strokeWidth: 0, duration: 0.45, ease: "power2.out" }, 1.15)
-      .to("[data-intro-content]", { yPercent: -40, opacity: 0, duration: 0.5, ease: "power3.in" }, 1.75)
-      .add(markReady, 2.0)
-      .to("[data-strip]", { yPercent: -100, duration: 0.9, ease: "expo.inOut", stagger: { each: 0.045, from: "start" } }, 1.95);
+    tl.to(path, { strokeDashoffset: 0, duration: 0.95, ease: "power2.inOut" })
+      .to(o, { v: 100, duration: 1.1, ease: "power2.inOut", onUpdate: () => (count.textContent = String(Math.round(o.v)).padStart(3, "0")) }, 0)
+      .to(path, { fillOpacity: 1, strokeWidth: 0, duration: 0.35, ease: "power2.out" }, 0.8)
+      .to("[data-intro-content]", { yPercent: -40, opacity: 0, duration: 0.4, ease: "power3.in" }, 1.2)
+      .add(markReady, 1.4)
+      .to("[data-strip]", { yPercent: -100, duration: 0.8, ease: "expo.inOut", stagger: { each: 0.04, from: "start" } }, 1.35);
     return () => {
       tl.kill();
     };

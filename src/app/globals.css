@@ -9,7 +9,7 @@
   --color-kiwi-2: #a4ff2a;
   --color-paper: #f2f2ee;
   --color-smoke: #9a9a93;
-  --color-ash: #6a6a65;
+  --color-ash: #8b8b85;
   --color-line: rgba(242, 242, 238, 0.1);
   --color-line-2: rgba(242, 242, 238, 0.18);
   --color-line-ink: rgba(34, 34, 34, 0.16);
@@ -248,6 +248,9 @@ body {
   animation-play-state: paused !important;
 }
 
+@media (hover: none) {
+  .grain { display: none; }
+}
 @media (prefers-reduced-motion: reduce) {
   .grain { animation: none; }
   *, *::before, *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; }

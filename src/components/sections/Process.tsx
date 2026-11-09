@@ -73,8 +73,8 @@ export function Process() {
               <article
                 key={s.n}
                 data-step=""
-                className="flex min-h-[46vh] flex-col justify-center border-t border-line py-12 transition-opacity duration-700 md:min-h-[62vh] md:border-none"
-                style={{ opacity: active === i ? 1 : 0.28 }}
+                data-active={active === i}
+                className="flex flex-col justify-center border-t border-line py-12 transition-opacity duration-700 md:min-h-[62vh] md:border-none md:data-[active=false]:opacity-30"
               >
                 <p className="t-meta mb-5 text-kiwi md:hidden">{s.n}</p>
                 <h3 className="t-l mb-6">{s.title}</h3>
