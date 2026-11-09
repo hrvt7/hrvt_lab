@@ -19,6 +19,8 @@ const config: NextConfig = {
       { source: "/cristiano/", destination: "/cristiano/index.html" },
       { source: "/cristiano/de", destination: "/cristiano/de/index.html" },
       { source: "/cristiano/de/", destination: "/cristiano/de/index.html" },
+      { source: "/priorite", destination: "/priorite/index.html" },
+      { source: "/priorite/", destination: "/priorite/index.html" },
     ];
   },
 };
