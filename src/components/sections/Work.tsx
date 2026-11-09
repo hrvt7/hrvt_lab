@@ -94,8 +94,18 @@ export function Work() {
           <DemoStage
             demos={[
               {
+                id: "hd",
+                tab: "Hullámhajtómű",
+                title: "Harmonic Drive hullámhajtómű — CSG-32",
+                src: "/demos/harmonic-drive-csg32.html",
+                poster: "/work/teardown-hd",
+                alt: "Interaktív 3D Harmonic Drive hullámhajtómű-szimulátor feliratozott alkatrészekkel, működési és katalógusadat-panelekkel.",
+                body: "Robotkarokban használt hullámhajtómű a gyártó STEP-fájljaiból és katalógusadataiból. Az elliptikus hullámgenerátor meghajlítja a vékony acélpoharat, így két ponton kapcsolódik a fogazat — fordulatonként két foggal lép vissza. Röntgen, metszet és szétszedett nézet.",
+                facts: [["Alap", "STEP + katalógus"], ["Áttétel", "100:1"], ["Fogszám", "200 / 202"], ["Nézetek", "Röntgen, metszet, szétszedés"]],
+              },
+              {
                 id: "sb400",
-                tab: "Bioklimatikus pergola — élő demó",
+                tab: "Bioklimatikus pergola",
                 title: "Bioklimatikus pergola — SB 400",
                 src: "/demos/pergola-sb400.html",
                 poster: "/work/teardown-sb400",

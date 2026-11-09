@@ -64,11 +64,13 @@ export function Cursor() {
     window.addEventListener("scroll", onScroll, { passive: true });
     document.addEventListener("pointerout", out);
     window.addEventListener("blur", hide);
+    window.addEventListener("hrvt:cursor-hide", hide);
     return () => {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("scroll", onScroll);
       document.removeEventListener("pointerout", out);
       window.removeEventListener("blur", hide);
+      window.removeEventListener("hrvt:cursor-hide", hide);
       document.documentElement.classList.remove("has-cursor");
     };
   }, []);
