@@ -1,0 +1,857 @@
+{
+ "updated": "2026-11-09",
+ "source": "cristianopizza.hu étlap, 2026-11-09",
+ "items": [
+  {
+   "id": "fuego-iberico",
+   "cat": "special",
+   "n": "Fuego Ibérico",
+   "num": null,
+   "d": "Pikáns paradicsomszósz, olvadó mozzarella, füstös chorizo, prémium serrano sonka, szárított paradicsom és fekete olíva, chili olaj csorgatás",
+   "d_de": "Pikante Tomatensauce, Mozzarella, rauchige Chorizo, Serrano-Schinken, getrocknete Tomaten, schwarze Oliven, Chiliöl",
+   "p": 4550,
+   "a": [
+    1,
+    7,
+    9
+   ],
+   "gf": true,
+   "tags": [
+    "hot"
+   ],
+   "img": "fuego-iberico",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "nduja-dolce-fuoco",
+   "cat": "special",
+   "n": "Nduja Dolce Fuoco",
+   "num": null,
+   "d": "Paradicsomszósz, Mézen futatott Fokhagyma, Friss bazsalikom, Mozzarella, csípős kolbászkrém, bufala mozzarella, parmezán, méz",
+   "d_de": "Tomatensauce, Honig-Knoblauch, frisches Basilikum, Mozzarella, scharfe Nduja, Büffelmozzarella, Parmesan, Honig",
+   "p": 4550,
+   "a": [
+    1,
+    7
+   ],
+   "gf": true,
+   "tags": [
+    "hot"
+   ],
+   "img": "nduja-dolce-fuoco",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "bianco-supremo-piccante",
+   "cat": "special",
+   "n": "Bianco Supremo Piccante",
+   "num": null,
+   "d": "Mascarponéval lágyított porcinis-szarvasgombakrém, mozzarella, markáns Gorgonzola, pikáns Spianata piccante szalámi, frissen reszelt Grana Padano",
+   "d_de": "Steinpilz-Trüffelcreme mit Mascarpone, Mozzarella, Gorgonzola, scharfe Spianata-Salami, Grana Padano",
+   "p": 4550,
+   "a": [
+    1,
+    7
+   ],
+   "gf": true,
+   "tags": [
+    "hot"
+   ],
+   "img": "bianco-supremo-piccante",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "tartufissimo",
+   "cat": "special",
+   "n": "Tartufissimo",
+   "num": null,
+   "d": "Mascarponés szarvasgomba-krém alappal készült prémium pizza, olvadt mozzarellával, szarvasgombás mortadellával, pirított shimeji gombával és friss parmezán forgácsokkal.",
+   "d_de": "Trüffelcreme mit Mascarpone, Mozzarella, Trüffel-Mortadella, geröstete Shimeji-Pilze, Parmesan",
+   "p": 4550,
+   "a": [
+    1,
+    8
+   ],
+   "gf": true,
+   "tags": [],
+   "img": "tartufissimo",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "marinara",
+   "cat": "pizza",
+   "n": "Marinara",
+   "num": "01",
+   "d": "Paradicsomszósz, fokhagyma, bazsalikom",
+   "d_de": "Tomatensauce, Knoblauch, Basilikum",
+   "p": 2450,
+   "a": [
+    1
+   ],
+   "gf": true,
+   "tags": [
+    "veg"
+   ],
+   "img": "marinara",
+   "round": true,
+   "on": true
+  },
+  {
+   "id": "margherita",
+   "cat": "pizza",
+   "n": "Margherita",
+   "num": "02",
+   "d": "Paradicsomszósz, Fior di latte Mozzarella, Mozzarella golyó, bazsalikom",
+   "d_de": "Tomatensauce, Fior-di-latte-Mozzarella, Mozzarellakugeln, Basilikum",
+   "p": 2750,
+   "a": [
+    1,
+    7
+   ],
+   "gf": true,
+   "tags": [
+    "veg"
+   ],
+   "img": "margherita",
+   "round": true,
+   "on": true
+  },
+  {
+   "id": "prosciutto-cotto",
+   "cat": "pizza",
+   "n": "Prosciutto Cotto",
+   "num": "03",
+   "d": "Paradicsomszósz, Fior di latte Mozzarella, sonka",
+   "d_de": "Tomatensauce, Fior-di-latte-Mozzarella, Kochschinken",
+   "p": 2890,
+   "a": [
+    1,
+    7
+   ],
+   "gf": true,
+   "tags": [],
+   "img": "prosciutto-cotto",
+   "round": true,
+   "on": true
+  },
+  {
+   "id": "prosciutto-cotto-e-funghi",
+   "cat": "pizza",
+   "n": "Prosciutto Cotto e Funghi",
+   "num": "04",
+   "d": "Paradicsomszósz, Fior di latte Mozzarella, sonka, gomba",
+   "d_de": "Tomatensauce, Fior-di-latte-Mozzarella, Kochschinken, Champignons",
+   "p": 2990,
+   "a": [
+    1,
+    7
+   ],
+   "gf": true,
+   "tags": [],
+   "img": "prosciutto-cotto-e-funghi",
+   "round": true,
+   "on": true
+  },
+  {
+   "id": "prosciutto-di-parma-e-rucola",
+   "cat": "pizza",
+   "n": "Prosciutto di Parma e Rucola",
+   "num": "05",
+   "d": "Paradicsomszósz, Fior di latte Mozzarella, Pármai sonka, rucola, koktélparadicsom, parmezán",
+   "d_de": "Tomatensauce, Fior-di-latte-Mozzarella, Parmaschinken, Rucola, Kirschtomaten, Parmesan",
+   "p": 3690,
+   "a": [
+    1,
+    7
+   ],
+   "gf": true,
+   "tags": [],
+   "img": "prosciutto-di-parma-e-rucola",
+   "round": true,
+   "on": true
+  },
+  {
+   "id": "milano",
+   "cat": "pizza",
+   "n": "Milano",
+   "num": "06",
+   "d": "Paradicsomszósz, Fior di latte Mozzarella, nápolyi szalámi",
+   "d_de": "Tomatensauce, Fior-di-latte-Mozzarella, neapolitanische Salami",
+   "p": 2990,
+   "a": [
+    1,
+    7
+   ],
+   "gf": true,
+   "tags": [],
+   "img": "milano",
+   "round": true,
+   "on": true
+  },
+  {
+   "id": "salame-piccante",
+   "cat": "pizza",
+   "n": "Salame Piccante",
+   "num": "07",
+   "d": "Paradicsomszósz, Fior di latte Mozzarella, csípős Spinata Piccante szalámi, jalapeno csipős paprika",
+   "d_de": "Tomatensauce, Fior-di-latte-Mozzarella, scharfe Spianata-Piccante-Salami, Jalapeños",
+   "p": 3190,
+   "a": [
+    1,
+    7
+   ],
+   "gf": true,
+   "tags": [
+    "hot"
+   ],
+   "img": "salame-piccante",
+   "round": true,
+   "on": true
+  },
+  {
+   "id": "tonno-e-cipolla",
+   "cat": "pizza",
+   "n": "Tonno e Cipolla",
+   "num": "08",
+   "d": "Paradicsomszósz, Fior di latte Mozzarella, tonhal, lilahagyma, olívabogyó",
+   "d_de": "Tomatensauce, Fior-di-latte-Mozzarella, Thunfisch, rote Zwiebeln, Oliven",
+   "p": 3390,
+   "a": [
+    1,
+    4,
+    7
+   ],
+   "gf": true,
+   "tags": [],
+   "img": "tonno-e-cipolla",
+   "round": true,
+   "on": true
+  },
+  {
+   "id": "quattro-formaggi",
+   "cat": "pizza",
+   "n": "Quattro Formaggi",
+   "num": "10",
+   "d": "Paradicsomszósz, Fior di latte Mozzarella, Gorgonzola, Feta, Parmezán",
+   "d_de": "Tomatensauce, Fior-di-latte-Mozzarella, Gorgonzola, Feta, Parmesan",
+   "p": 3350,
+   "a": [
+    1,
+    7
+   ],
+   "gf": true,
+   "tags": [
+    "veg"
+   ],
+   "img": "quattro-formaggi",
+   "round": true,
+   "on": true
+  },
+  {
+   "id": "nanni",
+   "cat": "pizza",
+   "n": "Nanni",
+   "num": "11",
+   "d": "Paradicsomszósz, Fior di latte Mozzarella, Ricotta, pisztáciás Mortadella",
+   "d_de": "Tomatensauce, Fior-di-latte-Mozzarella, Ricotta, Pistazien-Mortadella",
+   "p": 3350,
+   "a": [
+    1,
+    7,
+    8
+   ],
+   "gf": true,
+   "tags": [],
+   "img": "nanni",
+   "round": true,
+   "on": true
+  },
+  {
+   "id": "capricciosa",
+   "cat": "pizza",
+   "n": "Capricciosa",
+   "num": "12",
+   "d": "Paradicsomszósz, Fior di latte Mozzarella, sonka, gomba, articsóka, olívabogyó",
+   "d_de": "Tomatensauce, Fior-di-latte-Mozzarella, Schinken, Champignons, Artischocken, Oliven",
+   "p": 3350,
+   "a": [
+    1,
+    7
+   ],
+   "gf": true,
+   "tags": [],
+   "img": "capricciosa",
+   "round": true,
+   "on": true
+  },
+  {
+   "id": "calzone",
+   "cat": "pizza",
+   "n": "Calzone",
+   "num": "13",
+   "d": "Paradicsomszósz, Fior di latte Mozzarella, sonka, gomba, kukorica",
+   "d_de": "Gefaltete Pizza: Tomatensauce, Fior-di-latte-Mozzarella, Schinken, Champignons, Mais",
+   "p": 3390,
+   "a": [
+    1,
+    7
+   ],
+   "gf": false,
+   "tags": [],
+   "img": null,
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "concettina",
+   "cat": "pizza",
+   "n": "Concettina",
+   "num": "14",
+   "d": "Paradicsomszósz, Fior di latte Mozzarella, Milano szalámi, sonka, gomba, kukorica",
+   "d_de": "Tomatensauce, Fior-di-latte-Mozzarella, Mailänder Salami, Schinken, Champignons, Mais",
+   "p": 3590,
+   "a": [
+    1,
+    7
+   ],
+   "gf": true,
+   "tags": [],
+   "img": "concettina",
+   "round": true,
+   "on": true
+  },
+  {
+   "id": "ungherese",
+   "cat": "pizza",
+   "n": "Ungherese",
+   "num": "15",
+   "d": "Fokhagymás tejföl, Fior Di Latte Mozzarella, paprikás kolbász, bacon szalonna, lilahagyma, paprika",
+   "d_de": "Knoblauch-Sauerrahm, Fior-di-latte-Mozzarella, Paprikawurst, Speck, rote Zwiebeln, Paprika",
+   "p": 3390,
+   "a": [
+    1,
+    7
+   ],
+   "gf": true,
+   "tags": [],
+   "img": "ungherese",
+   "round": true,
+   "on": true
+  },
+  {
+   "id": "greco",
+   "cat": "pizza",
+   "n": "Greco",
+   "num": "16",
+   "d": "Fokhagymás tejföl, Fior Di Latte Mozzarella, Gyros hús, Feta sajt",
+   "d_de": "Knoblauch-Sauerrahm, Fior-di-latte-Mozzarella, Gyrosfleisch, Feta",
+   "p": 3490,
+   "a": [
+    1,
+    6,
+    7,
+    10
+   ],
+   "gf": true,
+   "tags": [],
+   "img": "greco",
+   "round": true,
+   "on": true
+  },
+  {
+   "id": "mexicana",
+   "cat": "pizza",
+   "n": "Mexicana",
+   "num": "17",
+   "d": "Paradicsomszósz, Fior di latte Mozzarella, sonka, vörösbab, kukorica",
+   "d_de": "Tomatensauce, Fior-di-latte-Mozzarella, Schinken, Kidneybohnen, Mais",
+   "p": 3290,
+   "a": [
+    1,
+    6,
+    7
+   ],
+   "gf": true,
+   "tags": [],
+   "img": "mexicana",
+   "round": true,
+   "on": true
+  },
+  {
+   "id": "vegetariana",
+   "cat": "pizza",
+   "n": "Vegetariana",
+   "num": "18",
+   "d": "Paradicsomszósz, Fior di latte Mozzarella, grillezett zöldségek",
+   "d_de": "Tomatensauce, Fior-di-latte-Mozzarella, gegrilltes Gemüse",
+   "p": 3390,
+   "a": [
+    1,
+    6,
+    7,
+    9,
+    10,
+    11
+   ],
+   "gf": true,
+   "tags": [
+    "veg"
+   ],
+   "img": "vegetariana",
+   "round": true,
+   "on": true
+  },
+  {
+   "id": "pesca",
+   "cat": "pizza",
+   "n": "Pesca",
+   "num": "19",
+   "d": "Paradicsomszósz, Fior di latte Mozzarella, sonka, őszibarack",
+   "d_de": "Tomatensauce, Fior-di-latte-Mozzarella, Schinken, Pfirsich",
+   "p": 3390,
+   "a": [
+    1,
+    7
+   ],
+   "gf": true,
+   "tags": [],
+   "img": "pesca",
+   "round": true,
+   "on": true
+  },
+  {
+   "id": "pulled-pork-e-cipolla",
+   "cat": "pizza",
+   "n": "Pulled Pork e Cipolla",
+   "num": "21",
+   "d": "Bbq krémes alap, Tépett disznó, Vörös Cheddar Sajt, Lilahagyma",
+   "d_de": "BBQ-Creme, Pulled Pork, roter Cheddar, rote Zwiebeln",
+   "p": 3650,
+   "a": [
+    1,
+    10,
+    11
+   ],
+   "gf": true,
+   "tags": [],
+   "img": "pulled-pork-e-cipolla",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "grande-e-rustica",
+   "cat": "pizza",
+   "n": "Grande e Rustica",
+   "num": "22",
+   "d": "Paradicsomos alap, Főtt sonka, Füstölt bacon szalonna, Salsiccia (pikàns Olasz kolbász), Kukorica, Füstölt sajt",
+   "d_de": "Tomatenbasis, Kochschinken, geräucherter Speck, Salsiccia (pikante italienische Wurst), Mais, Räucherkäse",
+   "p": 3650,
+   "a": null,
+   "gf": true,
+   "tags": [
+    "hot"
+   ],
+   "img": "grande-e-rustica",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "pizza-kebab",
+   "cat": "pizza",
+   "n": "Pizza Kebab",
+   "num": "23",
+   "d": "Kapros tejfölös alap, Fior Di latte Mozzarella, Borjú kebabhús, lilahagyma, paradicsom",
+   "d_de": "Dill-Sauerrahm, Fior-di-latte-Mozzarella, Kalbs-Kebab, rote Zwiebeln, Tomaten",
+   "p": 3650,
+   "a": [
+    1
+   ],
+   "gf": true,
+   "tags": [],
+   "img": "pizza-kebab",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "grande-e-rustica-familienpizza",
+   "cat": "csaladi",
+   "n": "Grande e Rustica — családi",
+   "num": null,
+   "d": "Paradicsomos alap, Fior di Latte Mozzarella, Főtt sonka, Füstölt bacon szalonna, Salsiccia (pikàns Olasz kolbász), Kukorica, Füstölt sajt",
+   "d_de": "Tomatenbasis, Fior-di-latte-Mozzarella, Kochschinken, geräucherter Speck, Salsiccia, Mais, Räucherkäse",
+   "p": 5790,
+   "a": null,
+   "gf": false,
+   "tags": [
+    "hot"
+   ],
+   "img": "grande-e-rustica-familienpizza",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "pizza-kebab-familienpizza",
+   "cat": "csaladi",
+   "n": "Pizza Kebab — családi",
+   "num": null,
+   "d": "Kapros tejfölös alap, Fior Di latte Mozzarella, Borjú kebabhús, lilahagyma, paradicsom",
+   "d_de": "Dill-Sauerrahm, Fior-di-latte-Mozzarella, Kalbs-Kebab, rote Zwiebeln, Tomaten",
+   "p": 5790,
+   "a": [
+    1,
+    7
+   ],
+   "gf": false,
+   "tags": [],
+   "img": "pizza-kebab-familienpizza",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "familienpizza-2-belage",
+   "cat": "csaladi",
+   "n": "Családi pizza 2 feltéttel",
+   "num": null,
+   "d": "Paradicsomszósz, Fior Di Latte Mozzarella, 2 szabadon választott feltét, (kérjük megjegyzésben feltüntetni a kért feltétet !)",
+   "d_de": "Tomatensauce, Fior-di-latte-Mozzarella, 2 frei wählbare Beläge (bitte im Kommentar angeben)",
+   "p": 5150,
+   "a": [
+    1,
+    7,
+    9
+   ],
+   "gf": false,
+   "tags": [],
+   "img": null,
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "paros-ajanlat",
+   "cat": "csaladi",
+   "n": "Páros ajánlat",
+   "num": null,
+   "d": "A képen szereplő étlapról kérjük válasszon kettőt, majd kérjük számát megjegyzésben beírni ! Kizárólag készpénzes fizetési lehetősèg !",
+   "d_de": "2 Pizzen aus der Aktionsliste (Nr. 31–44) – Nummern bitte im Kommentar angeben. Nur Barzahlung.",
+   "p": 4990,
+   "a": [
+    1,
+    7
+   ],
+   "gf": false,
+   "tags": [],
+   "img": "paros-ajanlat",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "cezar-salata",
+   "cat": "salata",
+   "n": "Cézár Saláta",
+   "num": null,
+   "d": "Jégsaláta, uborka, paradicsom, lilahagyma, kaliforniai paprika, Parmezán, sült fűszeres csirkecsíkok, öntet(tzatziki, fokhagymás, csípős vagy kapros)",
+   "d_de": "Eisbergsalat, Gurke, Tomate, rote Zwiebel, Paprika, Parmesan, gewürzte Hähnchenstreifen, Dressing nach Wahl",
+   "p": 2800,
+   "a": [
+    1
+   ],
+   "gf": false,
+   "tags": [],
+   "img": "cezar-salata",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "friss-kevert-salata",
+   "cat": "salata",
+   "n": "Friss Kevert Saláta",
+   "num": null,
+   "d": "Jégsaláta, uborka, paradicsom, lilahagyma, kaliforniai paprika olívaolajjal vagy balzsamecettel",
+   "d_de": "Eisbergsalat, Gurke, Tomate, rote Zwiebel, Paprika, mit Olivenöl oder Balsamico",
+   "p": 1600,
+   "a": null,
+   "gf": false,
+   "tags": [
+    "veg"
+   ],
+   "img": "friss-kevert-salata",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "gorog-salata",
+   "cat": "salata",
+   "n": "Görög Saláta",
+   "num": null,
+   "d": "Paradicsom, uborka, lilahagyma, olívabogyó, feta sajt, olívaolaj, bazsalikom",
+   "d_de": "Tomate, Gurke, rote Zwiebel, Oliven, Feta, Olivenöl, Basilikum",
+   "p": 2700,
+   "a": [
+    7
+   ],
+   "gf": false,
+   "tags": [
+    "veg"
+   ],
+   "img": "gorog-salata",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "gyros-tal",
+   "cat": "salata",
+   "n": "Gyros Tál",
+   "num": null,
+   "d": "Gyros hús, sült krumpli, jégsaláta, uborka, paradicsom, lilahagyma, kaliforniai paprika, öntet(tzatziki, fokhagymás, csípős, kapros)",
+   "d_de": "Gyrosfleisch, Pommes, Eisbergsalat, Gurke, Tomate, Zwiebel, Paprika, Dressing nach Wahl",
+   "p": 2850,
+   "a": [
+    6,
+    7,
+    10
+   ],
+   "gf": false,
+   "tags": [],
+   "img": "gyros-tal",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "sult-kebab-tal",
+   "cat": "salata",
+   "n": "Sült Kebab Tál",
+   "num": null,
+   "d": "Sült krumpli, sült kebab hús, sajt, jégsaláta, uborka, paradicsom, lilahagyma, kaliforniai paprika, öntet(tzatziki, fokhagymás, csípős, kapros)",
+   "d_de": "Pommes, Kebabfleisch, Käse, Eisbergsalat, Gurke, Tomate, Zwiebel, Paprika, Dressing nach Wahl",
+   "p": 2990,
+   "a": [
+    6,
+    10
+   ],
+   "gf": false,
+   "tags": [],
+   "img": "sult-kebab-tal",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "tonhal-salata",
+   "cat": "salata",
+   "n": "Tonhal Saláta",
+   "num": null,
+   "d": "Jégsaláta, tonhal, kaliforniai paprika, paradicsom, lilahagyma, madársaláta, olívaolaj, fűszerek (só, bors), citromlé",
+   "d_de": "Eisbergsalat, Thunfisch, Paprika, Tomate, rote Zwiebel, Feldsalat, Olivenöl, Zitrone",
+   "p": 2700,
+   "a": [
+    4
+   ],
+   "gf": false,
+   "tags": [],
+   "img": "tonhal-salata",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "churros-csokolade",
+   "cat": "desszert",
+   "n": "Churros csokoládé öntettel",
+   "num": null,
+   "d": "",
+   "d_de": "Churros mit Schokoladensauce",
+   "p": 1490,
+   "a": null,
+   "gf": false,
+   "tags": [],
+   "img": "churros-csokolade",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "churros-szamoca",
+   "cat": "desszert",
+   "n": "Churros szamóca öntettel",
+   "num": null,
+   "d": "",
+   "d_de": "Churros mit Erdbeersauce",
+   "p": 1490,
+   "a": [
+    1,
+    3,
+    7,
+    8
+   ],
+   "gf": false,
+   "tags": [],
+   "img": "churros-szamoca",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "extra-csoki-ontet",
+   "cat": "desszert",
+   "n": "Extra Csoki öntet",
+   "num": null,
+   "d": "",
+   "d_de": "Extra Schokoladensauce",
+   "p": 350,
+   "a": [
+    3,
+    5,
+    7
+   ],
+   "gf": false,
+   "tags": [],
+   "img": null,
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "extra-szamoca-ontet",
+   "cat": "desszert",
+   "n": "Extra Szamóca öntet",
+   "num": null,
+   "d": "",
+   "d_de": "Extra Erdbeersauce",
+   "p": 350,
+   "a": null,
+   "gf": false,
+   "tags": [],
+   "img": null,
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "pisztaciao",
+   "cat": "desszert",
+   "n": "PisztaCiao",
+   "num": null,
+   "d": "Pisztáciakrém, fehércsoki, tört pisztácia",
+   "d_de": "Süße Pizza: Pistaziencreme, weiße Schokolade, gehackte Pistazien",
+   "p": 2990,
+   "a": [
+    1,
+    5,
+    7,
+    8
+   ],
+   "gf": true,
+   "tags": [],
+   "img": "pisztaciao",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "sajttorta",
+   "cat": "desszert",
+   "n": "Sajttorta szamóca öntettel",
+   "num": null,
+   "d": "",
+   "d_de": "Käsekuchen mit Erdbeersauce",
+   "p": 1290,
+   "a": [
+    1,
+    3,
+    7
+   ],
+   "gf": false,
+   "tags": [],
+   "img": "sajttorta",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "coca-cola",
+   "cat": "ital",
+   "n": "Coca Cola",
+   "num": null,
+   "d": "0, 5L",
+   "d_de": "0, 5L",
+   "p": 750,
+   "a": null,
+   "gf": false,
+   "tags": [],
+   "img": "coca-cola",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "coca-cola-zero",
+   "cat": "ital",
+   "n": "Coca Cola Zero",
+   "num": null,
+   "d": "0, 5L",
+   "d_de": "0, 5L",
+   "p": 750,
+   "a": null,
+   "gf": false,
+   "tags": [],
+   "img": "coca-cola-zero",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "fanta-narancs",
+   "cat": "ital",
+   "n": "Fanta Narancs",
+   "num": null,
+   "d": "0, 5 L",
+   "d_de": "0, 5 L",
+   "p": 670,
+   "a": null,
+   "gf": false,
+   "tags": [],
+   "img": "fanta-narancs",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "fuzetea-barack",
+   "cat": "ital",
+   "n": "Fuzetea barack",
+   "num": null,
+   "d": "0, 5 L",
+   "d_de": "0, 5 L",
+   "p": 750,
+   "a": null,
+   "gf": false,
+   "tags": [],
+   "img": "fuzetea-barack",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "fuzetea-citrom",
+   "cat": "ital",
+   "n": "Fuzetea citrom",
+   "num": null,
+   "d": "0, 5 L",
+   "d_de": "0, 5 L",
+   "p": 750,
+   "a": null,
+   "gf": false,
+   "tags": [],
+   "img": "fuzetea-citrom",
+   "round": false,
+   "on": true
+  },
+  {
+   "id": "sprite",
+   "cat": "ital",
+   "n": "Sprite",
+   "num": null,
+   "d": "0, 5L",
+   "d_de": "0, 5L",
+   "p": 750,
+   "a": null,
+   "gf": false,
+   "tags": [],
+   "img": "sprite",
+   "round": false,
+   "on": true
+  }
+ ]
+}

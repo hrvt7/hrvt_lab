@@ -1,0 +1,9 @@
+# Cristiano Pizzéria (Szombathely) — koncepció-terv
+
+> Pizzéria Szombathelyen (Százhold u. 23, 9700). Kiszállítás Szombathelyen 350 Ft, vidékre 900 Ft, 60–90 perc; elvitel kb. 15 perc. A legtöbb pizza gluténmentes tésztával is kérhető (+1500 Ft). Rendelés: +36 70 425 37 93.
+
+Ez az oldal a HRVT koncepció-terve, nem a pizzéria hivatalos oldala (hivatalos: https://www.cristianopizza.hu/).
+
+- Étlap (gépileg olvasható): data/menu.json — árak bruttó forintban, allergének EU 1–14 számozással
+- Nyitvatartás (ideiglenes): hétfő és vasárnap zárva; kedd–csütörtök 11:00–21:00; péntek–szombat 11:00–22:00
+- Német változat: /de/

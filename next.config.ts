@@ -15,6 +15,10 @@ const config: NextConfig = {
       { source: "/novodom/", destination: "/novodom/index.html" },
       { source: "/hrvtburgers", destination: "/hrvtburgers/index.html" },
       { source: "/hrvtburgers/", destination: "/hrvtburgers/index.html" },
+      { source: "/cristiano", destination: "/cristiano/index.html" },
+      { source: "/cristiano/", destination: "/cristiano/index.html" },
+      { source: "/cristiano/de", destination: "/cristiano/de/index.html" },
+      { source: "/cristiano/de/", destination: "/cristiano/de/index.html" },
     ];
   },
 };
