@@ -87,7 +87,7 @@ export function Contact() {
     <footer ref={root} id="kapcsolat" data-theme="kiwi" className="relative bg-night-2">
       <div data-rise-shape="" className="relative overflow-hidden bg-kiwi text-night">
         <div className="wrap pt-[calc(var(--sec)*0.9)]">
-          <Meta n="05" dark>
+          <Meta n="04" dark>
             Kapcsolat
           </Meta>
           <h2 ref={word} className="t-mega mt-8 flex flex-wrap" style={{ fontSize: "clamp(4rem, 15.4vw, 18rem)" }} aria-label={WORD}>

@@ -4,7 +4,6 @@ export const NAV = [
   { label: "Szolgáltatások", href: "#szolgaltatasok" },
   { label: "Munkák", href: "#munkak" },
   { label: "Folyamat", href: "#folyamat" },
-  { label: "Rólam", href: "#rolam" },
 ];
 
 /** Words that roll in the hero: "Szoftvert építek, ami ___." */

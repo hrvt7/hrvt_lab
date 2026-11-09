@@ -25,11 +25,8 @@ export function Work() {
           <div className="md:col-span-3">
             <Meta n="02">Munkák</Meta>
           </div>
-          <div className="flex flex-col justify-between gap-8 md:col-span-9 md:flex-row md:items-end">
-            <Rise as="h2" className="t-xl" lines={[<>Kevés.</>, <span className="text-kiwi">De kész.</span>]} />
-            <p className="max-w-[30ch] text-smoke" data-fade="">
-              Csak olyat teszek ki, ami működik. Új projektek folyamatosan kerülnek fel.
-            </p>
+          <div className="md:col-span-9">
+            <Rise as="h2" className="t-xl" lines={[<>Válogatott</>, <span className="text-kiwi">munkák.</span>]} />
           </div>
         </div>
 
