@@ -30,16 +30,26 @@ export function Services() {
           scrollTrigger: { trigger: root.current, start: "top bottom", end: "top 20%", scrub: true },
         },
       );
-      // Stacked cards: each one sinks back as the next slides over it.
-      const cards = gsap.utils.toArray<HTMLElement>("[data-card]");
-      cards.forEach((card, i) => {
-        const next = cards[i + 1];
-        if (!next) return;
-        gsap.to(card.querySelector("[data-card-inner]"), {
-          scale: 0.9,
-          filter: "brightness(0.55)",
-          ease: "none",
-          scrollTrigger: { trigger: next, start: "top bottom", end: "top 30%", scrub: true },
+      // Stacked cards (desktop only): a card sinks back only while the next one actually covers it.
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 768px)", () => {
+        const cards = gsap.utils.toArray<HTMLElement>("[data-card]");
+        cards.forEach((card, i) => {
+          const next = cards[i + 1];
+          if (!next) return;
+          const inner = card.querySelector<HTMLElement>("[data-card-inner]")!;
+          gsap.fromTo(inner, { scale: 1, filter: "brightness(1)" }, {
+            scale: 0.94,
+            filter: "brightness(0.72)",
+            ease: "none",
+            scrollTrigger: {
+              trigger: next,
+              start: () => `top ${84 + i * 14 + inner.offsetHeight}px`,
+              end: () => `top ${84 + (i + 1) * 14}px`,
+              scrub: true,
+              invalidateOnRefresh: true,
+            },
+          });
         });
       });
     }, root);
@@ -72,7 +82,7 @@ export function Services() {
                 <article
                   key={s.n}
                   data-card=""
-                  className="sticky mb-6 last:mb-0 md:mb-10"
+                  className="mb-6 last:mb-0 md:sticky md:mb-10"
                   style={{ top: `calc(84px + ${i} * 14px)` }}
                 >
                   <div

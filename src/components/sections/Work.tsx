@@ -1,7 +1,7 @@
 import { Meta } from "../Scramble";
 import { Rise } from "../Rise";
 import { PixelReveal } from "../viz/PixelReveal";
-import { StrainWave } from "../viz/StrainWave";
+import { DemoStage } from "../viz/DemoStage";
 import { ArrowUpRight } from "../Icons";
 
 function Facts({ rows }: { rows: [string, string][] }) {
@@ -78,35 +78,43 @@ export function Work() {
           </a>
         </article>
 
-        {/* 02 — Strain wave teardown */}
-        <article className="mt-24 grid gap-8 md:mt-40 md:grid-cols-12 md:gap-[var(--g)]">
-          <div className="order-2 aspect-square overflow-hidden rounded-[22px] border border-line bg-night-2 md:order-1 md:col-span-8 md:aspect-[1.6] md:rounded-[30px]">
-            <StrainWave />
-          </div>
-          <div className="order-1 flex flex-col justify-between gap-10 md:order-2 md:col-span-4">
-            <div>
-              <p className="t-meta mb-6 text-kiwi">02 — Interaktív 3D magyarázó</p>
-              <Rise as="h3" className="t-l mb-6" lines={[<>Hullámhajtómű</>, <>teardown</>]} />
-              <p className="max-w-[40ch] text-smoke" data-fade="">
-                Böngészőben futó 3D termékmagyarázó egy ipari hullámhajtóműről, a gyártó nyilvános STEP-fájljaiból. A
-                mozgás számolt, nem animált: a rugalmas fogaskerék élőben hajlik, 200 fog kapcsolódik 202-be, és a kimenet
-                fordulatonként két fognyit lép. Metszet, szétszedés, katalógusadatok.
-              </p>
+        {/* 02 — Interactive 3D explainers */}
+        <article className="mt-24 md:mt-40">
+          <div className="mb-10 grid gap-6 md:mb-14 md:grid-cols-12">
+            <div className="md:col-span-5">
+              <p className="t-meta mb-6 text-kiwi">02 — Interaktív 3D termékmagyarázók</p>
+              <Rise as="h3" className="t-l" lines={[<>Szétszedhető</>, <>termékek</>]} />
             </div>
-            <div className="space-y-6">
-              <Facts
-                rows={[
-                  ["Típus", "Koncept demó"],
-                  ["Alap", "Gyári CAD / STEP"],
-                  ["Technológia", "OpenCascade · Three.js · shaderek"],
-                  ["Áttétel", "100 : 1, valós geometria"],
-                ]}
-              />
-              <p className="t-meta text-[0.62rem] leading-relaxed text-ash" data-fade="">
-                ← A működési elv élő, egyszerűsített 2D modellje. Húzd körbe. A teljes 3D demót kérésre megmutatom.
-              </p>
-            </div>
+            <p className="max-w-[46ch] self-end text-smoke md:col-span-5 md:col-start-8" data-fade="">
+              Gyári CAD-fájlokból és nyilvános műszaki adatokból épített, böngészőben futó 3D bemutatók. A mozgás
+              számolt, nem animált — a látogató forgatja, elindítja, metszetben és szétszedve is megnézi a terméket.
+              Mindkettő koncept demó, nem megrendelésre készült.
+            </p>
           </div>
+          <DemoStage
+            demos={[
+              {
+                id: "hd",
+                tab: "Hullámhajtómű",
+                title: "Harmonic Drive CSG-32-100",
+                src: "/demos/harmonic-drive-csg32.html",
+                poster: "/work/teardown-hd.webp",
+                alt: "Interaktív 3D hullámhajtómű-szimulátor: középen a hajtómű metszetben, körülötte vezérlőpanelek a fordulatszámmal, nézetekkel és katalógusadatokkal.",
+                body: "Ipari hullámhajtómű a gyártó STEP-fájljaiból. A hullámgenerátor élőben hajlítja a rugalmas fogaskereket, 200 fog kapcsolódik 202-be, a kimenet fordulatonként két fognyit lép. Metszet, röntgen, szétszedés, katalógusadatok.",
+                facts: [["Alap", "Gyári STEP"], ["Áttétel", "100 : 1"], ["Fogszám", "200 / 202"], ["Nézetek", "Metszet, röntgen, szétszedés"]],
+              },
+              {
+                id: "sb400",
+                tab: "Lamellás pergola",
+                title: "Bioklimatikus pergola — SB 400",
+                src: "/demos/pergola-sb400.html",
+                poster: "/work/teardown-sb400.webp",
+                alt: "Interaktív 3D lamellás pergola-szimulátor: terasz bútorokkal, nyitható lamellás tetővel, körülötte mechanika-, klíma- és nézetpanelek.",
+                body: "Bioklimatikus lamellás pergola a gyártó nyilvános műszaki mellékletéből. Lineáris motor és hajtórúd, 19 lamella nyílik 0–110° között, napfény- és árnyékszimulációval, metszettel és szétszedett nézettel.",
+                facts: [["Alap", "Műszaki melléklet"], ["Lamellák", "19 db, 0–110°"], ["Hajtás", "Lineáris motor"], ["Nézetek", "Metszet, szétszedés, LED"]],
+              },
+            ]}
+          />
         </article>
       </div>
     </section>
