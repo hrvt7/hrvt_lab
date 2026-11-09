@@ -1,0 +1,7 @@
+# HRVT Burgers — portfólió-demó
+
+> Kitalált burgermárka interaktív weboldala, a HRVT webes munkáinak bemutatására. Nem valódi vállalkozás, rendelés nem lehetséges.
+
+- Funkciók: 3D (WebGL) cel-shaded burger görgetésre szétnyíló rétegekkel, burger-összerakó élő árral és kosárral, demó rendelési folyamat, szósz-csepegés effekt, húzható márkakönyv.
+- Technológia: Next.js, React, TypeScript, Tailwind, GSAP, Lenis, three.js.
+- Készítő: HRVT — https://hrvt.vercel.app

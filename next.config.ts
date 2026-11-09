@@ -13,6 +13,8 @@ const config: NextConfig = {
       { source: "/sportpresszo/", destination: "/sportpresszo/index.html" },
       { source: "/novodom", destination: "/novodom/index.html" },
       { source: "/novodom/", destination: "/novodom/index.html" },
+      { source: "/hrvtburgers", destination: "/hrvtburgers/index.html" },
+      { source: "/hrvtburgers/", destination: "/hrvtburgers/index.html" },
     ];
   },
 };
