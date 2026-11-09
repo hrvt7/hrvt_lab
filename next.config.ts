@@ -9,6 +9,8 @@ const config: NextConfig = {
       { source: "/zolla/", destination: "/zolla/index.html" },
       { source: "/xkft", destination: "/xkft/index.html" },
       { source: "/xkft/", destination: "/xkft/index.html" },
+      { source: "/sportpresszo", destination: "/sportpresszo/index.html" },
+      { source: "/sportpresszo/", destination: "/sportpresszo/index.html" },
     ];
   },
 };
