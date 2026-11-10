@@ -21,6 +21,8 @@ const config: NextConfig = {
       { source: "/cristiano/de/", destination: "/cristiano/de/index.html" },
       { source: "/priorite", destination: "/priorite/index.html" },
       { source: "/priorite/", destination: "/priorite/index.html" },
+      { source: "/cleankong", destination: "/cleankong/index.html" },
+      { source: "/cleankong/", destination: "/cleankong/index.html" },
     ];
   },
 };
