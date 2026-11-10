@@ -23,6 +23,10 @@ const config: NextConfig = {
       { source: "/priorite/", destination: "/priorite/index.html" },
       { source: "/cleankong", destination: "/cleankong/index.html" },
       { source: "/cleankong/", destination: "/cleankong/index.html" },
+      { source: "/harlekin", destination: "/harlekin/index.html" },
+      { source: "/harlekin/", destination: "/harlekin/index.html" },
+      { source: "/harlekin/adatkezeles", destination: "/harlekin/adatkezeles/index.html" },
+      { source: "/harlekin/adatkezeles/", destination: "/harlekin/adatkezeles/index.html" },
     ];
   },
 };
