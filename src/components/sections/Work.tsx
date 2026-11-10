@@ -102,6 +102,11 @@ export function Work() {
                 body: "Robotkarokban használt hullámhajtómű a gyártó STEP-fájljaiból és katalógusadataiból. Az elliptikus hullámgenerátor meghajlítja a vékony acélpoharat, így két ponton kapcsolódik a fogazat — fordulatonként két foggal lép vissza. Röntgen, metszet és szétszedett nézet.",
                 facts: [["Alap", "STEP + katalógus"], ["Áttétel", "100:1"], ["Fogszám", "200 / 202"], ["Nézetek", "Röntgen, metszet, szétszedés"]],
               },
+            ]}
+          />
+          <div className="mt-16 md:mt-24">
+            <DemoStage
+              demos={[
               {
                 id: "sb400",
                 tab: "Bioklimatikus pergola",
@@ -112,8 +117,9 @@ export function Work() {
                 body: "Bioklimatikus lamellás pergola a gyártó nyilvános műszaki mellékletéből. Lineáris motor és hajtórúd, 19 lamella nyílik 0–110° között, napfény- és árnyékszimulációval, metszettel és szétszedett nézettel.",
                 facts: [["Alap", "Műszaki melléklet"], ["Lamellák", "19 db, 0–110°"], ["Hajtás", "Lineáris motor"], ["Nézetek", "Metszet, szétszedés, LED"]],
               },
-            ]}
-          />
+              ]}
+            />
+          </div>
         </article>
       </div>
     </section>
