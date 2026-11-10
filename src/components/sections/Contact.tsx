@@ -27,7 +27,7 @@ export function Contact() {
         gsap.fromTo(
           "[data-bl]",
           { yPercent: 100, "--w": 100 },
-          { yPercent: 0, "--w": 800, duration: 1.2, ease: "expo.out", stagger: 0.04, scrollTrigger: { trigger: word.current, start: "top 85%" } },
+          { yPercent: 0, "--w": 650, duration: 1.2, ease: "expo.out", stagger: 0.04, scrollTrigger: { trigger: word.current, start: "top 85%" } },
         );
         gsap.fromTo(
           "[data-wm-foot]",
@@ -85,7 +85,7 @@ export function Contact() {
           <Meta n="05" dark>
             Kapcsolat
           </Meta>
-          <h2 ref={word} className="t-mega mt-8 flex flex-wrap" style={{ fontSize: "clamp(4rem, 15.4vw, 18rem)" }} aria-label={WORD}>
+          <h2 ref={word} className="t-mega mt-8 flex flex-wrap" style={{ fontSize: "clamp(1.8rem, 7.6vw, 8.6rem)" }} aria-label={WORD}>
             {[...WORD].map((c, i) => (
               <span key={i} className="-mt-[0.24em] inline-block overflow-hidden pb-[0.04em] pt-[0.24em]" aria-hidden>
                 <span data-bl="" data-ch="" className="inline-block">

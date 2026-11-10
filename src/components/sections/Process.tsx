@@ -48,7 +48,7 @@ export function Process() {
               <div className="mt-12 hidden items-end gap-6 md:flex" aria-hidden>
                 <span
                   className="flex items-start font-display leading-none text-kiwi"
-                  style={{ fontSize: "clamp(8rem, 16vw, 15rem)", fontVariationSettings: '"wght" 800' }}
+                  style={{ fontSize: "clamp(5rem, 10vw, 9.5rem)", fontVariationSettings: '"wght" 650' }}
                 >
                   <span>0</span>
                   <span className="relative inline-block h-[1em] overflow-hidden leading-none">

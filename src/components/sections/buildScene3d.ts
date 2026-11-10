@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 THREE.ColorManagement.enabled = false;
 const C = { bg: "#181818", card: "#272727", paper: "#f2f2ee", smoke: "#9a9a93", kiwi: "#89e900", night: "#222222" };
-const DISP = '"Big Shoulders Display Variable", Impact, sans-serif', SANS = '"Geist Variable", system-ui, sans-serif';
+const DISP = '"Lexend Giga Variable", "Arial Black", sans-serif', SANS = '"Geist Variable", system-ui, sans-serif';
 type Ctx = CanvasRenderingContext2D;
 type Block = { id: string; x: number; y: number; w: number; h: number; z: number; grey: string; draw: (g: Ctx, w: number, h: number) => void };
 const rr = (g: Ctx, x: number, y: number, w: number, h: number, r: number) => { g.beginPath(); g.roundRect(x, y, w, h, r); };
@@ -16,20 +16,20 @@ const photo = (g: Ctx, w: number, h: number) => {
 };
 const head = (a: string, b: string) => (g: Ctx, w: number, h: number) => {
   g.fillStyle = C.bg; g.fillRect(0, 0, w, h); g.textBaseline = "alphabetic";
-  const f = (px: number) => `800 ${px}px ${DISP}`; fit(g, a.length > b.length ? a : b, f, w * 0.98, h * 0.52); const px = parseFloat(g.font.split("px")[0].split(" ").pop()!);
+  const f = (px: number) => `650 ${px}px ${DISP}`; fit(g, a.length > b.length ? a : b, f, w * 0.98, h * 0.52); const px = parseFloat(g.font.split("px")[0].split(" ").pop()!);
   g.font = f(px); g.fillStyle = C.paper; g.fillText(a, 0, h * 0.46); g.fillStyle = C.kiwi; g.fillText(b, 0, h * 0.95);
 };
 const lines = (g: Ctx, w: number, h: number) => { g.fillStyle = C.bg; g.fillRect(0, 0, w, h); g.fillStyle = C.smoke; g.textBaseline = "top"; const px = h * 0.3; g.font = `400 ${px}px ${SANS}`; g.fillText("Egyedi weboldal, ami ügyfelet hoz.", 0, h * 0.08); g.fillText("Telefonon is villámgyors.", 0, h * 0.54); };
 const cta = (g: Ctx, w: number, h: number) => { g.fillStyle = C.kiwi; g.fillRect(0, 0, w, h); g.fillStyle = C.night; g.textBaseline = "middle"; g.textAlign = "center"; g.font = `600 ${h * 0.36}px ${SANS}`; g.fillText("Ajánlatot kérek  →", w / 2, h * 0.53); g.textAlign = "left"; };
 const card = (n: string, t: string) => (g: Ctx, w: number, h: number) => {
   g.fillStyle = C.card; g.fillRect(0, 0, w, h); g.textBaseline = "top"; g.fillStyle = C.kiwi; g.font = `500 ${h * 0.13}px ui-monospace, monospace`; g.fillText(n, h * 0.14, h * 0.14);
-  g.fillStyle = C.paper; fit(g, t, (px) => `800 ${px}px ${DISP}`, w - h * 0.28, h * 0.3); g.textBaseline = "alphabetic"; g.fillText(t, h * 0.14, h * 0.86);
+  g.fillStyle = C.paper; fit(g, t, (px) => `650 ${px}px ${DISP}`, w - h * 0.28, h * 0.3); g.textBaseline = "alphabetic"; g.fillText(t, h * 0.14, h * 0.86);
 };
 const DESK: { W: number; H: number; blocks: Block[] } = {
   W: 16, H: 10, blocks: [
     { id: "bg", x: 0, y: 0, w: 16, h: 10, z: 0, grey: "#1c1c1c", draw: (g, w, h) => { g.fillStyle = C.bg; g.fillRect(0, 0, w, h); } },
     { id: "chrome", x: 0, y: 0, w: 16, h: 0.7, z: 1, grey: "#333", draw: (g, w, h) => { g.fillStyle = "#2c2c2c"; g.fillRect(0, 0, w, h); ["#555", "#555", C.kiwi].forEach((c, i) => { g.fillStyle = c; g.beginPath(); g.arc(h * (0.6 + i * 0.55), h / 2, h * 0.16, 0, 7); g.fill(); }); g.fillStyle = "#1a1a1a"; rr(g, w * 0.3, h * 0.2, w * 0.4, h * 0.6, h * 0.3); g.fill(); g.fillStyle = C.smoke; g.font = `400 ${h * 0.34}px ${SANS}`; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("ateceged.hu", w / 2, h * 0.53); g.textAlign = "left"; } },
-    { id: "nav", x: 0, y: 0.7, w: 16, h: 1, z: 1, grey: "#2e2e2e", draw: (g, w, h) => { g.fillStyle = C.bg; g.fillRect(0, 0, w, h); g.fillStyle = C.paper; g.textBaseline = "middle"; g.font = `800 ${h * 0.5}px ${DISP}`; g.fillText("A TE CÉGED", w * 0.05, h * 0.54); g.font = `400 ${h * 0.26}px ${SANS}`; g.fillStyle = C.smoke; ["Szolgáltatások", "Munkák", "Kapcsolat"].forEach((t, i) => g.fillText(t, w * (0.5 + i * 0.115), h * 0.53)); g.fillStyle = C.kiwi; rr(g, w * 0.86, h * 0.24, w * 0.09, h * 0.52, h * 0.26); g.fill(); } },
+    { id: "nav", x: 0, y: 0.7, w: 16, h: 1, z: 1, grey: "#2e2e2e", draw: (g, w, h) => { g.fillStyle = C.bg; g.fillRect(0, 0, w, h); g.fillStyle = C.paper; g.textBaseline = "middle"; g.font = `650 ${h * 0.34}px ${DISP}`; g.fillText("A TE CÉGED", w * 0.05, h * 0.54); g.font = `400 ${h * 0.26}px ${SANS}`; g.fillStyle = C.smoke; ["Szolgáltatások", "Munkák", "Kapcsolat"].forEach((t, i) => g.fillText(t, w * (0.5 + i * 0.115), h * 0.53)); g.fillStyle = C.kiwi; rr(g, w * 0.86, h * 0.24, w * 0.09, h * 0.52, h * 0.26); g.fill(); } },
     { id: "img", x: 9, y: 2.2, w: 6.2, h: 5.2, z: 2, grey: "#4a4a4a", draw: photo },
     { id: "c1", x: 0.8, y: 8, w: 4.53, h: 1.6, z: 2, grey: "#3a3a3a", draw: card("01", "TERVEZÉS") },
     { id: "c2", x: 5.73, y: 8, w: 4.53, h: 1.6, z: 2, grey: "#3a3a3a", draw: card("02", "FEJLESZTÉS") },
@@ -42,7 +42,7 @@ const DESK: { W: number; H: number; blocks: Block[] } = {
 const PHONE: typeof DESK = {
   W: 9, H: 17, blocks: [
     { id: "bg", x: 0, y: 0, w: 9, h: 17, z: 0, grey: "#1c1c1c", draw: (g, w, h) => { g.fillStyle = C.bg; g.fillRect(0, 0, w, h); } },
-    { id: "nav", x: 0, y: 0, w: 9, h: 1.4, z: 1, grey: "#2e2e2e", draw: (g, w, h) => { g.fillStyle = "#202020"; g.fillRect(0, 0, w, h); g.fillStyle = C.paper; g.textBaseline = "middle"; g.font = `800 ${h * 0.44}px ${DISP}`; g.fillText("A TE CÉGED", w * 0.08, h * 0.55); g.fillStyle = C.kiwi; g.beginPath(); g.arc(w * 0.88, h / 2, h * 0.26, 0, 7); g.fill(); } },
+    { id: "nav", x: 0, y: 0, w: 9, h: 1.4, z: 1, grey: "#2e2e2e", draw: (g, w, h) => { g.fillStyle = "#202020"; g.fillRect(0, 0, w, h); g.fillStyle = C.paper; g.textBaseline = "middle"; g.font = `650 ${h * 0.3}px ${DISP}`; g.fillText("A TE CÉGED", w * 0.08, h * 0.55); g.fillStyle = C.kiwi; g.beginPath(); g.arc(w * 0.88, h / 2, h * 0.26, 0, 7); g.fill(); } },
     { id: "img", x: 0.7, y: 7.1, w: 7.6, h: 4.5, z: 2, grey: "#4a4a4a", draw: photo },
     { id: "c1", x: 0.7, y: 13.9, w: 3.65, h: 2.4, z: 2, grey: "#3a3a3a", draw: card("01", "TERVEZÉS") },
     { id: "c2", x: 4.65, y: 13.9, w: 3.65, h: 2.4, z: 2, grey: "#3a3a3a", draw: card("02", "ÉLESÍTÉS") },
@@ -84,7 +84,7 @@ export function mount({ host, sec, canvas, flood, bar }: { host: HTMLElement; se
     const q = new THREE.Quaternion().setFromEuler(new THREE.Euler((R() - 0.5) * 2.4, (R() - 0.5) * 2.4, (R() - 0.5) * 1.6));
     const it = { b, pivot, mat, edge, home, sc, q, ph: R() * 6.283, i }; items.push(it); paint(it);
   });
-  Promise.all([document.fonts.load(`800 40px ${DISP}`), document.fonts.load(`400 20px ${SANS}`), document.fonts.load(`600 20px ${SANS}`)]).then(() => { items.forEach(paint); dirty = true; });
+  Promise.all([document.fonts.load(`650 40px ${DISP}`), document.fonts.load(`400 20px ${SANS}`), document.fonts.load(`600 20px ${SANS}`)]).then(() => { items.forEach(paint); dirty = true; });
   const grid = new THREE.GridHelper(160, 32, kiwi, kiwi); const gm = grid.material as THREE.LineBasicMaterial; gm.transparent = true; gm.opacity = 0; gm.depthTest = false; grid.renderOrder = -5; scene.add(grid); disposables.push(grid.geometry, gm);
   scene.fog = new THREE.Fog(0x222222, 38, 95);
   // Cursor that clicks the button once the page is live.

@@ -33,7 +33,7 @@ export function Hero() {
     const chars = el.querySelectorAll<HTMLElement>("[data-ch]");
     const fades = el.querySelectorAll("[data-hf]");
     if (prefersReduced()) {
-      chars.forEach((c) => c.style.setProperty("--w", "800"));
+      chars.forEach((c) => c.style.setProperty("--w", "650"));
       return;
     }
     gsap.set(chars, { yPercent: 105 });
@@ -41,7 +41,7 @@ export function Hero() {
     return onReady(() => {
       const tl = gsap.timeline({ delay: 0.1 });
       tl.to(chars, { yPercent: 0, duration: 1.1, ease: "expo.out", stagger: 0.022 }, 0.32)
-        .to(chars, { "--w": 800, duration: 0.9, ease: "power2.out", stagger: 0.022 }, 0)
+        .to(chars, { "--w": 650, duration: 0.9, ease: "power2.out", stagger: 0.022 }, 0)
         .to(fades, { opacity: 1, y: 0, duration: 1, stagger: 0.04, ease: "power3.out" }, 0.7)
         .fromTo(el.querySelectorAll("[data-hrule]"), { scaleX: 0 }, { scaleX: 1, duration: 1.4, ease: "expo.inOut" }, 0.4);
     });
@@ -116,7 +116,7 @@ function Content({ ink = false }: { ink?: boolean }) {
         </div>
       )}
 
-      <h1 className="t-mega mt-auto pt-10 [contain:layout_style]" style={{ fontSize: "clamp(3.3rem, min(11.6vw, 13.2vh), 13rem)" }}>
+      <h1 className="t-mega mt-auto pt-10 [contain:layout_style]" style={{ fontSize: "clamp(1.7rem, min(7.3vw, 9.6vh), 5.6rem)" }}>
         {LINES.map((l) => (
           <span key={l} className="rl whitespace-nowrap">
             {ink ? l : <Letters text={l} />}

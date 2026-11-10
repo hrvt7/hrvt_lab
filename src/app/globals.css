@@ -14,7 +14,7 @@
   --color-line-2: rgba(242, 242, 238, 0.18);
   --color-line-ink: rgba(34, 34, 34, 0.16);
 
-  --font-display: "Big Shoulders Display Variable", "Big Shoulders Display", Impact, sans-serif;
+  --font-display: "Lexend Giga Variable", "Lexend Giga", "Arial Black", sans-serif;
   --font-sans: "Geist Variable", "Geist", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, monospace;
 
@@ -53,26 +53,18 @@ body {
 .t-m {
   font-family: var(--font-display);
   text-transform: uppercase;
-  font-variation-settings: "wght" var(--w, 800);
+  font-variation-settings: "wght" var(--w, 650);
   font-weight: normal;
-  line-height: 0.98;
-  letter-spacing: -0.012em;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
 }
-.t-mega {
-  font-size: clamp(4.6rem, 17.5vw, 20rem);
-  line-height: 0.98;
-}
-.t-xl {
-  font-size: clamp(3.6rem, 11vw, 12rem);
-}
-.t-l {
-  font-size: clamp(2.6rem, 6.4vw, 6.6rem);
-  line-height: 0.98;
-}
-.t-m {
-  font-size: clamp(1.9rem, 3.4vw, 3.3rem);
-  line-height: 1;
-  letter-spacing: 0;
+.t-mega { font-size: clamp(2rem, 8vw, 9rem); }
+.t-xl { font-size: clamp(1.5rem, 6.2vw, 2.6rem); }
+.t-l { font-size: clamp(1.3rem, 5.2vw, 2rem); }
+.t-m { font-size: clamp(1.05rem, 1.7vw, 1.6rem); letter-spacing: -0.03em; }
+@media (min-width: 768px) {
+  .t-xl { font-size: clamp(2.6rem, 4.8vw, 5rem); }
+  .t-l { font-size: clamp(1.9rem, 2.9vw, 3rem); }
 }
 .t-lead {
   font-size: clamp(1.08rem, 1.35vw, 1.35rem);
@@ -264,7 +256,7 @@ html.lenis body { height: auto; }
 
 /* Per-letter variable weight (inheritance resolves var() too early otherwise) */
 [data-ch] {
-  font-variation-settings: "wght" var(--w, 800);
+  font-variation-settings: "wght" var(--w, 650);
 }
 
 /* Kulcsrakész rows: a kiwi fill travels left → right; the ink copy is clipped to it. */

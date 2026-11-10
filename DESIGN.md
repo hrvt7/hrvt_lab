@@ -15,7 +15,7 @@ Ratio ≈ 60 night · 25 paper · 15 kiwi.
 
 ## Type
 - **Rugis** — logo only, shipped as outlined SVG (`src/lib/logo.ts`), never as a webfont.
-- **Big Shoulders Display (variable 100–900)** — all headlines, uppercase, line-height 0.98 (leaves room for Hungarian accents Á É Í Ó Ö Ő Ú Ü Ű).
+- **Lexend Giga (variable 100–900)** — all headlines, uppercase, wide, weight 650, line-height 1.08 (leaves room for Hungarian accents Á É Í Ó Ö Ő Ú Ü Ű).
 - **Geist** — body. **Geist Mono** — labels, data, `[01]` indices.
 
 ## Motion vocabulary (all new)

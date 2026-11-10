@@ -26,7 +26,7 @@ export function Turnkey() {
             <Meta n="02">Weboldal-készítés</Meta>
           </div>
           <div className="min-w-0 md:col-span-9">
-            <Rise as="h2" className="t-xl max-md:!text-[12.6vw]" lines={[<>Weboldal,</>, <span className="text-kiwi">kulcsrakészen.</span>]} />
+            <Rise as="h2" className="t-xl" lines={[<>Weboldal,</>, <span className="text-kiwi">kulcsrakészen.</span>]} />
             <p className="t-lead mt-8 max-w-[46ch] text-smoke" data-fade="">
               Nem csak design. Minden, ami ahhoz kell, hogy az oldalad éljen, megtalálják, és érdeklődőt hozzon —{" "}
               <span className="text-paper">egy kézből.</span>

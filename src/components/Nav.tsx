@@ -85,7 +85,7 @@ export function Nav() {
         <nav className="flex flex-col" aria-label="Mobil navigáció">
           {[...NAV, { label: "Kapcsolat", href: "#kapcsolat" }].map((n, i) => (
             <a key={n.href} href={n.href} onClick={go(n.href)} className="block overflow-hidden border-b border-line-ink py-1">
-              <span data-mi="" className="t-l flex items-baseline justify-between" style={{ fontSize: "clamp(3rem,15vw,5.5rem)" }}>
+              <span data-mi="" className="t-l flex items-baseline justify-between" style={{ fontSize: "clamp(1.3rem,6vw,2.4rem)" }}>
                 {n.label}
                 <span className="t-meta">0{i + 1}</span>
               </span>
