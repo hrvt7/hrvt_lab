@@ -2,6 +2,7 @@ import { Meta } from "../Scramble";
 import { Rise } from "../Rise";
 import { PixelReveal } from "../viz/PixelReveal";
 import { DemoStage } from "../viz/DemoStage";
+import { LaptopStage } from "../viz/LaptopStage";
 import { ArrowUpRight } from "../Icons";
 
 function Facts({ rows }: { rows: [string, string][] }) {
@@ -19,7 +20,7 @@ function Facts({ rows }: { rows: [string, string][] }) {
 
 export function Work() {
   return (
-    <section id="munkak" data-theme="night" className="relative bg-night">
+    <section id="munkak" data-theme="night" className="relative bg-night [overflow-x:clip]">
       <div className="wrap pb-[var(--sec)] pt-[var(--sec)]">
         <div className="grid gap-8 md:grid-cols-12">
           <div className="md:col-span-3">
@@ -64,17 +65,15 @@ export function Work() {
               </a>
             </div>
           </div>
-          <a
-            href="https://lamelix.vercel.app/konfigurator"
-            target="_blank"
-            rel="noreferrer"
-            className="group block overflow-hidden rounded-[22px] border border-line md:col-span-8 md:rounded-[30px]"
-            data-cursor="Kipróbálom"
-          >
-            <PixelReveal
-              src="/work/lamelix"
-              alt="A Lamelix konfigurátor: lépésenkénti beállítópanel, valós idejű 3D pergola és azonnali árkalkuláció."
-            />
+          <a href="https://lamelix.vercel.app/konfigurator" target="_blank" rel="noreferrer" className="group block md:col-span-8" data-cursor="Kipróbálom">
+            <LaptopStage src="/work/lamelix">
+              <div className="overflow-hidden rounded-[22px] border border-line md:rounded-[30px]">
+                <PixelReveal
+                  src="/work/lamelix"
+                  alt="A Lamelix konfigurátor: lépésenkénti beállítópanel, valós idejű 3D pergola és azonnali árkalkuláció."
+                />
+              </div>
+            </LaptopStage>
           </a>
         </article>
 

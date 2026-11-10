@@ -33,5 +33,6 @@ Ratio ≈ 60 night · 25 paper · 15 kiwi.
 12. **Crosshair cursor** — with live page coordinates; becomes a kiwi tag on targets.
 13. **Magnetic letters** — "Beszéljünk." leans toward the pointer.
 14. **3D footer wordmark (WebGL)** — the Rugis wordmark extruded letter by letter; flips up on arrival, follows the pointer or the phone tilt with per-letter inertia, spins on tap. The flat SVG stays as fallback.
+15. **Laptop stage (WebGL)** — the Lamelix case arrives as a closed 3D laptop (kiwi monogram on the lid), opens on scroll, the screen boots into the screenshot and slowly pans. The pixel-resolve image is the fallback.
 
 All of it respects `prefers-reduced-motion`.
