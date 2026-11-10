@@ -307,3 +307,112 @@ html.lenis body { height: auto; }
 .sh em { font-style: italic; font-variation-settings: "wght" 380, "opsz" 144, "SOFT" 100; }
 .sh .t-meta { letter-spacing: 0.16em; }
 .sh .pill { font-weight: 600; }
+
+/* --- Smart Home: Areas (pinned light moods) --- */
+.ar { --lp: 0; color: var(--color-paper); }
+.ar-scene { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .7s, visibility 0s .7s; }
+.ar[data-step="0"] .ar-s0, .ar[data-step="1"] .ar-s1, .ar[data-step="2"] .ar-s2, .ar[data-step="3"] .ar-s3, .ar[data-step="4"] .ar-s4 { opacity: 1; visibility: visible; transition: opacity .7s; }
+.ar-copy { opacity: 0; transform: translateY(26px); transition: opacity .45s, transform .7s var(--ease-out-quint); pointer-events: none; }
+.ar[data-step="0"] .ar-copy[data-i="0"], .ar[data-step="1"] .ar-copy[data-i="1"], .ar[data-step="2"] .ar-copy[data-i="2"], .ar[data-step="3"] .ar-copy[data-i="3"], .ar[data-step="4"] .ar-copy[data-i="4"] { opacity: 1; transform: none; }
+.ar-dots { display: flex; gap: 6px; }
+.ar-dots li { width: 22px; height: 4px; border-radius: 9px; background: var(--color-line-2); transition: background .4s, width .4s; }
+.ar[data-step="0"] .ar-dots [data-i="0"], .ar[data-step="1"] .ar-dots [data-i="1"], .ar[data-step="2"] .ar-dots [data-i="2"], .ar[data-step="3"] .ar-dots [data-i="3"], .ar[data-step="4"] .ar-dots [data-i="4"] { background: var(--color-kiwi); width: 44px; }
+.ar-room { position: absolute; color: var(--color-kiwi); width: min(92vw, 820px); right: 2vw; top: 14%; }
+@media (max-width: 767px) { .ar-room { width: 108vw; right: -4vw; top: 22%; } }
+/* 1 light: a warm pool that follows you; the rest of the room stays dark */
+.ar-s0 { background: radial-gradient(circle at var(--mx) var(--my), rgba(255,206,140,.32), rgba(255,170,90,.08) 22vmax, transparent 40vmax); }
+.ar-dark { position: absolute; inset: 0; background: radial-gradient(circle at var(--mx) var(--my), transparent 0, transparent 9vmax, rgba(11,18,32,.95) 30vmax); }
+/* 2 shading: a window full of sun, slats close as you scroll */
+.ar-window { position: absolute; right: 6vw; top: 16%; width: min(46vw, 640px); height: 62%; border: 2px solid var(--color-kiwi); border-radius: 6px; overflow: hidden; background: linear-gradient(180deg, #ffb469, #f08a4b 55%, #8b4a3a); }
+@media (max-width: 767px) { .ar-window { left: 6vw; right: 6vw; width: auto; top: 22%; height: 40%; } }
+.ar-sun { position: absolute; width: 38%; aspect-ratio: 1; border-radius: 50%; left: 50%; top: 18%; translate: -50% calc(var(--lp) * 60%); background: radial-gradient(circle, #fff6d8, #ffd28a 45%, rgba(255,190,110,0) 70%); }
+.ar-window i { position: absolute; left: 0; right: 0; top: calc(var(--i) * 6.25%); height: 6.25%; background: linear-gradient(180deg, #2b3956, #17233a); border-bottom: 1px solid rgba(0,0,0,.35); transform-origin: top; transform: scaleY(clamp(.04, calc(var(--lp) * 1.5 - var(--i) * .03), 1)); }
+/* 3 heating */
+.ar-heat { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(255,90,54,.55), rgba(255,140,80,.18) 45%, transparent 75%); opacity: calc(.15 + var(--lp) * .85); }
+.ar-dial { position: absolute; width: min(62vw, 420px); right: 9vw; top: 50%; translate: 0 -55%; transform: rotate(-90deg); }
+.ar-dial-bg { stroke: var(--color-line-2); stroke-width: 10; fill: none; }
+.ar-dial-fg { stroke: var(--color-kiwi); stroke-width: 10; fill: none; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: calc(1 - .3 - var(--lp) * .55); transition: stroke-dashoffset .2s; }
+.ar-temp { position: absolute; right: 9vw; top: 50%; width: min(62vw, 420px); translate: 0 -55%; text-align: center; font-family: var(--font-display); font-size: clamp(3.4rem, 11vw, 8rem); font-variation-settings: "wght" 300, "opsz" 144; line-height: 1; margin-top: calc(min(62vw, 420px) / 2 - .5em); }
+.ar-temp sup { font-size: .3em; vertical-align: top; margin-left: .1em; color: var(--color-kiwi); }
+.ar-waves { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 40%; color: rgba(255,170,120,.35); }
+.ar-waves path { animation: wv 4s ease-in-out infinite alternate; }
+@keyframes wv { to { transform: translateY(-40px); opacity: .2; } }
+@media (max-width: 767px) { .ar-dial, .ar-temp { right: 50%; translate: 50% 0; top: 18%; width: 64vw; } .ar-temp { margin-top: calc(32vw - .5em); } }
+/* 4 security: camera viewfinder */
+.ar-s3 { background: repeating-linear-gradient(0deg, rgba(240,163,94,.05) 0 1px, transparent 1px 4px); }
+.ar-facade { opacity: .55; }
+.ar-vf { position: absolute; inset: 14% 5vw 22% 40vw; }
+@media (max-width: 767px) { .ar-vf { inset: 20% 5vw 40% 5vw; } }
+.ar-vf b { position: absolute; width: 36px; height: 36px; border: 2px solid var(--color-kiwi); }
+.ar-vf b:nth-child(1) { left: 0; top: 0; border-right: 0; border-bottom: 0; } .ar-vf b:nth-child(2) { right: 0; top: 0; border-left: 0; border-bottom: 0; }
+.ar-vf b:nth-child(3) { left: 0; bottom: 0; border-right: 0; border-top: 0; } .ar-vf b:nth-child(4) { right: 0; bottom: 0; border-left: 0; border-top: 0; }
+.ar-vf > p { position: absolute; left: 18px; top: 16px; display: flex; gap: 8px; align-items: center; color: var(--color-paper); }
+.ar-vf > p i { width: 9px; height: 9px; border-radius: 9px; background: #ff4a3a; animation: blink 1s steps(2) infinite; }
+.ar-vf .ar-cam { left: auto; right: 18px; top: auto; bottom: 16px; color: var(--color-smoke); }
+.ar-scan { position: absolute; left: 0; right: 0; height: 2px; background: var(--color-kiwi); box-shadow: 0 0 18px var(--color-kiwi); top: calc(var(--lp) * 100%); }
+.ar-lock { position: absolute; width: 110px; height: 140px; border: 1.5px dashed #ff4a3a; left: calc(var(--mx) - 40vw - 55px); top: calc(var(--my) - 14% - 70px); transition: left .35s, top .35s; }
+@media (max-width: 767px) { .ar-lock { left: calc(var(--mx) - 5vw - 55px); top: calc(var(--my) - 20vh - 70px); } }
+.ar-lock span { position: absolute; top: -20px; left: 0; color: #ff6a5a; font-size: .6rem; }
+/* 5 energy */
+.ar-flow { position: absolute; width: min(94vw, 900px); right: 2vw; top: 16%; color: var(--color-paper); }
+@media (max-width: 767px) { .ar-flow { width: 112vw; right: -6vw; top: 22%; } }
+.ar-wire path { stroke: var(--color-kiwi); stroke-dasharray: 10 14; animation: flow 1s linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -24; } }
+.ar-kwh { position: absolute; right: 6vw; top: 15%; font-family: var(--font-display); font-size: clamp(2.4rem, 7vw, 5.5rem); font-variation-settings: "wght" 300, "opsz" 144; color: var(--color-kiwi); }
+.ar-kwh small { display: block; color: var(--color-smoke); font-size: .7rem; margin-top: .5rem; }
+@media (max-width: 767px) { .ar-kwh { top: auto; bottom: 42%; right: 5vw; } }
+
+/* --- Smart Home: Wire (process) --- */
+.wr-path { stroke: var(--color-kiwi); stroke-width: 3; stroke-dasharray: 1; stroke-dashoffset: 1; stroke-linecap: round; }
+.wr-glow { stroke: var(--color-kiwi); stroke-width: 12; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: .25; filter: blur(6px); }
+.wr-node { display: block; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--color-line-2); background: var(--color-night-2); transition: all .5s; z-index: 1; }
+.wr-step[data-on="true"] .wr-node { border-color: var(--color-kiwi); background: var(--color-kiwi); box-shadow: 0 0 0 8px rgba(240,163,94,.15), 0 0 30px var(--color-kiwi); }
+.wr-num { font-size: clamp(4rem, 9vw, 8rem); color: var(--color-night-4); transition: color .6s, text-shadow .6s; }
+.wr-step[data-on="true"] .wr-num { color: var(--color-kiwi); text-shadow: 0 0 40px rgba(240,163,94,.45); }
+.wr-step h3, .wr-step p:not(.wr-num) { opacity: .35; transition: opacity .6s; }
+.wr-step[data-on="true"] h3, .wr-step[data-on="true"] p { opacity: 1; }
+.wr-bulb { width: 70px; color: var(--color-night-4); transition: color .4s, filter .6s; }
+.wr[data-lit="true"] .wr-bulb { color: #ffd9a8; filter: drop-shadow(0 0 22px #ffc078) drop-shadow(0 0 60px #f0a35e); }
+.wr-room { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 100%, rgba(255,192,120,.32), transparent 60%); opacity: 0; transition: opacity 1.2s; }
+.wr[data-lit="true"] .wr-room { opacity: 1; }
+.wr-done { opacity: 0; transition: opacity .8s .3s; }
+.wr[data-lit="true"] .wr-done { opacity: 1; }
+@media (min-width: 768px) { .wr-bulb { margin-left: 0; } }
+
+/* --- Smart Home: breaker panel FAQ --- */
+.bk-panel { position: relative; border-radius: 22px; padding: 14px; background: linear-gradient(180deg, #1a2438, #121b2c); box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 30px 60px rgba(0,0,0,.35); }
+.bk-rail { position: absolute; left: 14px; right: 14px; top: 50%; height: 0; }
+.bk-row { border-radius: 14px; background: #0e1626; margin-bottom: 10px; box-shadow: inset 0 0 0 1px var(--color-line); transition: box-shadow .4s; }
+.bk-row:last-child { margin-bottom: 0; }
+.bk-row[data-on="true"] { box-shadow: inset 0 0 0 1px rgba(240,163,94,.45); }
+.bk-btn { width: 100%; display: flex; align-items: center; gap: 16px; padding: 14px 16px; text-align: left; }
+.bk-q { flex: 1; font-size: 1.05rem; font-weight: 600; }
+.bk-lever { position: relative; flex: none; width: 34px; height: 54px; border-radius: 8px; background: #2a3550; box-shadow: inset 0 2px 6px rgba(0,0,0,.5); }
+.bk-lever i { position: absolute; left: 5px; right: 5px; height: 22px; bottom: 5px; border-radius: 5px; background: linear-gradient(180deg, #e9e3d8, #b9b2a5); box-shadow: 0 3px 0 #7c7669; transition: bottom .35s cubic-bezier(.3,1.6,.5,1), background .3s; }
+[aria-expanded="true"] .bk-lever i, [aria-pressed="true"] .bk-lever i { bottom: 27px; background: linear-gradient(180deg, #ffd0a0, #f0a35e); box-shadow: 0 3px 0 #a5622d; }
+.bk-led { flex: none; width: 10px; height: 10px; border-radius: 99px; background: #3a4560; transition: background .3s, box-shadow .3s; }
+.bk-row[data-on="true"] .bk-led { background: #8dff7a; box-shadow: 0 0 12px #8dff7a; }
+.bk-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .45s var(--ease-out-quint); }
+.bk-a > div { overflow: hidden; }
+.bk-a p { padding: 0 18px 18px 66px; color: var(--color-smoke); max-width: 56ch; }
+.bk-row[data-on="true"] .bk-a { grid-template-rows: 1fr; }
+.bk-main { display: inline-flex; align-items: center; gap: 14px; padding: 10px 18px 10px 10px; border-radius: 16px; box-shadow: inset 0 0 0 1px var(--color-line-2); }
+.bk-main .bk-lever { width: 40px; height: 62px; }
+.bk-main .bk-lever i { height: 26px; }
+.bk-main[aria-pressed="true"] .bk-lever i { bottom: 31px; }
+
+/* --- Smart Home: live floor plan --- */
+.pl { width: 100%; height: auto; color: var(--color-night); overflow: visible; }
+.pl-walls rect, .pl-walls path { fill: none; stroke: currentColor; stroke-width: 7; stroke-linecap: square; }
+.pl[data-mode="new"] .pl-walls * { stroke-width: 2.5; stroke-dasharray: .012 .008; animation: pl-draw 1.4s ease-out both; }
+@keyframes pl-draw { from { stroke-dashoffset: 1; } }
+.pl-new { fill: none; stroke: currentColor; stroke-width: 3; stroke-dasharray: .03 .02; animation: pl-draw 1.2s ease-out both; }
+.pl-furn rect { fill: rgba(11,18,32,.14); stroke: currentColor; stroke-width: 1.5; }
+.pl-label { font: 600 13px var(--font-sans); fill: currentColor; opacity: .7; letter-spacing: .04em; }
+.pl [data-on] { opacity: 0; transition: opacity .5s, transform .6s cubic-bezier(.3,1.5,.5,1); transform-box: fill-box; transform-origin: center; transform: scale(.85); }
+.pl [data-on="true"] { opacity: 1; transform: none; }
+.pl-light circle { fill: #fff3d6; filter: blur(14px); opacity: .9; }
+.pl-shut path { stroke: var(--color-night); stroke-width: 12; stroke-linecap: butt; }
+.pl-sec path, .pl-sec circle { fill: rgba(255,74,58,.25); stroke: #c2281b; stroke-width: 2; }
+.pl-sun rect, .pl-sun path { fill: rgba(11,18,32,.85); stroke: var(--color-night); stroke-width: 2; }
+.pl-sun path { stroke: #f0a35e; }
