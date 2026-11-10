@@ -281,3 +281,29 @@ html.lenis body { height: auto; }
 .sh .chip[aria-pressed="true"] i { opacity: 1; }
 .sh .chip-ink { box-shadow: inset 0 0 0 1px rgba(34,34,34,.35); color: var(--color-night); }
 .sh .chip-ink[aria-pressed="true"] { background: var(--color-night); color: var(--color-kiwi); }
+
+/* Smart Home: own identity. Midnight blue + copper (the colour of the wiring); only the HRVT logo is shared. */
+.sh {
+  --color-night: #0b1220; --color-night-2: #101a2c; --color-night-3: #17233a; --color-night-4: #22304b;
+  --color-kiwi: #f0a35e; --color-kiwi-2: #ffbf85;
+  --color-paper: #f4efe7; --color-smoke: #a3acbd; --color-ash: #8e98ab;
+  --color-line: rgba(244, 239, 231, 0.1); --color-line-2: rgba(244, 239, 231, 0.2); --color-line-ink: rgba(11, 18, 32, 0.18);
+  --font-display: "Fraunces Variable", Georgia, serif;
+  --font-sans: "Manrope Variable", system-ui, sans-serif;
+  font-family: var(--font-sans);
+  background: var(--color-night);
+  color: var(--color-paper);
+}
+.sh ::selection { background: var(--color-kiwi); color: var(--color-night); }
+.sh .t-mega, .sh .t-xl, .sh .t-l, .sh .t-m {
+  text-transform: none; letter-spacing: -0.025em; line-height: 1.02;
+  font-variation-settings: "wght" var(--w, 420), "opsz" 144, "SOFT" 60;
+}
+.sh .t-m { letter-spacing: -0.01em; font-variation-settings: "wght" 500, "opsz" 48, "SOFT" 60; }
+.sh .t-xl { font-size: clamp(2.4rem, 9.6vw, 3.6rem); }
+.sh .t-l { font-size: clamp(2rem, 8vw, 2.8rem); }
+.sh .t-m { font-size: clamp(1.35rem, 2.2vw, 1.9rem); }
+@media (min-width: 768px) { .sh .t-xl { font-size: clamp(3.6rem, 6.6vw, 7rem); } .sh .t-l { font-size: clamp(2.6rem, 4vw, 4.2rem); } }
+.sh em { font-style: italic; font-variation-settings: "wght" 380, "opsz" 144, "SOFT" 100; }
+.sh .t-meta { letter-spacing: 0.16em; }
+.sh .pill { font-weight: 600; }

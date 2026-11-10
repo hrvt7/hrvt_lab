@@ -10,7 +10,7 @@ export const ROOMS = [
   { name: "Hálószoba", x0: -6, x1: 0.5, y: 3 },
   { name: "Fürdő", x0: 0.5, x1: 6, y: 3 },
 ] as const;
-const KIWI = 0x89e900, ZB = -3.5, ZF = 3.5, WZ = -3.38;
+const KIWI = 0xf0a35e, ZB = -3.5, ZF = 3.5, WZ = -3.38;
 
 export function mount({ host, sec, canvas, labels, ui }: { host: HTMLElement; sec: HTMLElement; canvas: HTMLCanvasElement; labels: HTMLElement[]; ui: { current: UI } }) {
   let renderer: THREE.WebGLRenderer;
@@ -19,12 +19,12 @@ export function mount({ host, sec, canvas, labels, ui }: { host: HTMLElement; se
   const soft = /swiftshader|llvmpipe|software/i.test(String(dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : "")) && !location.search.includes("gl=1");
   renderer.outputColorSpace = THREE.LinearSRGBColorSpace; renderer.setClearColor(0, 0);
   const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(30, 1, 1, 400), house = new THREE.Group(); scene.add(house);
-  scene.fog = new THREE.Fog(0x222222, 60, 150);
+  scene.fog = new THREE.Fog(0x0b1220, 60, 150);
   const amb = new THREE.AmbientLight(0xffffff, 0.62); scene.add(amb);
-  const sun = new THREE.DirectionalLight(0xdfe8ff, 0.55); sun.position.set(0.4, 1, 0.9); scene.add(sun);
+  const sun = new THREE.DirectionalLight(0xbcd0ff, 0.6); sun.position.set(0.4, 1, 0.9); scene.add(sun);
   const D: { dispose(): void }[] = [];
   const std = (color: number, o: Partial<THREE.MeshStandardMaterialParameters> = {}) => { const m = new THREE.MeshStandardMaterial({ color, roughness: 0.85, metalness: 0, ...o }); D.push(m); return m; };
-  const slabM = std(0x383838), furnM = std(0x555555, { roughness: 0.7 }), wallM = std(0x4a4a4a, { transparent: true, opacity: 0.42, side: THREE.DoubleSide, depthWrite: false });
+  const slabM = std(0x26324a), furnM = std(0x4a5470, { roughness: 0.7 }), wallM = std(0x3a4866, { transparent: true, opacity: 0.42, side: THREE.DoubleSide, depthWrite: false });
   const edgeM = new THREE.LineBasicMaterial({ color: KIWI, transparent: true, opacity: 0.42 }), edgeDim = new THREE.LineBasicMaterial({ color: KIWI, transparent: true, opacity: 0.16 }); D.push(edgeM, edgeDim);
   const box = (w: number, h: number, d: number, x: number, y: number, z: number, m: THREE.Material, e: THREE.LineBasicMaterial | null = edgeDim, parent: THREE.Object3D = house) => {
     const g = new THREE.BoxGeometry(w, h, d), mesh = new THREE.Mesh(g, m); mesh.position.set(x, y, z); parent.add(mesh); D.push(g);
@@ -36,7 +36,7 @@ export function mount({ host, sec, canvas, labels, ui }: { host: HTMLElement; se
   box(12, 6, 0.08, 0, 3, ZB, wallM, edgeM); box(0.08, 6, 7, -6, 3, 0, wallM, edgeM); box(0.08, 6, 7, 6, 3, 0, wallM, edgeM);
   box(0.08, 2.84, 7, 1, 1.42, 0, wallM); box(0.08, 2.86, 7, 0.5, 4.5, 0, wallM);
   // roof + solar
-  const SL = Math.hypot(3.9, 2.3), ang = Math.atan2(2.3, 3.9), roofM = std(0x444444, { transparent: true, opacity: 0.22, side: THREE.DoubleSide, depthWrite: false });
+  const SL = Math.hypot(3.9, 2.3), ang = Math.atan2(2.3, 3.9), roofM = std(0x33405c, { transparent: true, opacity: 0.22, side: THREE.DoubleSide, depthWrite: false });
   for (const s of [1, -1]) {
     const g = new THREE.PlaneGeometry(12.8, SL), m = new THREE.Mesh(g, roofM); m.position.set(0, 6 + 1.15, s * 1.95); m.rotation.x = s * (-Math.PI / 2 + ang); house.add(m); D.push(g);
     const eg = new THREE.EdgesGeometry(g), l = new THREE.LineSegments(eg, edgeM); l.position.copy(m.position); l.rotation.copy(m.rotation); house.add(l); D.push(eg);
@@ -49,7 +49,7 @@ export function mount({ host, sec, canvas, labels, ui }: { host: HTMLElement; se
   box(2.6, 0.7, 1.2, 4.2, 3.35, -2.8, std(0x8a8a8a, { roughness: 0.4 })); box(1.3, 0.9, 0.6, 1.6, 3.45, -3.1, furnM); box(1.1, 1, 0.06, 1.6, 4.7, -3.42, std(0x7f8c93, { roughness: 0.2 }));
   // per room: lamp, light, window + shutter, heating coil, wires
   const glowT = (() => { const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d")!, r = g.createRadialGradient(64, 64, 2, 64, 64, 64); r.addColorStop(0, "rgba(255,236,196,1)"); r.addColorStop(0.3, "rgba(255,220,160,.45)"); r.addColorStop(1, "rgba(255,220,160,0)"); g.fillStyle = r; g.fillRect(0, 0, 128, 128); const t = new THREE.CanvasTexture(c); D.push(t); return t; })();
-  const tubeM = new THREE.MeshBasicMaterial({ color: KIWI, depthTest: false }), pulseM = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, depthTest: false }), pulseG = new THREE.SphereGeometry(0.11, 10, 8), heatM = new THREE.LineBasicMaterial({ color: 0xff8a3c, transparent: true, opacity: 0 }); D.push(tubeM, pulseM, pulseG, heatM);
+  const tubeM = new THREE.MeshBasicMaterial({ color: KIWI, depthTest: false }), pulseM = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, depthTest: false }), pulseG = new THREE.SphereGeometry(0.11, 10, 8), heatM = new THREE.LineBasicMaterial({ color: 0xff5a36, transparent: true, opacity: 0 }); D.push(tubeM, pulseM, pulseG, heatM);
   const board = new THREE.Vector3(-5.55, 1.4, WZ); box(0.5, 0.8, 0.14, board.x, board.y, WZ + 0.02, std(0x1a1a1a), edgeM);
   type Wire = { geo: THREE.TubeGeometry; n: number; curve: THREE.CurvePath<THREE.Vector3>; pulse: THREE.Mesh; act: () => number; ph: number };
   const wires: Wire[] = [];
