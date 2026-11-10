@@ -5,7 +5,7 @@ import { gsap, prefersReduced, isFinePointer, scrollToHash } from "@/lib/gsap";
 import { EMAIL, NAV } from "@/lib/content";
 import { Meta } from "../Scramble";
 import { Magnetic } from "../Magnetic";
-import { Wordmark } from "../Logo";
+import { FootMark } from "../FootMark";
 import { ArrowIcon } from "../Icons";
 
 const WORD = "Beszéljünk.";
@@ -28,11 +28,6 @@ export function Contact() {
           "[data-bl]",
           { yPercent: 100, "--w": 100 },
           { yPercent: 0, "--w": 800, duration: 1.2, ease: "expo.out", stagger: 0.04, scrollTrigger: { trigger: word.current, start: "top 85%" } },
-        );
-        gsap.fromTo(
-          "[data-wm-foot]",
-          { yPercent: 100 },
-          { yPercent: 0, duration: 1.4, ease: "expo.out", scrollTrigger: { trigger: "[data-wm-wrap]", start: "top bottom" } },
         );
       }
     }, root);
@@ -153,11 +148,7 @@ export function Contact() {
             </nav>
             <p className="t-meta text-night/75">© 2026 HRVT — tervezve és fejlesztve házon belül</p>
           </div>
-          <div data-wm-wrap="" className="overflow-hidden pb-[2.4vw]" aria-hidden>
-            <div data-wm-foot="">
-              <Wordmark className="h-auto w-full" />
-            </div>
-          </div>
+          <FootMark />
         </div>
       </div>
     </footer>

@@ -32,5 +32,6 @@ Ratio ≈ 60 night · 25 paper · 15 kiwi.
 11. **Scramble** — mono labels decode from random glyphs on view and hover.
 12. **Crosshair cursor** — with live page coordinates; becomes a kiwi tag on targets.
 13. **Magnetic letters** — "Beszéljünk." leans toward the pointer.
+14. **3D footer wordmark (WebGL)** — the Rugis wordmark extruded letter by letter; flips up on arrival, follows the pointer or the phone tilt with per-letter inertia, spins on tap. The flat SVG stays as fallback.
 
 All of it respects `prefers-reduced-motion`.
