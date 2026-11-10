@@ -19,17 +19,6 @@ export function Services() {
   useEffect(() => {
     if (prefersReduced()) return;
     const ctx = gsap.context(() => {
-      // Liquid rise: the kiwi field arrives with a deep curve that flattens.
-      gsap.fromTo(
-        "[data-rise-shape]",
-        { borderTopLeftRadius: "50% 22vw", borderTopRightRadius: "50% 22vw" },
-        {
-          borderTopLeftRadius: "0% 0vw",
-          borderTopRightRadius: "0% 0vw",
-          ease: "none",
-          scrollTrigger: { trigger: root.current, start: "top bottom", end: "top 20%", scrub: true },
-        },
-      );
       const mm = gsap.matchMedia();
       const cards = gsap.utils.toArray<HTMLElement>("[data-card]");
       const inners = cards.map((c) => c.querySelector<HTMLElement>("[data-card-inner]")!);
@@ -112,8 +101,8 @@ export function Services() {
   }, []);
 
   return (
-    <section ref={root} id="szolgaltatasok" data-theme="kiwi" className="relative bg-night">
-      <div data-rise-shape="" className="relative bg-kiwi text-night">
+    <section ref={root} id="szolgaltatasok" data-theme="kiwi" className="relative bg-kiwi">
+      <div className="relative bg-kiwi text-night">
         <div className="wrap pb-[var(--sec)] pt-[calc(var(--sec)*0.9)]">
           <div className="grid gap-8 md:grid-cols-12">
             <div className="md:col-span-3">
@@ -124,8 +113,8 @@ export function Services() {
             <div className="md:col-span-9">
               <Rise as="h2" className="t-xl" lines={[<>Mit vállalok?</>]} />
               <p className="t-lead mt-8 max-w-[46ch] text-night/75" data-fade="">
-                Mindent, ami AI-építés, automatizálás és szoftver. Ha a cégedben valami lassú, kézzel megy, vagy még nem
-                is létezik — <span className="text-night">azt megépítem.</span>
+                Weboldalt, egyedi szoftvert, AI-t és automatizálást. Ha a cégednek nincs jó oldala, vagy valami lassú és
+                kézzel megy — <span className="text-night">azt megépítem.</span>
               </p>
             </div>
           </div>
@@ -178,7 +167,7 @@ export function Services() {
                       </div>
                     </div>
                     <div className="m-2 min-h-[260px] overflow-hidden rounded-[16px] bg-night-2 md:col-span-6 md:m-3 md:min-h-0 md:rounded-[22px]">
-                      <div data-cviz="" className="h-full w-full">
+                      <div data-cviz="" aria-hidden className="h-full w-full">
                         <Viz />
                       </div>
                     </div>

@@ -43,7 +43,7 @@ export function Process() {
         <div className="grid gap-10 md:grid-cols-12">
           <div className="md:col-span-5">
             <div className="md:sticky md:top-28">
-              <Meta n="03">Folyamat</Meta>
+              <Meta n="04">Folyamat</Meta>
               <Rise as="h2" className="t-l mt-8" lines={[<>Így lesz</>, <>ötletből</>, <span className="text-kiwi">éles rendszer.</span>]} />
               <div className="mt-12 hidden items-end gap-6 md:flex" aria-hidden>
                 <span

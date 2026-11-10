@@ -1,5 +1,6 @@
 import { Hero } from "@/components/sections/Hero";
 import { Services } from "@/components/sections/Services";
+import { Turnkey } from "@/components/sections/Turnkey";
 import { Work } from "@/components/sections/Work";
 import { Process } from "@/components/sections/Process";
 import { Contact } from "@/components/sections/Contact";
@@ -9,6 +10,7 @@ export default function Page() {
     <>
       <Hero />
       <Services />
+      <Turnkey />
       <Work />
       <Process />
       <Contact />

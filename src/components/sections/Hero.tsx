@@ -1,16 +1,16 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap, onReady, prefersReduced, isFinePointer, scrollToHash } from "@/lib/gsap";
+import { gsap, onReady, prefersReduced, scrollToHash } from "@/lib/gsap";
 import { HERO_WORDS, SERVICES } from "@/lib/content";
-import { PlusField } from "./PlusField";
+import { HeroFluid } from "./HeroFluid";
 import { Magnetic } from "../Magnetic";
 import { Clock } from "../Clock";
 import { Scramble } from "../Scramble";
 import { ArrowIcon } from "../Icons";
 import { Badge } from "./Badge";
 
-const LINES = ["Szoftvert", "építek, ami"];
+const LINES = ["Weboldalt", "és szoftvert", "építek, ami"];
 
 function Letters({ text }: { text: string }) {
   return (
@@ -26,15 +26,13 @@ function Letters({ text }: { text: string }) {
 
 export function Hero() {
   const root = useRef<HTMLElement>(null);
-  const roll = useRef<HTMLSpanElement>(null);
 
   // Entrance: letters rise while their weight swells from hairline to heavy.
   useEffect(() => {
     const el = root.current!;
     const chars = el.querySelectorAll<HTMLElement>("[data-ch]");
     const fades = el.querySelectorAll("[data-hf]");
-    const reduced = prefersReduced();
-    if (reduced) {
+    if (prefersReduced()) {
       chars.forEach((c) => c.style.setProperty("--w", "800"));
       return;
     }
@@ -42,79 +40,31 @@ export function Hero() {
     gsap.set(fades, { opacity: 0, y: 16 });
     return onReady(() => {
       const tl = gsap.timeline({ delay: 0.1 });
-      tl.to(chars, { yPercent: 0, duration: 1.1, ease: "expo.out", stagger: 0.035 })
-        .to(chars, { "--w": 800, duration: 1.4, ease: "power3.inOut", stagger: 0.035 }, 0.15)
-        .to(fades, { opacity: 1, y: 0, duration: 1, stagger: 0.06, ease: "power3.out" }, 0.7)
-        .fromTo("[data-hrule]", { scaleX: 0 }, { scaleX: 1, duration: 1.4, ease: "expo.inOut" }, 0.4);
+      tl.to(chars, { yPercent: 0, duration: 1.1, ease: "expo.out", stagger: 0.022 }, 0.32)
+        .to(chars, { "--w": 800, duration: 0.9, ease: "power2.out", stagger: 0.022 }, 0)
+        .to(fades, { opacity: 1, y: 0, duration: 1, stagger: 0.04, ease: "power3.out" }, 0.7)
+        .fromTo(el.querySelectorAll("[data-hrule]"), { scaleX: 0 }, { scaleX: 1, duration: 1.4, ease: "expo.inOut" }, 0.4);
     });
   }, []);
 
-  // Weight lens: letters near the pointer thin out, the rest stay heavy.
-  useEffect(() => {
-    if (!isFinePointer() || prefersReduced()) return;
-    const el = root.current!;
-    const chars = [...el.querySelectorAll<HTMLElement>("[data-ch]")];
-    let rects: { x: number; y: number }[] = [];
-    const cur = chars.map(() => 800);
-    const measure = () => {
-      rects = chars.map((c) => {
-        const r = c.getBoundingClientRect();
-        return { x: r.left + r.width / 2, y: r.top + r.height / 2 + window.scrollY };
-      });
-    };
-    let live = false;
-    const off = onReady(() => setTimeout(() => ((live = true), measure()), 2600));
-    const p = { x: -9999, y: -9999 };
-    const move = (e: PointerEvent) => {
-      p.x = e.clientX;
-      p.y = e.clientY + window.scrollY;
-    };
-    let raf = 0;
-    const tick = () => {
-      raf = requestAnimationFrame(tick);
-      if (!live) return;
-      const R = Math.max(220, window.innerWidth * 0.2);
-      if (window.scrollY > window.innerHeight) return; // hero off-screen: nothing to do
-      chars.forEach((c, i) => {
-        const r = rects[i];
-        const d = Math.hypot(r.x - p.x, (r.y - p.y) * 1.4);
-        const k = Math.max(0, 1 - d / R);
-        const target = 800 - 640 * k * k * (3 - 2 * k);
-        const prev = Math.round(cur[i]);
-        cur[i] += (target - cur[i]) * 0.14;
-        const next = Math.round(cur[i]);
-        if (next !== prev) c.style.setProperty("--w", String(next)); // only touch letters that changed
-      });
-    };
-    raf = requestAnimationFrame(tick);
-    window.addEventListener("pointermove", move);
-    window.addEventListener("resize", measure);
-    return () => {
-      off();
-      cancelAnimationFrame(raf);
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("resize", measure);
-    };
-  }, []);
-
-  // Slot-machine word roll.
+  // Slot-machine word roll (both the paper and the ink copy move together).
   useEffect(() => {
     if (prefersReduced()) return;
-    const list = roll.current!;
-    const items = list.children.length - 1; // last is a clone of the first
+    const lists = root.current!.querySelectorAll<HTMLElement>("[data-roll]");
+    const items = HERO_WORDS.length;
     let i = 0;
     let id: ReturnType<typeof setInterval>;
     const off = onReady(() => {
       id = setInterval(() => {
         i++;
-        gsap.to(list, {
+        gsap.to(lists, {
           yPercent: (-100 / (items + 1)) * i,
           duration: 0.9,
           ease: "expo.inOut",
           onComplete: () => {
             if (i === items) {
               i = 0;
-              gsap.set(list, { yPercent: 0 });
+              gsap.set(lists, { yPercent: 0 });
             }
           },
         });
@@ -126,75 +76,81 @@ export function Hero() {
     };
   }, []);
 
-  // Exit: the headline compresses vertically as you leave.
-  useEffect(() => {
-    if (prefersReduced()) return;
-    const ctx = gsap.context(() => {
-      gsap.to("[data-hhead]", {
-        scaleY: 0.55,
-        opacity: 0.25,
-        transformOrigin: "50% 0%",
-        ease: "none",
-        scrollTrigger: { trigger: root.current, start: "top top", end: "bottom top", scrub: true },
-      });
-    }, root);
-    return () => ctx.revert();
-  }, []);
-
-  const go = (h: string) => (e: React.MouseEvent) => {
-    e.preventDefault();
-    scrollToHash(h);
-  };
-
   return (
     <section ref={root} id="top" data-theme="night" className="relative flex min-h-[100svh] flex-col overflow-hidden bg-night">
-      <PlusField />
-      <div className="wrap relative z-10 flex flex-1 flex-col pb-6 pt-24 md:pb-8 md:pt-28">
-        <div className="t-meta flex items-start justify-between gap-6 text-smoke" data-hf="">
-          <p className="flex items-center gap-2.5">
-            <i className="h-2 w-2 rounded-full bg-kiwi" />
-            <Scramble text="Független digitális műhely — új projekteket vállalok" />
-          </p>
-          <p className="hidden text-right sm:block">
-            Szombathely / Bécs
-            <br />
-            <span className="text-paper">
-              <Clock />
-            </span>
-          </p>
-        </div>
+      <Content />
+      <HeroFluid>
+        <Content ink />
+      </HeroFluid>
+    </section>
+  );
+}
 
-        <div className="pointer-events-none absolute right-[var(--m)] top-[38%] hidden w-[clamp(140px,13vw,210px)] lg:block" data-hf="">
+const go = (h: string) => (e: React.MouseEvent) => {
+  e.preventDefault();
+  scrollToHash(h);
+};
+
+/** The hero content. It is rendered twice: once in paper on night, and once in ink, which only shows where the liquid is. */
+function Content({ ink = false }: { ink?: boolean }) {
+  const dim = ink ? "text-night" : "text-smoke";
+  return (
+    <div className={`wrap relative z-10 flex flex-1 flex-col pb-[calc(1.5rem+7svh)] pt-24 md:pb-[calc(2rem+7svh)] md:pt-28 ${ink ? "h-full text-night" : ""}`}>
+      <div className={`t-meta flex items-start justify-between gap-6 ${dim}`} data-hf="">
+        <p className="flex items-center gap-2.5">
+          <i className={`h-2 w-2 rounded-full ${ink ? "bg-night" : "bg-kiwi"}`} />
+          {ink ? <span>Független digitális műhely — új projekteket vállalok</span> : <Scramble text="Független digitális műhely — új projekteket vállalok" />}
+        </p>
+        <p className="hidden text-right sm:block">
+          Szombathely / Bécs
+          <br />
+          <span className={ink ? "" : "text-paper"}>
+            <Clock />
+          </span>
+        </p>
+      </div>
+
+      {!ink && (
+        <div className="pointer-events-none absolute right-[var(--m)] top-[30%] hidden w-[clamp(140px,13vw,210px)] lg:block" data-hf="">
           <Badge className="aspect-square" />
         </div>
+      )}
 
-        <h1 data-hhead="" className="t-mega mt-auto pt-10 [contain:layout_style]" style={{ fontSize: "clamp(3.6rem, min(12.6vw, 16.5vh), 16rem)" }}>
-          {LINES.map((l) => (
-            <span key={l} className="rl">
-              <Letters text={l} />
-            </span>
-          ))}
-          <span className="block">
-            <span className="relative -mt-[0.24em] inline-block h-[1.22em] overflow-hidden align-top text-kiwi">
-              <span ref={roll} className="block">
-                {[...HERO_WORDS, HERO_WORDS[0]].map((w, i) => (
-                  <span key={i} className="block h-[1.22em] pt-[0.24em]">
-                    {i === 0 ? <Letters text={w + "."} /> : w + "."}
-                  </span>
-                ))}
-              </span>
+      <h1 className="t-mega mt-auto pt-10 [contain:layout_style]" style={{ fontSize: "clamp(3.3rem, min(11.6vw, 13.2vh), 13rem)" }}>
+        {LINES.map((l) => (
+          <span key={l} className="rl whitespace-nowrap">
+            {ink ? l : <Letters text={l} />}
+          </span>
+        ))}
+        <span className="block">
+          <span className={`relative -mt-[0.24em] inline-block h-[1.22em] overflow-hidden align-top ${ink ? "" : "text-kiwi"}`}>
+            <span data-roll="" className="block">
+              {[...HERO_WORDS, HERO_WORDS[0]].map((w, i) => (
+                <span key={i} className="block h-[1.22em] pt-[0.24em]">
+                  {i === 0 && !ink ? <Letters text={w + "."} /> : w + "."}
+                </span>
+              ))}
             </span>
           </span>
-        </h1>
+        </span>
+      </h1>
 
-        <div className="relative mt-8 md:mt-10">
-          <div data-hrule="" className="h-px origin-left bg-line-2" />
-          <div className="mt-6 grid gap-8 md:grid-cols-12 md:items-end">
-            <p className="t-lead max-w-[36ch] text-smoke md:col-span-5" data-hf="">
-              AI-rendszerek, automatizálás, egyedi szoftver, prémium weboldalak és interaktív 3D.{" "}
-              <span className="text-paper">Tervezéstől az élesítésig, egy kézben.</span>
-            </p>
-            <div className="flex flex-wrap gap-3 md:col-span-4 md:col-start-6" data-hf="">
+      <div className="relative mt-7 md:mt-9">
+        <div data-hrule="" className={`h-px origin-left ${ink ? "bg-night/40" : "bg-line-2"}`} />
+        <div className="mt-6 grid gap-7 md:grid-cols-12 md:items-end">
+          <p className={`t-lead max-w-[38ch] md:col-span-5 ${dim}`}>
+            Weboldal-készítés, egyedi fejlesztés, AI és automatizálás.{" "}
+            <span className={ink ? "" : "text-paper"}>Tervezéstől az élesítésig, egy kézben.</span>
+          </p>
+          <div className="flex flex-wrap gap-3 md:col-span-4 md:col-start-6" data-hf="">
+            {ink ? (
+              <span className="pill bg-night text-white">
+                Beszéljünk a projektedről
+                <span className="pill-dot bg-white text-night">
+                  <ArrowIcon />
+                </span>
+              </span>
+            ) : (
               <Magnetic>
                 <a href="#kapcsolat" onClick={go("#kapcsolat")} className="pill pill--kiwi" data-cursor="Írj">
                   Beszéljünk a projektedről
@@ -203,20 +159,27 @@ export function Hero() {
                   </span>
                 </a>
               </Magnetic>
-            </div>
-            <ul className="t-meta hidden gap-1.5 text-smoke md:col-span-2 md:col-start-11 md:grid" data-hf="">
-              {SERVICES.map((s) => (
-                <li key={s.n}>
+            )}
+          </div>
+          <ul className={`t-meta hidden gap-1.5 md:col-span-2 md:col-start-11 md:grid ${dim}`} data-hf="">
+            {SERVICES.map((s) => (
+              <li key={s.n}>
+                {ink ? (
+                  <span className="flex gap-2">
+                    <span>{s.n}</span>
+                    <span>{s.title}</span>
+                  </span>
+                ) : (
                   <a href="#szolgaltatasok" onClick={go("#szolgaltatasok")} className="flex gap-2 transition-colors hover:text-kiwi">
                     <span className="text-ash">{s.n}</span>
                     <Scramble text={s.title} />
                   </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

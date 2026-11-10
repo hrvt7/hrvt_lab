@@ -2,6 +2,7 @@ export const EMAIL = "hrvtadam.7@icloud.com";
 
 export const NAV = [
   { label: "Szolgáltatások", href: "#szolgaltatasok" },
+  { label: "Weboldal", href: "#weboldal" },
   { label: "Munkák", href: "#munkak" },
   { label: "Folyamat", href: "#folyamat" },
 ];
@@ -12,6 +13,22 @@ export const HERO_WORDS = ["dolgozik", "elad", "spórol", "lenyűgöz"];
 export const SERVICES = [
   {
     n: "01",
+    title: "Weboldalak",
+    lede: "Egyedi weboldal, ami megállítja a görgetést — és ügyfelet hoz.",
+    body: "Bemutatkozó oldaltól a teljes márkaoldalig, sablonok nélkül. Egyedi design és mozgás, telefonra tervezve, mérhető sebességgel és konverzióra épített szerkezettel. A szöveget, a keresőoptimalizálást és az élesítést is viszem.",
+    tags: ["Egyedi design", "Animáció", "Mobilra tervezve", "SEO"],
+    viz: "web",
+  },
+  {
+    n: "02",
+    title: "Egyedi fejlesztés",
+    lede: "Belső eszközök és SaaS — attól, ami a fejedben van, az élesig.",
+    body: "Webes alkalmazások, adminfelületek, dashboardok, foglaló- és ajánlatkérő rendszerek, SaaS MVP. Gyors, kattintható prototípussal indulunk, és tiszta, karbantartható kóddal élesítünk.",
+    tags: ["Webalkalmazás", "Dashboard", "SaaS MVP", "Supabase / Next.js"],
+    viz: "code",
+  },
+  {
+    n: "03",
     title: "AI-rendszerek",
     lede: "AI, ami a te adataidon dolgozik — nem egy újabb chatablak.",
     body: "Asszisztensek és ügynökök, amelyek dokumentumokat, terveket és e-maileket dolgoznak fel, ajánlatot készítenek, ügyfeleknek válaszolnak, vagy a céged tudásából keresnek. Ellenőrizhető válaszokkal, korlátokkal, éles használatra.",
@@ -19,28 +36,12 @@ export const SERVICES = [
     viz: "ai",
   },
   {
-    n: "02",
+    n: "04",
     title: "Automatizálás",
     lede: "Ami ma kézzel megy, holnap magától fut.",
     body: "Ajánlatkérés → CRM → e-mail → számla. Összekötöm a rendszereidet, és kiveszem a folyamatból az ismétlődő munkát. Hibakezeléssel és értesítéssel, hogy semmi ne álljon le csendben.",
     tags: ["n8n / Make", "API-integráció", "Lead-folyamatok", "Riportok"],
     viz: "flow",
-  },
-  {
-    n: "03",
-    title: "Egyedi szoftver",
-    lede: "Belső eszközök és SaaS — attól, ami a fejedben van, az élesig.",
-    body: "Webes alkalmazások, adminfelületek, dashboardok, SaaS MVP. Gyors, kattintható prototípussal indulunk, és tiszta, karbantartható kóddal élesítünk.",
-    tags: ["Webalkalmazás", "Dashboard", "SaaS MVP", "Supabase / Next.js"],
-    viz: "code",
-  },
-  {
-    n: "04",
-    title: "Weboldalak",
-    lede: "Prémium oldalak, amik megállítják a görgetést — és el is adnak.",
-    body: "Egyedi design és mozgás, mérhető sebesség, konverzióra épített szerkezet. Landing oldaltól a teljes márkaoldalig, sablonok nélkül.",
-    tags: ["Art direction", "Animáció", "Landing oldal", "SEO-alapok"],
-    viz: "web",
   },
   {
     n: "05",
@@ -50,6 +51,18 @@ export const SERVICES = [
     tags: ["Three.js / WebGL", "Konfigurátor", "CAD / STEP", "Ajánlatkérés"],
     viz: "gear",
   },
+] as const;
+
+/** "Weboldal, kulcsrakészen" — everything a site needs, in the order it happens. */
+export const TURNKEY = [
+  ["Tervezés", "Egyedi arculat és elrendezés, a céged saját anyagaiból."],
+  ["Szöveg", "Címsorok és leírások, amik a vevő kérdéseire válaszolnak."],
+  ["Kép és mozgás", "A saját fotóidból, szükség esetén AI-val készített képpel és videóval."],
+  ["Fejlesztés", "Gyors, kézzel írt kód. Telefonon ugyanolyan jó, mint laptopon."],
+  ["Űrlap és foglalás", "Ajánlatkérés, időpontfoglalás, rendelés — ami a te üzletedhez kell."],
+  ["Keresők", "SEO, Google-cégprofil, és hogy az AI-keresők is megtaláljanak."],
+  ["Domain és tárhely", "Beállítom, élesítem, átköltöztetem a régit."],
+  ["Mérés és karbantartás", "Látod, mi hoz érdeklődőt. Utána sem tűnök el."],
 ] as const;
 
 export const STEPS = [

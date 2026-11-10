@@ -23,7 +23,7 @@ export function Work() {
       <div className="wrap pb-[var(--sec)] pt-[var(--sec)]">
         <div className="grid gap-8 md:grid-cols-12">
           <div className="md:col-span-3">
-            <Meta n="02">Munkák</Meta>
+            <Meta n="03">Munkák</Meta>
           </div>
           <div className="md:col-span-9">
             <Rise as="h2" className="t-xl" lines={[<>Válogatott</>, <span className="text-kiwi">munkák.</span>]} />

@@ -10,12 +10,12 @@ import { Nav } from "@/components/Nav";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://hrvt.vercel.app"),
-  title: "HRVT — AI, automatizálás, szoftver és 3D",
+  title: "HRVT — weboldal-készítés, egyedi fejlesztés, AI és automatizálás",
   description:
-    "AI-rendszerek, automatizálás, egyedi szoftver, prémium weboldalak és interaktív 3D — tervezéstől az élesítésig, egy kézben.",
+    "Egyedi weboldal-készítés, egyedi szoftverfejlesztés, AI-rendszerek, automatizálás és interaktív 3D — tervezéstől az élesítésig, egy kézben.",
   openGraph: {
-    title: "HRVT — Szoftvert építek, ami dolgozik.",
-    description: "AI-rendszerek, automatizálás, egyedi szoftver, prémium weboldalak és interaktív 3D.",
+    title: "HRVT — Weboldalt és szoftvert építek, ami dolgozik.",
+    description: "Egyedi weboldalak, egyedi fejlesztés, AI-rendszerek, automatizálás és interaktív 3D.",
     type: "website",
     locale: "hu_HU",
   },

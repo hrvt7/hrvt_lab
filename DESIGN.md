@@ -1,4 +1,4 @@
-# HRVT — Design system v2 (Night & Kiwi)
+# HRVT — Design system v3 (Night & Kiwi, liquid)
 
 **Concept:** bold color blocking and kinetic, condensed type. Night (#222222) is the base, Kiwi (#89E900) the single loud voice; whole sections flip to kiwi.
 
@@ -22,8 +22,9 @@ Ratio ≈ 60 night · 25 paper · 15 kiwi.
 1. **Kiwi curtain intro** — the Rugis wordmark draws itself, then the screen lifts away in 8 vertical strips.
 2. **Weight lens** — hero letters thin out near the cursor (variable `wght` per letter); entrance animates weight 100 → 800.
 3. **Slot word** — "Szoftvert építek, ami ___." rolls dolgozik / elad / spórol / lenyűgöz.
-4. **Plus field** — canvas of engineering "+" marks that rotate and turn kiwi around the pointer.
-5. **Liquid rise** — kiwi sections arrive with a deep curved top edge that flattens on scroll.
+4. **Kiwi liquid (WebGL)** — a GPU fluid solver in the hero: a kiwi pool with a live surface, bubbles rising from it, and splashes that follow the pointer or finger. Scrolling floods the hero. Text under the liquid turns to ink (an ink copy multiplied over the page through a cover canvas with a liquid-shaped hole). Falls back to the plain hero without a GPU or with reduced motion; a frame-cost guard steps quality down on slow devices.
+5. **Liquid edges (WebGL)** — kiwi sections end in dripping liquid and begin with a sloshing surface; both react to scroll speed.
+5b. **Tube fill** — the "Weboldal, kulcsrakészen" rows fill with kiwi left to right as they cross the screen, text turning to ink.
 6. **Stacked cards** — services stick and sink back (scale + dim) as the next one slides over.
 7. **Live visualisations** — AI answer stream, automation graph with pulses, deploy log, self-assembling layout, 3D wireframe gear.
 8. **Pixel resolve** — case images resolve from coarse kiwi-tinted pixels to full resolution.

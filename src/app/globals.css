@@ -266,3 +266,10 @@ html.lenis body { height: auto; }
 [data-ch] {
   font-variation-settings: "wght" var(--w, 800);
 }
+
+/* Kulcsrakész rows: a kiwi fill travels left → right with a liquid front; the ink copy is clipped to it. */
+.tk-row { --f: 0; }
+.tk-ink {
+  clip-path: polygon(0 0, calc(var(--f) * 108% - 8%) 0, calc(var(--f) * 108% - 3%) 22%, calc(var(--f) * 108% - 6.5%) 50%, calc(var(--f) * 108% - 2%) 78%, calc(var(--f) * 108% - 8%) 100%, 0 100%);
+}
+@media (prefers-reduced-motion: reduce) { .tk-ink { display: none; } }
