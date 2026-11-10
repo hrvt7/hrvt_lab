@@ -5,8 +5,6 @@ import "@fontsource-variable/geist-mono/index.css";
 import "./globals.css";
 import { Motion } from "@/components/Motion";
 import { Cursor } from "@/components/Cursor";
-import { Intro } from "@/components/Intro";
-import { Nav } from "@/components/Nav";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://hrvt.vercel.app"),
@@ -34,9 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <Intro />
-        <Nav />
-        <main>{children}</main>
+        {children}
         <div className="grain" aria-hidden />
         <Cursor />
         <Motion />
