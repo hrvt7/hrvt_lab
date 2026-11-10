@@ -4,7 +4,6 @@ import { gsap, prefersReduced, scrollToHash } from "@/lib/gsap";
 import { TURNKEY } from "@/lib/content";
 import { Meta } from "../Scramble";
 import { Rise } from "../Rise";
-import { LiquidEdge } from "../LiquidEdge";
 import { ArrowIcon } from "../Icons";
 
 /** "Weboldal, kulcsrakészen": each row fills with kiwi like a tube as it crosses the screen, and its text turns to ink. */
@@ -21,8 +20,7 @@ export function Turnkey() {
   }, []);
   return (
     <section ref={root} id="weboldal" data-theme="night" className="relative bg-night [overflow-x:clip]">
-      <LiquidEdge mode="drip" className="top-[-1px]" />
-      <div className="wrap pb-[var(--sec)] pt-[calc(var(--sec)*1.25)]">
+      <div className="wrap pb-[var(--sec)] pt-[var(--sec)]">
         <div className="grid gap-8 md:grid-cols-12">
           <div className="md:col-span-3">
             <Meta n="02">Weboldal-készítés</Meta>

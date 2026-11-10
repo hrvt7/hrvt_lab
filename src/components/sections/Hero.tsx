@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap, onReady, prefersReduced, scrollToHash } from "@/lib/gsap";
 import { HERO_WORDS, SERVICES } from "@/lib/content";
-import { HeroFluid } from "./HeroFluid";
+import { BuildScene } from "./BuildScene";
 import { Magnetic } from "../Magnetic";
 import { Clock } from "../Clock";
 import { Scramble } from "../Scramble";
@@ -77,11 +77,11 @@ export function Hero() {
   }, []);
 
   return (
-    <section ref={root} id="top" data-theme="night" className="relative flex min-h-[100svh] flex-col overflow-hidden bg-night">
-      <Content />
-      <HeroFluid>
-        <Content ink />
-      </HeroFluid>
+    <section ref={root} id="top" data-theme="night" data-build="" className="relative bg-night" style={{ height: "520svh" }}>
+      <BuildScene />
+      <div className="absolute inset-x-0 top-0 z-10 flex h-[100svh] flex-col">
+        <Content />
+      </div>
     </section>
   );
 }
@@ -95,7 +95,7 @@ const go = (h: string) => (e: React.MouseEvent) => {
 function Content({ ink = false }: { ink?: boolean }) {
   const dim = ink ? "text-night" : "text-smoke";
   return (
-    <div className={`wrap relative z-10 flex flex-1 flex-col pb-[calc(1.5rem+7svh)] pt-24 md:pb-[calc(2rem+7svh)] md:pt-28 ${ink ? "h-full text-night" : ""}`}>
+    <div className={`wrap relative z-10 flex flex-1 flex-col pb-6 pt-24 md:pb-8 md:pt-28 ${ink ? "h-full text-night" : ""}`}>
       <div className={`t-meta flex items-start justify-between gap-6 ${dim}`} data-hf="">
         <p className="flex items-center gap-2.5">
           <i className={`h-2 w-2 rounded-full ${ink ? "bg-night" : "bg-kiwi"}`} />

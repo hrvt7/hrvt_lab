@@ -7,7 +7,6 @@ import { Meta } from "../Scramble";
 import { Magnetic } from "../Magnetic";
 import { Wordmark } from "../Logo";
 import { ArrowIcon } from "../Icons";
-import { LiquidEdge } from "../LiquidEdge";
 
 const WORD = "Beszéljünk.";
 
@@ -20,6 +19,11 @@ export function Contact() {
     const reduced = prefersReduced();
     const ctx = gsap.context(() => {
       if (!reduced) {
+        gsap.fromTo(
+          "[data-rise-shape]",
+          { borderTopLeftRadius: "50% 22vw", borderTopRightRadius: "50% 22vw" },
+          { borderTopLeftRadius: "0% 0vw", borderTopRightRadius: "0% 0vw", ease: "none", scrollTrigger: { trigger: root.current, start: "top bottom", end: "top 20%", scrub: true } },
+        );
         gsap.fromTo(
           "[data-bl]",
           { yPercent: 100, "--w": 100 },
@@ -75,9 +79,8 @@ export function Contact() {
   };
 
   return (
-    <footer ref={root} id="kapcsolat" data-theme="kiwi" className="relative bg-kiwi">
-      <LiquidEdge mode="surface" className="bottom-[calc(100%-1px)]" />
-      <div className="relative overflow-hidden bg-kiwi text-night">
+    <footer ref={root} id="kapcsolat" data-theme="kiwi" className="relative bg-night-2">
+      <div data-rise-shape="" className="relative overflow-hidden bg-kiwi text-night">
         <div className="wrap pt-[calc(var(--sec)*0.9)]">
           <Meta n="05" dark>
             Kapcsolat

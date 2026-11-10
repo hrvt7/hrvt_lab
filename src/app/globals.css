@@ -267,9 +267,13 @@ html.lenis body { height: auto; }
   font-variation-settings: "wght" var(--w, 800);
 }
 
-/* Kulcsrakész rows: a kiwi fill travels left → right with a liquid front; the ink copy is clipped to it. */
+/* Kulcsrakész rows: a kiwi fill travels left → right; the ink copy is clipped to it. */
 .tk-row { --f: 0; }
-.tk-ink {
-  clip-path: polygon(0 0, calc(var(--f) * 108% - 8%) 0, calc(var(--f) * 108% - 3%) 22%, calc(var(--f) * 108% - 6.5%) 50%, calc(var(--f) * 108% - 2%) 78%, calc(var(--f) * 108% - 8%) 100%, 0 100%);
-}
+.tk-ink { clip-path: polygon(0 0, calc(var(--f) * 106% - 2%) 0, calc(var(--f) * 106% - 6%) 100%, 0 100%); }
 @media (prefers-reduced-motion: reduce) { .tk-ink { display: none; } }
+
+/* Build scene captions */
+.cap { opacity: 0; transform: translateY(18px); transition: opacity .45s, transform .6s var(--ease-out-quint); }
+[data-stage="0"] .cap-0, [data-stage="1"] .cap-1, [data-stage="2"] .cap-2, [data-stage="3"] .cap-3 { opacity: 1; transform: none; }
+.cap-ui { opacity: 0; transition: opacity .4s; }
+[data-stage="0"] .cap-ui, [data-stage="1"] .cap-ui, [data-stage="2"] .cap-ui, [data-stage="3"] .cap-ui { opacity: 1; }

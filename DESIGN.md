@@ -22,9 +22,8 @@ Ratio ≈ 60 night · 25 paper · 15 kiwi.
 1. **Kiwi curtain intro** — the Rugis wordmark draws itself, then the screen lifts away in 8 vertical strips.
 2. **Weight lens** — hero letters thin out near the cursor (variable `wght` per letter); entrance animates weight 100 → 800.
 3. **Slot word** — "Szoftvert építek, ami ___." rolls dolgozik / elad / spórol / lenyűgöz.
-4. **Kiwi liquid (WebGL)** — a GPU fluid solver in the hero: a kiwi pool with a live surface, bubbles rising from it, and splashes that follow the pointer or finger. Scrolling floods the hero. Text under the liquid turns to ink (an ink copy multiplied over the page through a cover canvas with a liquid-shaped hole). Falls back to the plain hero without a GPU or with reduced motion; a frame-cost guard steps quality down on slow devices.
-5. **Liquid edges (WebGL)** — kiwi sections end in dripping liquid and begin with a sloshing surface; both react to scroll speed.
-5b. **Tube fill** — the "Weboldal, kulcsrakészen" rows fill with kiwi left to right as they cross the screen, text turning to ink.
+4. **Épül a szemed előtt (WebGL / three.js)** — the hero is a 520svh scroll scene with a sticky 3D canvas. Wireframe blocks float beside the headline; scrolling assembles them into an exploded page (01 Drótváz), fills them grey (02 Elrendezés), sweeps real textures in (03 Design), flattens the page to face the camera where a cursor clicks the CTA (04 Éles oldal), then the camera dives into the kiwi button and the screen becomes the kiwi Services section. Desktop builds a browser page, phones build a phone page. Collapses to a plain hero with reduced motion or no WebGL.
+5. **Tube fill** — the "Weboldal, kulcsrakészen" rows fill with kiwi left to right as they cross the screen, text turning to ink. The contact section keeps the curved liquid rise.
 6. **Stacked cards** — services stick and sink back (scale + dim) as the next one slides over.
 7. **Live visualisations** — AI answer stream, automation graph with pulses, deploy log, self-assembling layout, 3D wireframe gear.
 8. **Pixel resolve** — case images resolve from coarse kiwi-tinted pixels to full resolution.
