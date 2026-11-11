@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LiquidEdge } from "../LiquidEdge";
 import { gsap, ScrollTrigger, prefersReduced } from "@/lib/gsap";
 import { plop } from "@/lib/sound";
@@ -23,7 +23,15 @@ const SPEC = "Aa Bb Cc Őő Űű 123";
  */
 export function TypeRibbon() {
   const root = useRef<HTMLElement>(null);
+  const [live, setLive] = useState(false);
+  // The posters are heavy to paint (six full-screen layers, seven typefaces): build them only when the visitor gets close.
   useEffect(() => {
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setLive(true); io.disconnect(); } }, { rootMargin: "180% 0px" });
+    io.observe(root.current!);
+    return () => io.disconnect();
+  }, []);
+  useEffect(() => {
+    if (!live) return;
     const el = root.current!;
     const posters = [...el.querySelectorAll<HTMLElement>("[data-poster]")];
     const names = posters.map((p) => p.querySelector<HTMLElement>("[data-pname]")!);
@@ -80,6 +88,7 @@ export function TypeRibbon() {
       start: "top top",
       end: () => `+=${(N - 1) * innerHeight * 0.95}`,
       pin: true,
+      refreshPriority: 1,
       scrub: 0.5,
       invalidateOnRefresh: true,
       onUpdate: (s) => { P = s.progress * (N - 1) + 0.0001; if (!raf) raf = requestAnimationFrame(paint); },
@@ -89,14 +98,16 @@ export function TypeRibbon() {
     const idle = () => { const fr = P % 1; if (st.isActive && fr > 0.01 && fr < 0.99 && !raf) raf = requestAnimationFrame(paint); };
     gsap.ticker.add(idle);
     paint();
+    ScrollTrigger.sort();
+    ScrollTrigger.refresh();
     return () => { st.kill(); gsap.ticker.remove(idle); removeEventListener("resize", fit); cancelAnimationFrame(raf); };
-  }, []);
+  }, [live]);
 
   return (
     <section ref={root} data-theme="night" aria-label="Minta-arculatok: minden vállalkozásnak saját hangja van" className="relative bg-[#16231b]">
       <LiquidEdge color="#89e900" />
       <div data-pstage="" className="relative h-[100svh] overflow-hidden">
-        {POSTERS.map((p, i) => (
+        {live && POSTERS.map((p, i) => (
           <article key={p.name} data-poster="" className="absolute inset-0 overflow-hidden" style={{ background: p.bg, color: p.ink, zIndex: i, visibility: i ? "hidden" : "visible" }}>
             {/* diagonal band + giant outline glyph, like a type-foundry poster */}
             <span aria-hidden className="absolute -left-[10%] top-[38%] h-[34%] w-[130%] -rotate-[24deg]" style={{ background: p.band }} />
@@ -120,11 +131,11 @@ export function TypeRibbon() {
 
               <div className="relative">
                 <p className="mb-[1.5svh] text-right text-[clamp(0.9rem,1.6vw,1.4rem)] opacity-85">{p.font}</p>
-                <h3 aria-label={p.name} data-pname="" className={`${p.f} inline-block origin-bottom-left whitespace-nowrap leading-[0.92] will-change-transform`}>
+                <h2 aria-label={p.name} data-pname="" className={`${p.f} inline-block origin-bottom-left whitespace-nowrap leading-[0.92] will-change-transform`}>
                   {p.name.split(" ").map((w, k) => (
                     <span key={k} className="max-md:block">{k ? <span className="md:inline max-md:hidden"> </span> : null}{w}</span>
                   ))}
-                </h3>
+                </h2>
                 <div className="mt-[3svh] flex items-start gap-3">
                   <svg viewBox="0 0 20 28" className="h-9 w-6 shrink-0 md:h-11 md:w-8" aria-hidden><path d="M0 0h20v28l-10-7-10 7z" fill={p.acc} /></svg>
                   <p className="font-display text-[clamp(0.85rem,1.4vw,1.15rem)] uppercase leading-tight" style={{ fontVariationSettings: '"wght" 600' }}>
