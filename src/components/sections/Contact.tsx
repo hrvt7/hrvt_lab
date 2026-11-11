@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { plop, pour } from "@/lib/sound";
 import { gsap, prefersReduced, isFinePointer, scrollToHash } from "@/lib/gsap";
 import { EMAIL, NAV } from "@/lib/content";
 import { Meta } from "../Scramble";
@@ -55,7 +56,9 @@ export function Contact() {
               el.dataset.state = e >= 1 ? "full" : e > 0.02 ? "on" : "";
               el.querySelector("b")!.textContent = `${Math.round(e * 100)}%`;
             },
+            onTap: () => plop({ pitch: 0.8 + Math.random() * 0.8 }),
             onMelted: () => {
+              pour({ dur: 1.4, gain: 0.14, bubbles: 9 });
               const prize = root.current!.querySelector<HTMLElement>("[data-prize]")!;
               prize.style.visibility = "visible";
               gsap.fromTo(prize.querySelectorAll("[data-pz]"), { yPercent: 120, opacity: 0, rotate: 4 }, { yPercent: 0, opacity: 1, rotate: 0, duration: 1.1, ease: "elastic.out(1,0.55)", stagger: 0.08 });

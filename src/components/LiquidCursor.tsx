@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { isFinePointer, prefersReduced } from "@/lib/gsap";
+import { plop } from "@/lib/sound";
 
 const TRAIL = 5;
 const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
@@ -113,7 +114,7 @@ export function LiquidCursor() {
     const hide = () => { shown = false; el.style.opacity = "0"; shape.style.visibility = "hidden"; cancelAnimationFrame(raf); raf = 0; };
     const out = (e: PointerEvent) => { if (!e.relatedTarget) hide(); };
     const onScroll = () => shown && pick(m.x, m.y);
-    const dn = () => (down = true), up = () => (down = false);
+    const dn = () => { down = true; plop({ pitch: mode === "wrap" ? 1.5 : 1.1, gain: 0.14 }); }, up = () => (down = false);
     addEventListener("pointermove", move, { passive: true });
     addEventListener("scroll", onScroll, { passive: true });
     addEventListener("pointerdown", dn);

@@ -25,7 +25,7 @@ export function CodeViz() {
     <div ref={ref} className="grid h-full grid-rows-[1fr_auto] gap-3 p-4 font-mono text-[0.7rem] md:p-6 md:text-[0.74rem]">
       <div className="grid min-h-0 gap-3 sm:grid-cols-[1.15fr_1fr]">
         <div className="overflow-hidden rounded-xl bg-night-3 p-3.5">
-          <p className="mb-2 text-ash">index.html — kézzel írva</p>
+          <p className="mb-2 text-smoke">index.html — kézzel írva</p>
           {CODE.map(([k, l], i) => {
             const n = Math.max(0, Math.min(l.length, Math.floor((t - starts[i]) * SPEED)));
             const typing = n > 0 && n < l.length;

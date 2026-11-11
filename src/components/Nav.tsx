@@ -5,11 +5,18 @@ import { gsap, onReady, scrollToHash } from "@/lib/gsap";
 import { NAV, EMAIL } from "@/lib/content";
 import { Wordmark } from "./Logo";
 import { Scramble } from "./Scramble";
+import { SoundToggle } from "./SoundToggle";
+import { pour } from "@/lib/sound";
+
+const FACE = ["f-ins", "f-bag", "f-bod", "f-unb"];
+const SIZE = ["1.35em", "1.05em", "1.25em", "0.8em"];
 
 export function Nav() {
   const bar = useRef<HTMLElement>(null);
   const menu = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
+  const level = useRef({ v: 0, dir: 0 });
+  const drawRef = useRef<() => void>(() => {});
 
   useEffect(() => {
     gsap.set(bar.current, { yPercent: -100 });
@@ -19,14 +26,40 @@ export function Nav() {
   useEffect(() => {
     const m = menu.current!;
     const lenis = (window as unknown as { __lenis?: { stop(): void; start(): void } }).__lenis;
+    // The menu fills with kiwi liquid from the bottom: a sloshing surface rises past the items,
+    // and each item surfaces (in its own typeface) as the level reaches it. Closing drains it.
+    const path = m.querySelector<SVGPathElement>("[data-fill] path")!;
+    const lv = level.current;
+    const draw = () => {
+      const W = innerWidth, H = innerHeight, t = performance.now() / 1000, L = lv.v;
+      const amp = 26 * Math.sin(Math.min(1, L) * Math.PI) + 4 * (1 - Math.min(1, L));
+      const top = H * (1 - L) - (L >= 1 ? 60 : 0);
+      let d = `M0 ${H + 2}`;
+      for (let k = 0; k <= 40; k++) {
+        const x = (k / 40) * W;
+        d += `L${x.toFixed(1)} ${(top + Math.sin(x * 0.011 + t * 4 + lv.dir) * amp + Math.sin(x * 0.027 - t * 6) * amp * 0.35).toFixed(1)}`;
+      }
+      path.setAttribute("d", `${d}L${W} ${H + 2}Z`);
+    };
+    gsap.ticker.remove(drawRef.current);
+    drawRef.current = draw;
     if (open) {
       lenis?.stop();
+      pour({ dur: 0.9, gain: 0.1 });
       gsap.set(m, { display: "flex" });
-      gsap.fromTo(m, { clipPath: "circle(0% at 100% 0%)" }, { clipPath: "circle(150% at 100% 0%)", duration: 0.9, ease: "expo.inOut" });
-      gsap.fromTo(m.querySelectorAll("[data-mi]"), { yPercent: 100 }, { yPercent: 0, duration: 0.9, stagger: 0.05, delay: 0.3, ease: "expo.out" });
+      gsap.set(m.querySelectorAll("[data-mi]"), { yPercent: 110 });
+      gsap.ticker.add(draw);
+      lv.dir = 0;
+      gsap.fromTo(lv, { v: 0 }, { v: 1.06, duration: 0.95, ease: "power2.inOut", onComplete: () => void gsap.ticker.remove(draw) });
+      gsap.fromTo(m.querySelectorAll("[data-mi]"), { yPercent: 110, rotate: 6 }, { yPercent: 0, rotate: 0, duration: 0.9, stagger: { each: 0.08, from: "end" }, delay: 0.5, ease: "elastic.out(1,0.7)" });
+      gsap.fromTo(m.querySelectorAll("[data-mfade]"), { opacity: 0 }, { opacity: 1, duration: 0.5, delay: 0.7 });
     } else if (m.style.display === "flex") {
       lenis?.start();
-      gsap.to(m, { clipPath: "circle(0% at 100% 0%)", duration: 0.6, ease: "expo.inOut", onComplete: () => void gsap.set(m, { display: "none" }) });
+      gsap.ticker.add(draw);
+      lv.dir = 2;
+      gsap.to(m.querySelectorAll("[data-mi]"), { yPercent: 110, duration: 0.35, stagger: 0.03, ease: "power2.in" });
+      gsap.to(m.querySelectorAll("[data-mfade]"), { opacity: 0, duration: 0.2 });
+      gsap.to(lv, { v: 0, duration: 0.7, delay: 0.15, ease: "power2.in", onComplete: () => { gsap.ticker.remove(draw); gsap.set(m, { display: "none" }); } });
     }
   }, [open]);
 
@@ -59,6 +92,7 @@ export function Nav() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
+          <SoundToggle />
           <a
             href="#kapcsolat"
             onClick={go("#kapcsolat")}
@@ -81,18 +115,21 @@ export function Nav() {
         </div>
       </header>
 
-      <div ref={menu} id="menu" className="wrap fixed inset-0 z-[79] hidden flex-col justify-between bg-kiwi pb-8 pt-28 text-night">
+      <div ref={menu} id="menu" className="wrap fixed inset-0 z-[79] hidden flex-col justify-between pb-8 pt-28 text-night">
+        <svg data-fill="" aria-hidden className="pointer-events-none absolute inset-0 -z-[1] h-full w-full overflow-visible">
+          <path fill="#89e900" />
+        </svg>
         <nav className="flex flex-col" aria-label="Mobil navigáció">
           {[...NAV, { label: "Kapcsolat", href: "#kapcsolat" }].map((n, i) => (
-            <a key={n.href} href={n.href} onClick={go(n.href)} className="block overflow-hidden border-b border-line-ink py-1">
-              <span data-mi="" className="t-l flex items-baseline justify-between" style={{ fontSize: "clamp(1.3rem,6vw,2.4rem)" }}>
-                {n.label}
+            <a key={n.href} href={n.href} onClick={go(n.href)} className="block overflow-hidden border-b border-line-ink py-2">
+              <span data-mi="" className="flex items-baseline justify-between py-1 leading-none" style={{ fontSize: "clamp(1.6rem,8vw,2.8rem)" }}>
+                <span className={FACE[i]} style={{ fontSize: SIZE[i] }}>{n.label}</span>
                 <span className="t-meta">0{i + 1}</span>
               </span>
             </a>
           ))}
         </nav>
-        <a href={`mailto:${EMAIL}`} className="t-meta">
+        <a href={`mailto:${EMAIL}`} className="t-meta" data-mfade="">
           {EMAIL}
         </a>
       </div>

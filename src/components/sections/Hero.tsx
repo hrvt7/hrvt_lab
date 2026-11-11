@@ -105,7 +105,7 @@ function Content({ ink = false }: { ink?: boolean }) {
   const dim = "text-night/75";
   return (
     <div className={`wrap relative z-10 flex min-h-0 flex-1 flex-col pb-6 pt-24 md:pb-8 md:pt-28 ${ink ? "h-full text-night" : ""}`}>
-      <div className={`hero-tag t-meta flex items-start justify-between gap-6 ${dim}`} data-hf="">
+      <div className="hero-tag t-meta flex items-start justify-between gap-6 text-night">
         <p className="flex items-center gap-2.5">
           <i className={`h-2 w-2 rounded-full bg-night`} />
           {ink ? <span>Egyedi weboldal készítés — új projekteket vállalok</span> : <Scramble text="Egyedi weboldal készítés — új projekteket vállalok" />}

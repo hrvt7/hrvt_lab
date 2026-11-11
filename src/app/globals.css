@@ -441,3 +441,5 @@ html.lenis body { height: auto; }
 main :is(h1, h2) { transform-origin: 0 50%; transform: skewY(calc(var(--sv, 0) * 1deg)) scaleY(calc(1 + var(--sa, 0) * 0.007)); }
 @media (prefers-reduced-motion: reduce) { main :is(h1, h2) { transform: none; } }
 html.liquid-cursor [data-old-cursor] { display: none !important; }
+@keyframes eq { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.35); } }
+[class*="animate-[eq"] { transform-origin: bottom; }

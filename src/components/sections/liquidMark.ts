@@ -24,7 +24,7 @@ void main(){
   gl_FragColor=vec4(col*a,a);
 }`;
 
-export function mount(host: HTMLElement, opt: { ink?: [number, number, number]; hi?: [number, number, number]; edge?: [number, number, number]; splash?: boolean; onEnergy?: (e: number) => void; onMelted?: () => void } = {}) {
+export function mount(host: HTMLElement, opt: { ink?: [number, number, number]; hi?: [number, number, number]; edge?: [number, number, number]; splash?: boolean; onEnergy?: (e: number) => void; onMelted?: () => void; onTap?: () => void } = {}) {
   const svgs = [...host.querySelectorAll<SVGSVGElement>("svg")];
   const canvas = document.createElement("canvas");
   canvas.setAttribute("aria-hidden", "true");
@@ -130,6 +130,7 @@ export function mount(host: HTMLElement, opt: { ink?: [number, number, number]; 
     const x = ((e.clientX - b.left) / b.width) * TW, y = ((e.clientY - b.top) / b.height) * TH;
     for (let i = 0; i < 6; i++) { const a = (i / 6) * 6.28; stamp(x + Math.cos(a) * 6, y + Math.sin(a) * 6, Math.cos(a) * 0.8, Math.sin(a) * 0.8, 14); }
     feed(0.2);
+    opt.onTap?.();
     lastIn = performance.now();
   };
   host.addEventListener("pointerdown", onTap);
