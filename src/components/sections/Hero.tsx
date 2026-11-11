@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap, onReady, prefersReduced, scrollToHash } from "@/lib/gsap";
 import { HERO_WORDS, SERVICES } from "@/lib/content";
-import { LensScene } from "./LensScene";
+import { Wordmark, WordmarkHalf } from "../Logo";
 import { Magnetic } from "../Magnetic";
 import { Clock } from "../Clock";
 import { Scramble } from "../Scramble";
@@ -48,6 +48,17 @@ export function Hero() {
     });
   }, []);
 
+  // The full-screen wordmark turns liquid (same shader as the footer), loaded after the intro.
+  useEffect(() => {
+    if (prefersReduced()) return;
+    let dead = false, stop = () => {};
+    const off = onReady(() => {
+      const idle = (window as unknown as { requestIdleCallback?: (f: () => void, o?: object) => void }).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 150));
+      idle(() => import("./liquidMark").then((m) => { if (!dead) stop = m.mount(root.current!.querySelector<HTMLElement>("[data-hero-wm]")!, { ink: [0.949, 0.949, 0.933], edge: [0.537, 0.914, 0], hi: [0, 0, 0] }) ?? (() => {}); }), { timeout: 900 });
+    });
+    return () => { dead = true; off(); stop(); };
+  }, []);
+
   // Slot-machine word roll (both the paper and the ink copy move together).
   useEffect(() => {
     if (prefersReduced()) return;
@@ -78,11 +89,8 @@ export function Hero() {
   }, []);
 
   return (
-    <section ref={root} id="top" data-theme="night" className="relative bg-night" style={{ height: "260svh" }}>
-      <LensScene />
-      <div data-hero-content="" className="pointer-events-none absolute inset-x-0 top-0 z-10 flex h-[100svh] flex-col [&_a]:pointer-events-auto [&_h1]:[text-shadow:0_2px_28px_rgba(0,0,0,.45)]">
-        <Content />
-      </div>
+    <section ref={root} id="top" data-theme="night" className="relative flex h-[100svh] min-h-[640px] flex-col bg-night">
+      <Content />
     </section>
   );
 }
@@ -96,7 +104,7 @@ const go = (h: string) => (e: React.MouseEvent) => {
 function Content({ ink = false }: { ink?: boolean }) {
   const dim = ink ? "text-night" : "text-smoke";
   return (
-    <div className={`wrap relative z-10 flex flex-1 flex-col pb-6 pt-24 md:pb-8 md:pt-28 ${ink ? "h-full text-night" : ""}`}>
+    <div className={`wrap relative z-10 flex min-h-0 flex-1 flex-col pb-6 pt-24 md:pb-8 md:pt-28 ${ink ? "h-full text-night" : ""}`}>
       <div className={`hero-tag t-meta flex items-start justify-between gap-6 ${dim}`} data-hf="">
         <p className="flex items-center gap-2.5">
           <i className={`h-2 w-2 rounded-full ${ink ? "bg-night" : "bg-kiwi"}`} />
@@ -112,13 +120,22 @@ function Content({ ink = false }: { ink?: boolean }) {
       </div>
 
 
-      <h1 className="t-mega mt-auto pt-10 [contain:layout_style] max-md:bg-night max-md:shadow-[0_-36px_32px_-6px_var(--color-night)]" style={{ fontSize: "clamp(1.7rem, min(7.3vw, 9.6vh), 5.6rem)" }}>
-        {LINES.map((l) => (
-          <span key={l} className="rl whitespace-nowrap">
-            {ink ? l : <Letters text={l} />}
+      <div className="flex min-h-0 flex-1 items-center py-4 md:py-6" data-hf="">
+        <div data-hero-wm="" className="relative flex max-h-full w-full flex-col justify-center text-paper">
+          <Wordmark className="hidden h-auto max-h-[62svh] w-full md:block" />
+          <WordmarkHalf half={0} className="h-auto max-h-[24svh] w-full md:hidden" />
+          <WordmarkHalf half={1} className="mt-[2svh] h-auto max-h-[24svh] w-full md:hidden" />
+        </div>
+      </div>
+
+      <h1 className="t-mega [contain:layout_style] md:whitespace-nowrap" style={{ fontSize: "clamp(1.05rem, min(2.5vw, 3.4vh), 2.1rem)" }}>
+        {LINES.map((l, i) => (
+          <span key={l}>
+            <span className="mr-[0.35em] inline-block whitespace-nowrap">{ink ? l : <Letters text={l} />}</span>
+            {i === 1 && <br className="md:hidden" />}
           </span>
         ))}
-        <span className="block">
+        <span className="inline-block align-top max-md:block">
           <span className={`relative -mt-[0.24em] inline-block h-[1.22em] overflow-hidden align-top ${ink ? "" : "text-kiwi"}`}>
             <span data-roll="" className="block">
               {[...HERO_WORDS, HERO_WORDS[0]].map((w, i) => (
@@ -131,9 +148,9 @@ function Content({ ink = false }: { ink?: boolean }) {
         </span>
       </h1>
 
-      <div className="relative pt-7 max-md:-mb-6 max-md:bg-night max-md:pb-6 md:mt-9 md:pt-0">
+      <div className="relative pt-4 md:pt-6">
         <div data-hrule="" className={`h-px origin-left ${ink ? "bg-night/40" : "bg-line-2"}`} />
-        <div className="mt-6 grid gap-7 md:grid-cols-12 md:items-end">
+        <div className="mt-4 grid gap-4 md:mt-6 md:grid-cols-12 md:items-end md:gap-7">
           <p className={`t-lead max-w-[38ch] md:col-span-5 ${dim}`}>
             Egyedi weboldal készítés helyi vállalkozásoknak és cégeknek.{" "}
             <span className={ink ? "" : "text-paper"}>Tervezéstől az élesítésig, egy kézben.</span>

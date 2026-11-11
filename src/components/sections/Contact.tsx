@@ -45,7 +45,7 @@ export function Contact() {
       liquidIO = new IntersectionObserver(([e]) => {
         if (!e.isIntersecting) return;
         liquidIO!.disconnect();
-        import("./liquidMark").then((m) => { stopLiquid = m.mount(host, host.querySelector("svg")!) ?? (() => {}); });
+        import("./liquidMark").then((m) => { stopLiquid = m.mount(host, { hi: [0.35, 0.35, 0.35] }) ?? (() => {}); });
       }, { rootMargin: "600px" });
       liquidIO.observe(host);
     }

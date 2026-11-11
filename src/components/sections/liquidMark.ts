@@ -5,7 +5,7 @@
  */
 const VS = "attribute vec2 a;varying vec2 v;void main(){v=a*.5+.5;gl_Position=vec4(a,0.,1.);}";
 const FS = `precision highp float;
-varying vec2 v;uniform sampler2D tM,tT;uniform float time;uniform vec2 px;
+varying vec2 v;uniform sampler2D tM,tT;uniform float time;uniform vec2 px;uniform vec3 inkC,hiC,edgeC;
 float mk(vec2 u){ return (u.x<0.||u.x>1.||u.y<0.||u.y>1.)?0.:texture2D(tM,u).a; }
 void main(){
   vec2 f=texture2D(tT,v).rg-.5;
@@ -17,18 +17,22 @@ void main(){
   float hi=mk(u+vec2(-1.5,2.)*px+d*.25);
   float lo=mk(u+vec2(1.5,-2.)*px-d*.25);
   float sp=length(f);
-  vec3 ink=vec3(.133);
-  vec3 col=ink+vec3(.537,.914,0.)*clamp(a-lo,0.,1.)*.9*smoothstep(.01,.08,sp)+vec3(1.)*clamp(a-hi,0.,1.)*.35*smoothstep(.02,.1,sp);
+  vec3 ink=inkC;
+  vec3 col=mix(ink,edgeC,clamp(a-lo,0.,1.)*smoothstep(.01,.08,sp))+hiC*clamp(a-hi,0.,1.)*smoothstep(.02,.1,sp);
   gl_FragColor=vec4(col*a,a);
 }`;
 
-export function mount(host: HTMLElement, svg: SVGSVGElement) {
+export function mount(host: HTMLElement, opt: { ink?: [number, number, number]; hi?: [number, number, number]; edge?: [number, number, number] } = {}) {
+  const svgs = [...host.querySelectorAll<SVGSVGElement>("svg")];
   const canvas = document.createElement("canvas");
   canvas.setAttribute("aria-hidden", "true");
   canvas.style.cssText = "position:absolute;left:0;top:-18%;width:100%;height:136%;pointer-events:none";
   const ctx = canvas.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false });
   if (!ctx) return null;
   const gl: WebGLRenderingContext = ctx;
+  // Software GL (no GPU) would burn the main thread on a full-screen shader: keep the still wordmark there.
+  const dbg = gl.getExtension("WEBGL_debug_renderer_info");
+  if (/swiftshader|llvmpipe|software/i.test(String(dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : "")) && !location.search.includes("gl=1")) return null;
   const sh = (t: number, s: string) => { const o = gl.createShader(t)!; gl.shaderSource(o, s); gl.compileShader(o); return o; };
   const prog = gl.createProgram()!;
   gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS));
@@ -54,6 +58,9 @@ export function mount(host: HTMLElement, svg: SVGSVGElement) {
   gl.uniform1i(gl.getUniformLocation(prog, "tM"), 0);
   gl.uniform1i(gl.getUniformLocation(prog, "tT"), 1);
   const uTime = gl.getUniformLocation(prog, "time"), uPx = gl.getUniformLocation(prog, "px");
+  gl.uniform3fv(gl.getUniformLocation(prog, "inkC"), opt.ink ?? [0.133, 0.133, 0.133]);
+  gl.uniform3fv(gl.getUniformLocation(prog, "edgeC"), opt.edge ?? [0.616, 0.956, 0.133]);
+  gl.uniform3fv(gl.getUniformLocation(prog, "hiC"), opt.hi ?? [0.35, 0.35, 0.35]);
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
@@ -63,8 +70,6 @@ export function mount(host: HTMLElement, svg: SVGSVGElement) {
   // wordmark → alpha texture (with the same 18% vertical bleed the canvas has, so smears have room)
   const mark = document.createElement("canvas");
   const mg = mark.getContext("2d")!;
-  const [vx0, vy0, vw, vh] = (svg.getAttribute("viewBox") || "0 0 100 30").split(/\s+/).map(Number);
-  const path = new Path2D(svg.querySelector("path")!.getAttribute("d")!);
   let W = 0, H = 0;
   const size = () => {
     const w = host.clientWidth, h = host.clientHeight * 1.36;
@@ -74,10 +79,20 @@ export function mount(host: HTMLElement, svg: SVGSVGElement) {
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
     gl.viewport(0, 0, canvas.width, canvas.height);
     mark.width = canvas.width; mark.height = canvas.height;
-    const s = canvas.width / vw;
-    mg.setTransform(s, 0, 0, s, -vx0 * s, (canvas.height - vh * s) / 2 - vy0 * s);
+    // Draw every visible wordmark svg where the layout put it (one row on desktop, two stacked halves on phones).
+    const hb = host.getBoundingClientRect();
+    mg.setTransform(1, 0, 0, 1, 0, 0);
+    mg.clearRect(0, 0, mark.width, mark.height);
     mg.fillStyle = "#fff";
-    mg.fill(path);
+    svgs.forEach((svg) => {
+      const r = svg.getBoundingClientRect();
+      if (!r.width) return;
+      const [x0, y0, vw, vh] = (svg.getAttribute("viewBox") || "0 0 1 1").split(/\s+/).map(Number);
+      const s = Math.min(r.width / vw, r.height / vh) * dpr;
+      const ox = (r.left - hb.left + (r.width - (vw * s) / dpr) / 2) * dpr, oy = (r.top - hb.top + hb.height * 0.18 + (r.height - (vh * s) / dpr) / 2) * dpr;
+      mg.setTransform(s, 0, 0, s, ox - x0 * s, oy - y0 * s);
+      mg.fill(new Path2D(svg.querySelector("path")!.getAttribute("d")!));
+    });
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, tM);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, mark);
@@ -140,13 +155,13 @@ export function mount(host: HTMLElement, svg: SVGSVGElement) {
   const ro = new ResizeObserver(size);
   ro.observe(host);
   size();
-  svg.style.opacity = "0";
+  svgs.forEach((s) => (s.style.opacity = "0"));
 
   return () => {
     cancelAnimationFrame(raf);
     io.disconnect(); ro.disconnect();
     removeEventListener("pointermove", onMove);
-    svg.style.opacity = "";
+    svgs.forEach((s) => (s.style.opacity = ""));
     canvas.remove();
     gl.getExtension("WEBGL_lose_context")?.loseContext();
   };
