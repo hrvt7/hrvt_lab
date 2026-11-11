@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap, onReady, scrollToHash } from "@/lib/gsap";
 import { NAV, EMAIL } from "@/lib/content";
-import { Wordmark } from "./Logo";
+import { NavLogo } from "./NavLogo";
+import { TypeSwap } from "./TypeSwap";
 import { Scramble } from "./Scramble";
 import { SoundToggle } from "./SoundToggle";
 import { pour } from "@/lib/sound";
@@ -77,7 +78,7 @@ export function Nav() {
         className="wrap fixed inset-x-0 top-0 z-[80] flex h-[72px] items-center justify-between text-paper transition-colors duration-500 [html[data-nav=kiwi]_&]:text-night"
       >
         <a href="#top" onClick={go("#top")} aria-label="HRVT — vissza a tetejére" data-cursor="Fel">
-          <Wordmark className="h-[22px] w-auto" />
+          <NavLogo className="h-[22px] w-auto" />
         </a>
         <nav className="hidden items-center gap-1 rounded-full p-1 lg:flex" aria-label="Fő navigáció">
           {NAV.map((n) => (
@@ -87,7 +88,7 @@ export function Nav() {
               onClick={go(n.href)}
               className="t-meta rounded-full px-4 py-2.5 transition-colors duration-300 hover:bg-paper/10 [html[data-nav=kiwi]_&]:hover:bg-night/10"
             >
-              <Scramble text={n.label} />
+              <TypeSwap text={n.label} />
             </a>
           ))}
         </nav>

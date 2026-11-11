@@ -443,3 +443,7 @@ main :is(h1, h2) { transform-origin: 0 50%; transform: skewY(calc(var(--sv, 0) *
 html.liquid-cursor [data-old-cursor] { display: none !important; }
 @keyframes eq { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.35); } }
 [class*="animate-[eq"] { transform-origin: bottom; }
+
+/* Selection: kiwi liquid on dark, ink on kiwi */
+::selection { background: #89e900; color: #222222; }
+[data-theme="kiwi"] ::selection, [data-theme="kiwi"]::selection { background: #222222; color: #89e900; }
