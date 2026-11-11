@@ -4,18 +4,17 @@ import { LiquidEdge } from "../LiquidEdge";
 import { gsap, ScrollTrigger, prefersReduced } from "@/lib/gsap";
 import { plop } from "@/lib/sound";
 
-type P = { name: string; f: string; font: string; bg: string; ink: string; acc: string; band: string; best: string; glyph: string; light?: boolean };
-// Invented sample identities — not clients.
+type P = { name: string; f: string; font: string; bg: string; ink: string; acc: string; band: string; kicker: string; body: string; tags: string; light?: boolean };
+// What you get from HRVT — each promise set in its own typeface and colour, to show that every site gets its own voice.
 const POSTERS: P[] = [
-  { name: "Kert Bisztró", f: "f-ins", font: "Instrument Serif Italic", bg: "#16231b", ink: "#f3ead8", acc: "#e0673f", band: "rgba(0,0,0,.28)", best: "Éttermeknek, bisztróknak", glyph: "&" },
-  { name: "Lila Szalon", f: "f-bod", font: "Bodoni Moda Italic", bg: "#2a1131", ink: "#f6dccd", acc: "#ff7aa8", band: "rgba(255,122,168,.1)", best: "Szalonoknak, fodrászoknak", glyph: "S" },
-  { name: "GARÁZS 24", f: "f-bag", font: "Bagel Fat One", bg: "#ff5a12", ink: "#0d1726", acc: "#0d1726", band: "rgba(13,23,38,.14)", best: "Autószervizeknek, műhelyeknek", glyph: "24", light: true },
-  { name: "Hajnal Pékség", f: "f-all", font: "Allura", bg: "#e3a72f", ink: "#3b2416", acc: "#fff3dc", band: "rgba(59,36,22,.1)", best: "Pékségeknek, cukrászdáknak", glyph: "P", light: true },
-  { name: "Fenyves Panzió", f: "f-gv", font: "Great Vibes", bg: "#f1ebdf", ink: "#1d3a1f", acc: "#6f8f3a", band: "rgba(29,58,31,.07)", best: "Panzióknak, esküvői helyszíneknek", glyph: "F", light: true },
-  { name: "ZÖLDKERT", f: "f-cli", font: "Climate Crisis", bg: "#1d3a1f", ink: "#b6f08a", acc: "#89e900", band: "rgba(182,240,138,.07)", best: "Kertészeteknek, tájépítőknek", glyph: "Z" },
+  { name: "Nincs sablon.", f: "f-ins", font: "Instrument Serif Italic", bg: "#16231b", ink: "#f3ead8", acc: "#e0673f", band: "rgba(0,0,0,.28)", kicker: "Egyedi design", body: "Minden oldalt nulláról tervezek, a cégedhez szabva. Nem témát töltök fel, hanem a te oldaladat rajzolom meg.", tags: "tervezés · tipográfia · animáció" },
+  { name: "Saját arculat.", f: "f-bod", font: "Bodoni Moda Italic", bg: "#2a1131", ink: "#f6dccd", acc: "#ff7aa8", band: "rgba(255,122,168,.1)", kicker: "Karakter", body: "Színek, betűk, hangnem: az oldal úgy néz ki és úgy beszél, mint a vállalkozásod. Ettől emlékeznek rád.", tags: "színvilág · betűválasztás · szöveg" },
+  { name: "VILLÁMGYORS.", f: "f-bag", font: "Bagel Fat One", bg: "#ff5a12", ink: "#0d1726", acc: "#0d1726", band: "rgba(13,23,38,.14)", kicker: "Fejlesztés", body: "Kézzel írt, könnyű kód és optimalizált képek. A látogató nem vár, a Google is jobban szereti.", tags: "Next.js · képoptimalizálás · sebességmérés", light: true },
+  { name: "Telefonra szabva.", f: "f-all", font: "Allura", bg: "#e3a72f", ink: "#3b2416", acc: "#fff3dc", band: "rgba(59,36,22,.1)", kicker: "Mobil", body: "A legtöbben telefonról néznek meg egy céget. Minden gomb, űrlap és animáció hüvelykujjra tervezve.", tags: "mobilra tervezve · minden képernyőn tesztelve", light: true },
+  { name: "Megtalálnak.", f: "f-gv", font: "Great Vibes", bg: "#f1ebdf", ink: "#1d3a1f", acc: "#6f8f3a", band: "rgba(29,58,31,.07)", kicker: "Keresők", body: "Keresőoptimalizálás, Google-cégprofil és AI-keresők: aki a környéken keres, rád találjon, ne a konkurenciára.", tags: "SEO · Google-cégprofil · AI-keresők", light: true },
+  { name: "KULCSRAKÉSZ.", f: "f-cli", font: "Climate Crisis", bg: "#1d3a1f", ink: "#b6f08a", acc: "#89e900", band: "rgba(182,240,138,.07)", kicker: "Egy kézben", body: "Domain, tárhely, űrlap, mérés, karbantartás. Az első egyeztetéstől az élesítésig nem kell senki mást keresned.", tags: "domain · tárhely · karbantartás" },
 ];
 const N = POSTERS.length;
-const SPEC = "Aa Bb Cc Őő Űű 123";
 
 /**
  * "Arculat-plakátok": full-screen type posters, one per invented business. Scrolling floods the next
@@ -104,7 +103,7 @@ export function TypeRibbon() {
   }, [live]);
 
   return (
-    <section ref={root} data-theme="night" aria-label="Minta-arculatok: minden vállalkozásnak saját hangja van" className="relative bg-[#16231b]">
+    <section ref={root} data-theme="night" aria-label="Amit kapsz: egyedi design, saját arculat, gyors oldal, mobil, keresők, kulcsrakész átadás" className="relative bg-[#16231b]">
       <LiquidEdge color="#89e900" />
       <div data-pstage="" className="relative h-[100svh] overflow-hidden">
         {live && POSTERS.map((p, i) => (
@@ -112,15 +111,15 @@ export function TypeRibbon() {
             {/* diagonal band + giant outline glyph, like a type-foundry poster */}
             <span aria-hidden className="absolute -left-[10%] top-[38%] h-[34%] w-[130%] -rotate-[24deg]" style={{ background: p.band }} />
             <span aria-hidden className={`${p.f} pointer-events-none absolute -right-[4vw] top-1/2 -translate-y-1/2 leading-none text-transparent`} style={{ fontSize: "min(78svh, 70vw)", WebkitTextStroke: `1.5px ${p.ink}`, opacity: 0.14 }}>
-              {p.glyph}
+              {String(i + 1).padStart(2, "0")}
             </span>
 
             <div data-pbody="" className="wrap relative flex h-full flex-col justify-between pb-8 pt-24 md:pb-10 md:pt-28">
               <div className="t-meta flex items-start justify-between gap-4 text-[0.66rem]">
                 <span>
-                  Minta-arculat
+                  HRVT — amit kapsz
                   <br />
-                  <span className="opacity-70">kitalált cég · saját betű</span>
+                  <span className="opacity-70">{p.kicker}</span>
                 </span>
                 <span className="text-right">
                   {String(i + 1).padStart(2, "0")} / {String(N).padStart(2, "0")}
@@ -138,16 +137,12 @@ export function TypeRibbon() {
                 </h2>
                 <div className="mt-[3svh] flex items-start gap-3">
                   <svg viewBox="0 0 20 28" className="h-9 w-6 shrink-0 md:h-11 md:w-8" aria-hidden><path d="M0 0h20v28l-10-7-10 7z" fill={p.acc} /></svg>
-                  <p className="font-display text-[clamp(0.85rem,1.4vw,1.15rem)] uppercase leading-tight" style={{ fontVariationSettings: '"wght" 600' }}>
-                    Legjobb:
-                    <br />
-                    {p.best}
-                  </p>
+                  <p className="max-w-[46ch] text-[clamp(1rem,1.5vw,1.3rem)] leading-snug">{p.body}</p>
                 </div>
               </div>
 
               <div className="flex flex-wrap items-end justify-between gap-5">
-                <p className={`${p.f} text-[clamp(1.4rem,3vw,2.6rem)] leading-none opacity-80`}>{SPEC}</p>
+                <p className="t-meta text-[0.62rem] opacity-80">{p.tags}</p>
                 <div className="flex items-center gap-2">
                   {[p.bg, p.ink, p.acc].map((c, k) => (
                     <span key={k} className="flex items-center gap-1.5">
@@ -160,7 +155,7 @@ export function TypeRibbon() {
             </div>
           </article>
         ))}
-        <p className="sr-only">Minden vállalkozásnak saját hangja van, a betűt is hozzá választom: hat kitalált minta-arculat, mindegyik más betűtípussal és színnel.</p>
+        <p className="sr-only">Amit a HRVT-től kapsz, hat pontban, mindegyik más betűtípussal és színnel szedve.</p>
       </div>
     </section>
   );
