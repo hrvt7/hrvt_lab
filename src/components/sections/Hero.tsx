@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap, onReady, prefersReduced, scrollToHash } from "@/lib/gsap";
 import { HERO_WORDS, SERVICES } from "@/lib/content";
-import { Wordmark, WordmarkHalf } from "../Logo";
+import { Wordmark } from "../Logo";
 import { Magnetic } from "../Magnetic";
 import { Clock } from "../Clock";
 import { Scramble } from "../Scramble";
@@ -54,7 +54,7 @@ export function Hero() {
     let dead = false, stop = () => {};
     const off = onReady(() => {
       const idle = (window as unknown as { requestIdleCallback?: (f: () => void, o?: object) => void }).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 150));
-      idle(() => import("./liquidMark").then((m) => { if (!dead) stop = m.mount(root.current!.querySelector<HTMLElement>("[data-hero-wm]")!, { ink: [0.949, 0.949, 0.933], edge: [0.537, 0.914, 0], hi: [0, 0, 0] }) ?? (() => {}); }), { timeout: 900 });
+      idle(() => import("./liquidMark").then((m) => { if (!dead) stop = m.mount(root.current!.querySelector<HTMLElement>("[data-hero-wm]")!, { hi: [0.35, 0.35, 0.35] }) ?? (() => {}); }), { timeout: 900 });
     });
     return () => { dead = true; off(); stop(); };
   }, []);
@@ -89,7 +89,7 @@ export function Hero() {
   }, []);
 
   return (
-    <section ref={root} id="top" data-theme="night" className="relative flex h-[100svh] min-h-[640px] flex-col bg-night">
+    <section ref={root} id="top" data-theme="kiwi" className="relative flex h-[100svh] min-h-[640px] flex-col bg-kiwi text-night">
       <Content />
     </section>
   );
@@ -102,18 +102,18 @@ const go = (h: string) => (e: React.MouseEvent) => {
 
 /** The hero content. It is rendered twice: once in paper on night, and once in ink, which only shows where the liquid is. */
 function Content({ ink = false }: { ink?: boolean }) {
-  const dim = ink ? "text-night" : "text-smoke";
+  const dim = "text-night/75";
   return (
     <div className={`wrap relative z-10 flex min-h-0 flex-1 flex-col pb-6 pt-24 md:pb-8 md:pt-28 ${ink ? "h-full text-night" : ""}`}>
       <div className={`hero-tag t-meta flex items-start justify-between gap-6 ${dim}`} data-hf="">
         <p className="flex items-center gap-2.5">
-          <i className={`h-2 w-2 rounded-full ${ink ? "bg-night" : "bg-kiwi"}`} />
+          <i className={`h-2 w-2 rounded-full bg-night`} />
           {ink ? <span>Egyedi weboldal készítés — új projekteket vállalok</span> : <Scramble text="Egyedi weboldal készítés — új projekteket vállalok" />}
         </p>
         <p className="hidden text-right sm:block">
           Szombathely / Bécs
           <br />
-          <span className={ink ? "" : "text-paper"}>
+          <span className="text-night">
             <Clock />
           </span>
         </p>
@@ -121,14 +121,12 @@ function Content({ ink = false }: { ink?: boolean }) {
 
 
       <div className="flex min-h-0 flex-1 items-center py-4 md:py-6" data-hf="">
-        <div data-hero-wm="" className="relative flex max-h-full w-full flex-col justify-center text-paper">
-          <Wordmark className="hidden h-auto max-h-[62svh] w-full md:block" />
-          <WordmarkHalf half={0} className="h-auto max-h-[24svh] w-full md:hidden" />
-          <WordmarkHalf half={1} className="mt-[2svh] h-auto max-h-[24svh] w-full md:hidden" />
+        <div data-hero-wm="" className="relative flex max-h-full w-full flex-col justify-center text-night">
+          <Wordmark className="h-auto max-h-[62svh] w-full" />
         </div>
       </div>
 
-      <h1 className="t-mega [contain:layout_style] md:whitespace-nowrap" style={{ fontSize: "clamp(1.05rem, min(2.5vw, 3.4vh), 2.1rem)" }}>
+      <h1 className="t-mega [contain:layout_style] md:whitespace-nowrap" style={{ fontSize: "clamp(1.7rem, min(8.4vw, 5.6vh), 2.6rem)" }}>
         {LINES.map((l, i) => (
           <span key={l}>
             <span className="mr-[0.35em] inline-block whitespace-nowrap">{ink ? l : <Letters text={l} />}</span>
@@ -136,7 +134,7 @@ function Content({ ink = false }: { ink?: boolean }) {
           </span>
         ))}
         <span className="inline-block align-top max-md:block">
-          <span className={`relative -mt-[0.24em] inline-block h-[1.22em] overflow-hidden align-top ${ink ? "" : "text-kiwi"}`}>
+          <span className={`relative -mt-[0.24em] inline-block h-[1.22em] overflow-hidden align-top `}>
             <span data-roll="" className="block">
               {[...HERO_WORDS, HERO_WORDS[0]].map((w, i) => (
                 <span key={i} className={`block h-[1.22em] pt-[0.24em] ${WORD_FONT[i % HERO_WORDS.length]}`}>
@@ -149,11 +147,11 @@ function Content({ ink = false }: { ink?: boolean }) {
       </h1>
 
       <div className="relative pt-4 md:pt-6">
-        <div data-hrule="" className={`h-px origin-left ${ink ? "bg-night/40" : "bg-line-2"}`} />
+        <div data-hrule="" className={`h-px origin-left bg-night/30`} />
         <div className="mt-4 grid gap-4 md:mt-6 md:grid-cols-12 md:items-end md:gap-7">
           <p className={`t-lead max-w-[38ch] md:col-span-5 ${dim}`}>
             Egyedi weboldal készítés helyi vállalkozásoknak és cégeknek.{" "}
-            <span className={ink ? "" : "text-paper"}>Tervezéstől az élesítésig, egy kézben.</span>
+            <span className="text-night">Tervezéstől az élesítésig, egy kézben.</span>
           </p>
           <div className="flex flex-wrap gap-3 md:col-span-4 md:col-start-6" data-hf="">
             {ink ? (
@@ -165,7 +163,7 @@ function Content({ ink = false }: { ink?: boolean }) {
               </span>
             ) : (
               <Magnetic>
-                <a href="#kapcsolat" onClick={go("#kapcsolat")} className="pill pill--kiwi" data-cursor="Írj">
+                <a href="#kapcsolat" onClick={go("#kapcsolat")} className="pill pill--night" data-cursor="Írj">
                   Kérek egy weboldalt
                   <span className="pill-dot">
                     <ArrowIcon />
@@ -183,8 +181,8 @@ function Content({ ink = false }: { ink?: boolean }) {
                     <span>{s.title}</span>
                   </span>
                 ) : (
-                  <a href="#szolgaltatasok" onClick={go("#szolgaltatasok")} className="flex gap-2 transition-colors hover:text-kiwi">
-                    <span className="text-ash">{s.n}</span>
+                  <a href="#szolgaltatasok" onClick={go("#szolgaltatasok")} className="flex gap-2 hover:text-night hover:underline">
+                    <span>{s.n}</span>
                     <Scramble text={s.title} />
                   </a>
                 )}
