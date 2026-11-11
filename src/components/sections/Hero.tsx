@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap, onReady, prefersReduced, scrollToHash } from "@/lib/gsap";
 import { HERO_WORDS, SERVICES } from "@/lib/content";
 import { Wordmark } from "../Logo";
+import { TiltHint } from "../TiltHint";
 import { Magnetic } from "../Magnetic";
 import { Clock } from "../Clock";
 import { Scramble } from "../Scramble";
@@ -54,7 +55,7 @@ export function Hero() {
     let dead = false, stop = () => {};
     const off = onReady(() => {
       const idle = (window as unknown as { requestIdleCallback?: (f: () => void, o?: object) => void }).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 150));
-      idle(() => import("./liquidMark").then((m) => { if (!dead) stop = m.mount(root.current!.querySelector<HTMLElement>("[data-hero-wm]")!, { hi: [0.35, 0.35, 0.35] }) ?? (() => {}); }), { timeout: 900 });
+      idle(() => import("./liquidMark").then((m) => { if (!dead) stop = m.mount(root.current!.querySelector<HTMLElement>("[data-hero-wm]")!, { hi: [0.35, 0.35, 0.35], splash: true }) ?? (() => {}); }), { timeout: 900 });
     });
     return () => { dead = true; off(); stop(); };
   }, []);
@@ -120,10 +121,11 @@ function Content({ ink = false }: { ink?: boolean }) {
       </div>
 
 
-      <div className="flex min-h-0 flex-1 items-center py-4 md:py-6" data-hf="">
+      <div className="flex min-h-0 flex-1 flex-col justify-center py-4 md:py-6" data-hf="">
         <div data-hero-wm="" className="relative flex max-h-full w-full flex-col justify-center text-night">
           <Wordmark className="h-auto max-h-[62svh] w-full" />
         </div>
+        <TiltHint />
       </div>
 
       <h1 className="t-mega [contain:layout_style] md:whitespace-nowrap" style={{ fontSize: "clamp(1.7rem, min(8.4vw, 5.6vh), 2.6rem)" }}>

@@ -22,7 +22,7 @@ void main(){
   gl_FragColor=vec4(col*a,a);
 }`;
 
-export function mount(host: HTMLElement, opt: { ink?: [number, number, number]; hi?: [number, number, number]; edge?: [number, number, number] } = {}) {
+export function mount(host: HTMLElement, opt: { ink?: [number, number, number]; hi?: [number, number, number]; edge?: [number, number, number]; splash?: boolean } = {}) {
   const svgs = [...host.querySelectorAll<SVGSVGElement>("svg")];
   const canvas = document.createElement("canvas");
   canvas.setAttribute("aria-hidden", "true");
@@ -125,6 +125,28 @@ export function mount(host: HTMLElement, opt: { ink?: [number, number, number]; 
   };
   addEventListener("pointermove", onMove, { passive: true });
 
+  // Tilting the phone sloshes the whole wordmark (uneven on purpose, so it reads as liquid rather than a shift).
+  let lg: number | null = null, lb: number | null = null;
+  const onTilt = (e: DeviceOrientationEvent) => {
+    if (e.gamma == null || e.beta == null) return;
+    if (lg !== null && lb !== null) {
+      const dg = Math.max(-0.5, Math.min(0.5, (e.gamma - lg) * 0.045)), db = Math.max(-0.5, Math.min(0.5, (e.beta - lb) * 0.045));
+      if (Math.abs(dg) + Math.abs(db) > 0.006) {
+        const ph = performance.now() / 900;
+        for (let y = 0; y < TH; y++) for (let x = 0; x < TW; x++) {
+          const k = y * TW + x, w = 0.5 + 0.5 * Math.sin(x * 0.21 + y * 0.37 + ph);
+          fx[k] = Math.max(-1, Math.min(1, fx[k] + dg * w));
+          fy[k] = Math.max(-1, Math.min(1, fy[k] + db * w));
+        }
+        lastIn = performance.now();
+      }
+    }
+    lg = e.gamma; lb = e.beta;
+  };
+  addEventListener("deviceorientation", onTilt, { passive: true });
+  // Intro hand-off: the wordmark starts splashed outwards and settles.
+  if (opt.splash) for (let i = 0; i < 9; i++) { const a = i * 0.7; stamp(TW * (0.1 + 0.1 * i), TH * (0.5 + 0.25 * Math.sin(a * 2)), Math.cos(a) * 0.9, Math.sin(a) * 0.9, 20); }
+
   let raf = 0, vis = false, t0 = performance.now(), gx = 0, gy = 0;
   const frame = (now: number) => {
     raf = 0;
@@ -161,6 +183,7 @@ export function mount(host: HTMLElement, opt: { ink?: [number, number, number]; 
     cancelAnimationFrame(raf);
     io.disconnect(); ro.disconnect();
     removeEventListener("pointermove", onMove);
+    removeEventListener("deviceorientation", onTilt);
     svgs.forEach((s) => (s.style.opacity = ""));
     canvas.remove();
     gl.getExtension("WEBGL_lose_context")?.loseContext();

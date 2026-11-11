@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { LiquidEdge } from "../LiquidEdge";
 import { gsap, prefersReduced } from "@/lib/gsap";
 import { SERVICES } from "@/lib/content";
 import { Meta } from "../Scramble";
@@ -101,6 +102,7 @@ export function Services() {
 
   return (
     <section ref={root} id="szolgaltatasok" data-theme="kiwi" className="relative bg-kiwi">
+      <LiquidEdge color="#222222" />
       <div className="relative bg-kiwi text-night">
         <div className="wrap pb-[var(--sec)] pt-[calc(var(--sec)*0.9)]">
           <div className="grid gap-8 md:grid-cols-12">

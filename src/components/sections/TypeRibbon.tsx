@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { LiquidEdge } from "../LiquidEdge";
 import { gsap, ScrollTrigger, prefersReduced } from "@/lib/gsap";
 
 // word · typeface class · typeface name · card colour · ink
@@ -47,6 +48,7 @@ export function TypeRibbon() {
   const cur = W[k];
   return (
     <section ref={root} data-theme="night" aria-label="Minden vállalkozásnak saját hangja van" className="relative bg-night [--cell:78vw] md:[--cell:44vw]">
+      <LiquidEdge color="#89e900" />
       <div data-ribbon="" className="relative flex h-[100svh] flex-col justify-center overflow-hidden">
         <div className="wrap absolute inset-x-0 top-24 flex flex-wrap items-end justify-between gap-4 md:top-28">
           <p className="t-meta text-kiwi">Betű · hang · karakter</p>

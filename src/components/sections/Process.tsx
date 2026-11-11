@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { LiquidEdge } from "../LiquidEdge";
 import { gsap, ScrollTrigger, prefersReduced } from "@/lib/gsap";
 import { STEPS } from "@/lib/content";
 import { Meta } from "../Scramble";
@@ -94,6 +95,7 @@ export function Process() {
 
   return (
     <section ref={root} id="folyamat" data-theme="night" className="relative bg-night-2 [overflow-x:clip]">
+      <LiquidEdge color="#222222" />
       <div className="wrap py-[var(--sec)]">
         <div className="grid gap-8 md:grid-cols-12">
           <div className="md:col-span-3">

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { LiquidEdge } from "../LiquidEdge";
 import { gsap, ScrollTrigger, prefersReduced, scrollToHash } from "@/lib/gsap";
 import { TURNKEY } from "@/lib/content";
 import { Meta } from "../Scramble";
@@ -39,6 +40,7 @@ export function Turnkey() {
   const url = on(6) ? "hajnalpekseg.hu" : "localhost:3000";
   return (
     <section ref={root} id="weboldal" data-theme="night" className="relative bg-night [overflow-x:clip]">
+      <LiquidEdge color="#89e900" />
       <div className="wrap pt-[var(--sec)]">
         <div className="grid gap-8 md:grid-cols-12">
           <div className="md:col-span-3">
