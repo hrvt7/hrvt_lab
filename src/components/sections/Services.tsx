@@ -102,7 +102,7 @@ export function Services() {
 
   return (
     <section ref={root} id="szolgaltatasok" data-theme="kiwi" className="relative bg-kiwi">
-      <LiquidEdge color="#222222" />
+      <LiquidEdge color="#1d3a1f" />
       <div className="relative bg-kiwi text-night">
         <div className="wrap pb-[var(--sec)] pt-[calc(var(--sec)*0.9)]">
           <div className="grid gap-8 md:grid-cols-12">
