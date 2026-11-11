@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap, onReady, prefersReduced, scrollToHash } from "@/lib/gsap";
 import { HERO_WORDS, SERVICES } from "@/lib/content";
-import { PhoneScene } from "./PhoneScene";
+import { LensScene } from "./LensScene";
 import { Magnetic } from "../Magnetic";
 import { Clock } from "../Clock";
 import { Scramble } from "../Scramble";
@@ -76,9 +76,9 @@ export function Hero() {
   }, []);
 
   return (
-    <section ref={root} id="top" data-theme="night" className="relative bg-night" style={{ height: "520svh" }}>
-      <PhoneScene />
-      <div className="absolute inset-x-0 top-0 z-10 flex h-[100svh] flex-col">
+    <section ref={root} id="top" data-theme="night" className="relative bg-night" style={{ height: "260svh" }}>
+      <LensScene />
+      <div data-hero-content="" className="pointer-events-none absolute inset-x-0 top-0 z-10 flex h-[100svh] flex-col [&_a]:pointer-events-auto [&_h1]:[text-shadow:0_2px_28px_rgba(0,0,0,.45)]">
         <Content />
       </div>
     </section>

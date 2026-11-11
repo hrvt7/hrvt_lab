@@ -267,6 +267,8 @@ html.lenis body { height: auto; }
 /* Build scene captions */
 .cap { opacity: 0; transform: translateY(18px); transition: opacity .45s, transform .6s var(--ease-out-quint); }
 [data-stage="0"] .cap-0, [data-stage="1"] .cap-1, [data-stage="2"] .cap-2, [data-stage="3"] .cap-3 { opacity: 1; transform: none; }
+.cap-intro { transition: opacity .5s, transform .7s var(--ease-out-quint); }
+[data-stage]:not([data-stage="-1"]) .cap-intro { opacity: 0; transform: translateY(-24px); }
 .cap-ui { opacity: 0; transition: opacity .4s; }
 [data-stage="0"] .cap-ui, [data-stage="1"] .cap-ui, [data-stage="2"] .cap-ui, [data-stage="3"] .cap-ui { opacity: 1; }
 

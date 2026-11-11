@@ -10,7 +10,7 @@ const STAGES = [
 ] as const;
 
 /** "Telefon a kézben": a 3D phone with a live website on its screen; scroll scrolls it, then the screen becomes the page. */
-export function PhoneScene() {
+export function PhoneScene({ intro = false }: { intro?: boolean }) {
   const box = useRef<HTMLDivElement>(null), cv = useRef<HTMLCanvasElement>(null), flood = useRef<HTMLDivElement>(null), bar = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     const host = box.current!, sec = host.parentElement as HTMLElement;
@@ -26,6 +26,12 @@ export function PhoneScene() {
   return (
     <div ref={box} className="sticky top-0 h-[100dvh] overflow-hidden" data-stage="-1">
       <canvas ref={cv} aria-hidden className="absolute inset-0 h-full w-full" />
+      {intro && (
+        <div className="cap-intro wrap pointer-events-none absolute inset-x-0 bottom-0 z-[2] pb-10 md:bottom-auto md:top-0 md:pb-0 md:pt-32">
+          <p className="t-meta text-kiwi">[01] Mit vállalok</p>
+          <h2 className="t-xl mt-4 max-w-[13ch]">Telefonra tervezve, minden képernyőre.</h2>
+        </div>
+      )}
       <div className="wrap pointer-events-none absolute inset-x-0 bottom-0 z-[2] pb-[max(1.5rem,5svh)]">
         <div className="relative h-[11.5rem] md:h-[13rem] md:max-w-[30rem]">
           {STAGES.map(([t, d], i) => (
