@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import { gsap, onReady, prefersReduced, scrollToHash } from "@/lib/gsap";
 import { HERO_WORDS, SERVICES } from "@/lib/content";
 import { Wordmark } from "../Logo";
-import { TiltHint } from "../TiltHint";
 import { Magnetic } from "../Magnetic";
 import { Clock } from "../Clock";
 import { Scramble } from "../Scramble";
@@ -125,7 +124,6 @@ function Content({ ink = false }: { ink?: boolean }) {
         <div data-hero-wm="" className="relative flex max-h-full w-full flex-col justify-center text-night">
           <Wordmark className="h-auto max-h-[62svh] w-full" />
         </div>
-        <TiltHint />
       </div>
 
       <h1 className="t-mega [contain:layout_style] md:whitespace-nowrap" style={{ fontSize: "clamp(1.7rem, min(8.4vw, 5.6vh), 2.6rem)" }}>
