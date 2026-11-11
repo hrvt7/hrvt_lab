@@ -82,7 +82,7 @@ export function Contact() {
     <footer ref={root} id="kapcsolat" data-theme="kiwi" className="relative bg-night-2">
       <div data-rise-shape="" className="relative overflow-hidden bg-kiwi text-night">
         <div className="wrap pt-[calc(var(--sec)*0.9)]">
-          <Meta n="05" dark>
+          <Meta n="04" dark>
             Kapcsolat
           </Meta>
           <h2 ref={word} className="t-mega mt-8 flex flex-wrap" style={{ fontSize: "clamp(1.8rem, 7.6vw, 8.6rem)" }} aria-label={WORD}>
@@ -98,12 +98,12 @@ export function Contact() {
           <div className="mt-12 grid gap-10 md:mt-16 md:grid-cols-12 md:items-end">
             <div className="md:col-span-7">
               <p className="t-lead mb-10 max-w-[42ch] text-night/75">
-                Írd le pár mondatban, mit szeretnél elérni. Egy munkanapon belül személyesen válaszolok — általában már egy
+                Írd le pár mondatban, milyen weboldalt szeretnél. Egy munkanapon belül személyesen válaszolok — általában már egy
                 első ötlettel.
               </p>
               <div className="flex flex-wrap items-center gap-3">
                 <Magnetic strength={0.22}>
-                  <a href={`mailto:${EMAIL}?subject=Projekt`} className="pill pill--night h-16 pl-7 text-base" data-cursor="Írj">
+                  <a href={`mailto:${EMAIL}?subject=Weboldal`} className="pill pill--night h-16 pl-7 text-base" data-cursor="Írj">
                     {EMAIL}
                     <span className="pill-dot h-11 w-11">
                       <ArrowIcon />

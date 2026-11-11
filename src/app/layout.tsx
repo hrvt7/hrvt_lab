@@ -8,12 +8,12 @@ import { Cursor } from "@/components/Cursor";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://hrvt.vercel.app"),
-  title: "HRVT — weboldal-készítés, egyedi fejlesztés, AI és automatizálás",
+  title: "Weboldal készítés Szombathely — egyedi weboldal | HRVT",
   description:
-    "Egyedi weboldal-készítés, egyedi szoftverfejlesztés, AI-rendszerek, automatizálás és interaktív 3D — tervezéstől az élesítésig, egy kézben.",
+    "Egyedi weboldal készítés és honlapkészítés Szombathelyen: design, szöveg, fejlesztés, keresőoptimalizálás és élesítés egy kézben, sablon nélkül.",
   openGraph: {
-    title: "HRVT — Weboldalt és szoftvert építek, ami dolgozik.",
-    description: "Egyedi weboldalak, egyedi fejlesztés, AI-rendszerek, automatizálás és interaktív 3D.",
+    title: "HRVT — Egyedi weboldalt építek, ami dolgozik.",
+    description: "Egyedi weboldal készítés Szombathelyen: design, szöveg, fejlesztés és élesítés egy kézben.",
     type: "website",
     locale: "hu_HU",
   },

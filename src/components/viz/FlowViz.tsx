@@ -2,10 +2,10 @@
 
 const NODES = [
   { x: 30, y: 120, l: "Űrlap" },
-  { x: 150, y: 120, l: "AI-szűrés" },
-  { x: 275, y: 55, l: "CRM" },
+  { x: 150, y: 120, l: "Ellenőrzés" },
+  { x: 275, y: 55, l: "E-mail" },
   { x: 275, y: 185, l: "Értesítés" },
-  { x: 395, y: 55, l: "Ajánlat" },
+  { x: 395, y: 55, l: "Válasz" },
   { x: 395, y: 185, l: "Naptár" },
 ];
 const EDGES = [
@@ -20,7 +20,7 @@ const EDGES = [
 export function FlowViz() {
   return (
     <div className="flex h-full flex-col p-5 md:p-6">
-      <p className="mb-2 font-mono text-[0.72rem] text-ash">automatizmus · ajánlatkérés → ügyfél</p>
+      <p className="mb-2 font-mono text-[0.72rem] text-ash">űrlap · ajánlatkérés → hozzád</p>
       <svg viewBox="0 0 440 240" className="w-full flex-1" aria-hidden>
         {EDGES.map((d, i) => (
           <g key={i}>
@@ -40,8 +40,8 @@ export function FlowViz() {
       </svg>
       <style>{`@keyframes flowdot{0%{offset-distance:0%;opacity:0}15%{opacity:1}85%{opacity:1}100%{offset-distance:100%;opacity:0}}`}</style>
       <div className="mt-2 flex justify-between font-mono text-[0.66rem] text-ash">
-        <span>142 futás / nap</span>
-        <span className="text-kiwi">0 kézi lépés</span>
+        <span>űrlap → e-mail</span>
+        <span className="text-kiwi">azonnali értesítés</span>
       </div>
     </div>
   );

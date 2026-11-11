@@ -3,14 +3,13 @@
 import { useEffect, useRef } from "react";
 import { gsap, onReady, prefersReduced, scrollToHash } from "@/lib/gsap";
 import { HERO_WORDS, SERVICES } from "@/lib/content";
-import { BuildScene } from "./BuildScene";
+import { PhoneScene } from "./PhoneScene";
 import { Magnetic } from "../Magnetic";
 import { Clock } from "../Clock";
 import { Scramble } from "../Scramble";
 import { ArrowIcon } from "../Icons";
-import { Badge } from "./Badge";
 
-const LINES = ["Weboldalt", "és szoftvert", "építek, ami"];
+const LINES = ["Egyedi", "weboldalt", "építek, ami"];
 
 function Letters({ text }: { text: string }) {
   return (
@@ -77,8 +76,8 @@ export function Hero() {
   }, []);
 
   return (
-    <section ref={root} id="top" data-theme="night" data-build="" className="relative bg-night" style={{ height: "520svh" }}>
-      <BuildScene />
+    <section ref={root} id="top" data-theme="night" className="relative bg-night" style={{ height: "520svh" }}>
+      <PhoneScene />
       <div className="absolute inset-x-0 top-0 z-10 flex h-[100svh] flex-col">
         <Content />
       </div>
@@ -96,10 +95,10 @@ function Content({ ink = false }: { ink?: boolean }) {
   const dim = ink ? "text-night" : "text-smoke";
   return (
     <div className={`wrap relative z-10 flex flex-1 flex-col pb-6 pt-24 md:pb-8 md:pt-28 ${ink ? "h-full text-night" : ""}`}>
-      <div className={`t-meta flex items-start justify-between gap-6 ${dim}`} data-hf="">
+      <div className={`hero-tag t-meta flex items-start justify-between gap-6 ${dim}`} data-hf="">
         <p className="flex items-center gap-2.5">
           <i className={`h-2 w-2 rounded-full ${ink ? "bg-night" : "bg-kiwi"}`} />
-          {ink ? <span>Független digitális műhely — új projekteket vállalok</span> : <Scramble text="Független digitális műhely — új projekteket vállalok" />}
+          {ink ? <span>Egyedi weboldal készítés — új projekteket vállalok</span> : <Scramble text="Egyedi weboldal készítés — új projekteket vállalok" />}
         </p>
         <p className="hidden text-right sm:block">
           Szombathely / Bécs
@@ -110,13 +109,8 @@ function Content({ ink = false }: { ink?: boolean }) {
         </p>
       </div>
 
-      {!ink && (
-        <div className="pointer-events-none absolute right-[var(--m)] top-[30%] hidden w-[clamp(140px,13vw,210px)] lg:block" data-hf="">
-          <Badge className="aspect-square" />
-        </div>
-      )}
 
-      <h1 className="t-mega mt-auto pt-10 [contain:layout_style]" style={{ fontSize: "clamp(1.7rem, min(7.3vw, 9.6vh), 5.6rem)" }}>
+      <h1 className="t-mega mt-auto pt-10 [contain:layout_style] max-md:bg-night max-md:shadow-[0_-36px_32px_-6px_var(--color-night)]" style={{ fontSize: "clamp(1.7rem, min(7.3vw, 9.6vh), 5.6rem)" }}>
         {LINES.map((l) => (
           <span key={l} className="rl whitespace-nowrap">
             {ink ? l : <Letters text={l} />}
@@ -135,17 +129,17 @@ function Content({ ink = false }: { ink?: boolean }) {
         </span>
       </h1>
 
-      <div className="relative mt-7 md:mt-9">
+      <div className="relative pt-7 max-md:-mb-6 max-md:bg-night max-md:pb-6 md:mt-9 md:pt-0">
         <div data-hrule="" className={`h-px origin-left ${ink ? "bg-night/40" : "bg-line-2"}`} />
         <div className="mt-6 grid gap-7 md:grid-cols-12 md:items-end">
           <p className={`t-lead max-w-[38ch] md:col-span-5 ${dim}`}>
-            Weboldal-készítés, egyedi fejlesztés, AI és automatizálás.{" "}
+            Egyedi weboldal készítés helyi vállalkozásoknak és cégeknek.{" "}
             <span className={ink ? "" : "text-paper"}>Tervezéstől az élesítésig, egy kézben.</span>
           </p>
           <div className="flex flex-wrap gap-3 md:col-span-4 md:col-start-6" data-hf="">
             {ink ? (
               <span className="pill bg-night text-white">
-                Beszéljünk a projektedről
+                Kérek egy weboldalt
                 <span className="pill-dot bg-white text-night">
                   <ArrowIcon />
                 </span>
@@ -153,7 +147,7 @@ function Content({ ink = false }: { ink?: boolean }) {
             ) : (
               <Magnetic>
                 <a href="#kapcsolat" onClick={go("#kapcsolat")} className="pill pill--kiwi" data-cursor="Írj">
-                  Beszéljünk a projektedről
+                  Kérek egy weboldalt
                   <span className="pill-dot">
                     <ArrowIcon />
                   </span>

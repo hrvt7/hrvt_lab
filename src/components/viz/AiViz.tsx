@@ -3,16 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import { useVisible } from "./useVisible";
 
-const PROMPT = "Ajánlat: 48 m² terasz, antracit, motoros lamella";
+const PROMPT = "weboldal készítés szombathely";
 const ANSWER = [
-  ["Méret felismerve", "6,0 × 8,0 m"],
-  ["Termék", "Bioklimatikus pergola"],
-  ["Anyagár", "4 280 000 Ft"],
-  ["Szerelés", "640 000 Ft"],
-  ["Összesen (bruttó)", "6 248 400 Ft"],
+  ["Címsor és leírás", "rendben"],
+  ["Telefonos nézet", "rendben"],
+  ["Betöltési idő", "gyors"],
+  ["Strukturált adat", "rendben"],
+  ["A kereső érti az oldalt", "igen"],
 ];
 
-/** An assistant reading a request and streaming a priced answer. */
+/** A search query being typed, then the page passing its search checks one by one. */
 export function AiViz() {
   const ref = useRef<HTMLDivElement>(null);
   const vis = useVisible(ref);
@@ -39,7 +39,7 @@ export function AiViz() {
     <div ref={ref} className="flex h-full flex-col gap-4 p-5 font-mono text-[0.78rem] md:p-6">
       <div className="flex items-center gap-2 text-ash">
         <i className="h-2 w-2 rounded-full bg-kiwi" />
-        hrvt-asszisztens · ajánlatkészítő
+        keresés · így lát a Google
       </div>
       <div className="rounded-xl bg-night-3 p-3.5 text-paper">
         {PROMPT.slice(0, typed)}
@@ -58,8 +58,8 @@ export function AiViz() {
         {rows > 0 && rows < ANSWER.length && <span className="inline-block h-3.5 w-1.5 animate-[blink_0.8s_steps(1)_infinite] bg-kiwi" />}
       </div>
       <div className="flex gap-2 text-[0.66rem] text-ash">
-        <span className="rounded-full border border-line px-2.5 py-1">PDF kész</span>
-        <span className="rounded-full border border-line px-2.5 py-1">CRM-be mentve</span>
+        <span className="rounded-full border border-line px-2.5 py-1">Indexelhető</span>
+        <span className="rounded-full border border-line px-2.5 py-1">AI-keresőknek is érthető</span>
       </div>
     </div>
   );

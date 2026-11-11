@@ -55,7 +55,7 @@ export function Intro() {
       <div data-intro-content="" className="absolute inset-0 flex flex-col items-center justify-center text-night">
         <Wordmark className="h-[clamp(64px,13vw,170px)] w-auto overflow-visible" />
         <div className="t-meta absolute inset-x-0 bottom-0 flex justify-between p-[var(--m)] text-night">
-          <span>HRVT — digitális termékek</span>
+          <span>HRVT — egyedi weboldalak</span>
           <span data-count="">000</span>
         </div>
       </div>

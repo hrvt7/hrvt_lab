@@ -416,3 +416,6 @@ html.lenis body { height: auto; }
 .pl-sec path, .pl-sec circle { fill: rgba(255,74,58,.25); stroke: #c2281b; stroke-width: 2; }
 .pl-sun rect, .pl-sun path { fill: rgba(11,18,32,.85); stroke: var(--color-night); stroke-width: 2; }
 .pl-sun path { stroke: #f0a35e; }
+
+/* Short phones: the tagline gives its room to the 3D phone. */
+@media (max-width: 767px) and (min-aspect-ratio: 10/19) { .hero-tag { display: none; } }

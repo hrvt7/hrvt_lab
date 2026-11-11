@@ -5,9 +5,9 @@ const LINES: [string, string][] = [
   ["›", "Típusellenőrzés ......... rendben"],
   ["›", "Tesztek 128/128 ......... rendben"],
   ["›", "Build ................... 6,2 s"],
-  ["›", "Adatbázis-migráció ...... 3 lépés"],
+  ["›", "Telefonos nézet ......... rendben"],
   ["›", "Lighthouse .............. 99 / 100"],
-  ["✓", "Élesítve — app.ugyfel.hu"],
+  ["✓", "Élesítve — ugyfeled.hu"],
 ];
 
 /** A deploy log that types itself out on a loop (CSS only). */

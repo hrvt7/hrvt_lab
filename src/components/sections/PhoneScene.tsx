@@ -3,14 +3,14 @@ import { useEffect, useRef } from "react";
 import { onReady, prefersReduced } from "@/lib/gsap";
 
 const STAGES = [
-  ["Drótváz", "Először a szerkezet: mi kerül az oldalra, és milyen sorrendben."],
-  ["Elrendezés", "A blokkok a helyükre kerülnek. Itt dől el, hova néz először a látogató."],
-  ["Design", "Betű, szín, kép és mozgás: a céged saját arculata, nem sablon."],
-  ["Éles oldal", "Gyors, telefonra kész, a keresők is megtalálják. Egy kattintás, és ajánlatot kérnek."],
+  ["Telefonon nézik", "A látogatóid többsége telefonról nyitja meg az oldalt. Ezért ott kezdem a tervezést, és csak utána jön a laptop."],
+  ["Hüvelykujjra szabva", "Gombok ott, ahol az ujjad van, jól olvasható betűk. Nem kell csipegetni és nagyítani."],
+  ["Villámgyors", "Kézzel írt kód, könnyű képek: mobilneten is gyorsan betölt, mielőtt a látogató továbblapozna."],
+  ["Egy érintés", "Hívás vagy ajánlatkérés egyetlen érintéssel. Így lesz a látogatóból ügyfél."],
 ] as const;
 
-/** "Épül a szemed előtt": a website assembles in 3D as you scroll: wireframe → layout → design → live. */
-export function BuildScene() {
+/** "Telefon a kézben": a 3D phone with a live website on its screen; scroll scrolls it, then the screen becomes the page. */
+export function PhoneScene() {
   const box = useRef<HTMLDivElement>(null), cv = useRef<HTMLCanvasElement>(null), flood = useRef<HTMLDivElement>(null), bar = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     const host = box.current!, sec = host.parentElement as HTMLElement;
@@ -19,7 +19,7 @@ export function BuildScene() {
     let dead = false, stop = () => {};
     const off = onReady(() => {
       const idle = (window as unknown as { requestIdleCallback?: (f: () => void, o?: object) => void }).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 200));
-      idle(() => import("./buildScene3d").then((m) => { if (dead) return; const s = m.mount({ host, sec, canvas: cv.current!, flood: flood.current!, bar: bar.current! }); if (!s) collapse(); else stop = s; }).catch(collapse), { timeout: 1200 });
+      idle(() => import("./phoneScene3d").then((m) => { if (dead) return; const s = m.mount({ host, sec, canvas: cv.current!, flood: flood.current!, bar: bar.current! }); if (!s) collapse(); else stop = s; }).catch(collapse), { timeout: 1200 });
     });
     return () => { dead = true; off(); stop(); };
   }, []);

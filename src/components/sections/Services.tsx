@@ -9,9 +9,8 @@ import { AiViz } from "../viz/AiViz";
 import { FlowViz } from "../viz/FlowViz";
 import { CodeViz } from "../viz/CodeViz";
 import { WebViz } from "../viz/WebViz";
-import { GearViz } from "../viz/GearViz";
 
-const VIZ = { ai: AiViz, flow: FlowViz, code: CodeViz, web: WebViz, gear: GearViz } as const;
+const VIZ = { ai: AiViz, flow: FlowViz, code: CodeViz, web: WebViz } as const;
 
 export function Services() {
   const root = useRef<HTMLElement>(null);
@@ -107,14 +106,14 @@ export function Services() {
           <div className="grid gap-8 md:grid-cols-12">
             <div className="md:col-span-3">
               <Meta n="01" dark>
-                Szolgáltatások
+                Mit vállalok
               </Meta>
             </div>
             <div className="md:col-span-9">
-              <Rise as="h2" className="t-xl" lines={[<>Mit vállalok?</>]} />
+              <Rise as="h2" className="t-xl" lines={[<>Weboldal készítés</>, <>Szombathelyen.</>]} />
               <p className="t-lead mt-8 max-w-[46ch] text-night/75" data-fade="">
-                Weboldalt, egyedi szoftvert, AI-t és automatizálást. Ha a cégednek nincs jó oldala, vagy valami lassú és
-                kézzel megy — <span className="text-night">azt megépítem.</span>
+                Egyedi weboldalt: megtervezve, megírva, megépítve. Ha a cégednek nincs jó oldala, vagy van, de nem hoz
+                érdeklődőt — <span className="text-night">azt megépítem.</span>
               </p>
             </div>
           </div>
@@ -143,7 +142,7 @@ export function Services() {
                     <div className="flex flex-col justify-between gap-10 p-6 md:col-span-6 md:p-10">
                       <div className="flex items-start justify-between">
                         <span className="t-meta text-kiwi">[{s.n}]</span>
-                        <span className="t-meta text-ash">{String(i + 1).padStart(2, "0")} / 05</span>
+                        <span className="t-meta text-ash">{String(i + 1).padStart(2, "0")} / {String(SERVICES.length).padStart(2, "0")}</span>
                       </div>
                       <div>
                         <h3 className="t-l mb-5" aria-label={s.title}>
