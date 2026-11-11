@@ -26,6 +26,24 @@ export function Motion() {
       if (!w.__hrvtReady) lenis.stop();
     }
 
+    // Liquid headings: a damped spring follows scroll velocity, so titles stretch while you scroll
+    // and wobble back (with a little overshoot) when you stop.
+    let sx = 0, sv = 0, lastS = "";
+    const spring = (_t: number, dtMs: number) => {
+      if (!lenis) return;
+      const dt = Math.min(0.05, dtMs / 1000);
+      const target = Math.max(-6, Math.min(6, lenis.velocity * 0.16));
+      sv += (-190 * (sx - target) - 11 * sv) * dt;
+      sx += sv * dt;
+      const str = sx.toFixed(2);
+      if (str === lastS) return;
+      lastS = str;
+      const r = document.documentElement.style;
+      r.setProperty("--sv", Math.abs(sx) < 0.02 ? "0" : str);
+      r.setProperty("--sa", Math.abs(sx) < 0.02 ? "0" : Math.abs(sx * 3).toFixed(2));
+    };
+    if (!reduced) gsap.ticker.add(spring);
+
     let ctx: gsap.Context | null = null;
     const off = onReady(() => {
       lenis?.start();
@@ -101,6 +119,7 @@ export function Motion() {
     ro.observe(document.body);
 
     return () => {
+      gsap.ticker.remove(spring);
       ro.disconnect();
       clearTimeout(to);
       off();

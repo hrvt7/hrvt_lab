@@ -79,6 +79,7 @@ export function Cursor() {
     <div
       ref={root}
       data-mode="cross"
+      data-old-cursor=""
       aria-hidden
       className="group pointer-events-none invisible fixed left-0 top-0 z-[95] opacity-0 [@media(hover:none)]:hidden"
     >

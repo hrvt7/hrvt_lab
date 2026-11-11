@@ -5,7 +5,7 @@
  */
 const VS = "attribute vec2 a;varying vec2 v;void main(){v=a*.5+.5;gl_Position=vec4(a,0.,1.);}";
 const FS = `precision highp float;
-varying vec2 v;uniform sampler2D tM,tT;uniform float time;uniform vec2 px;uniform vec3 inkC,hiC,edgeC;
+varying vec2 v;uniform sampler2D tM,tT;uniform float time,melt;uniform vec2 px;uniform vec3 inkC,hiC,edgeC;
 float mk(vec2 u){ return (u.x<0.||u.x>1.||u.y<0.||u.y>1.)?0.:texture2D(tM,u).a; }
 void main(){
   vec2 f=texture2D(tT,v).rg-.5;
@@ -13,7 +13,9 @@ void main(){
   vec2 d=(f+f2*.6)*vec2(.26,.72);
   d.y+=sin(v.x*7.+time*.9)*.012+sin(v.x*17.-time*1.3)*.004;
   vec2 u=v-d;
-  float a=mk(u);
+  // melt: the letters run downwards in uneven drips and drain away
+  u.y+=melt*melt*(.55+.45*sin(v.x*23.+1.7)*sin(v.x*7.))*.9;
+  float a=mk(u)*(1.-smoothstep(.55,1.,melt));
   float hi=mk(u+vec2(-1.5,2.)*px+d*.25);
   float lo=mk(u+vec2(1.5,-2.)*px-d*.25);
   float sp=length(f);
@@ -22,7 +24,7 @@ void main(){
   gl_FragColor=vec4(col*a,a);
 }`;
 
-export function mount(host: HTMLElement, opt: { ink?: [number, number, number]; hi?: [number, number, number]; edge?: [number, number, number]; splash?: boolean } = {}) {
+export function mount(host: HTMLElement, opt: { ink?: [number, number, number]; hi?: [number, number, number]; edge?: [number, number, number]; splash?: boolean; onEnergy?: (e: number) => void; onMelted?: () => void } = {}) {
   const svgs = [...host.querySelectorAll<SVGSVGElement>("svg")];
   const canvas = document.createElement("canvas");
   canvas.setAttribute("aria-hidden", "true");
@@ -57,7 +59,7 @@ export function mount(host: HTMLElement, opt: { ink?: [number, number, number]; 
   const tM = tex(0), tT = tex(1);
   gl.uniform1i(gl.getUniformLocation(prog, "tM"), 0);
   gl.uniform1i(gl.getUniformLocation(prog, "tT"), 1);
-  const uTime = gl.getUniformLocation(prog, "time"), uPx = gl.getUniformLocation(prog, "px");
+  const uMelt = gl.getUniformLocation(prog, "melt"), uTime = gl.getUniformLocation(prog, "time"), uPx = gl.getUniformLocation(prog, "px");
   gl.uniform3fv(gl.getUniformLocation(prog, "inkC"), opt.ink ?? [0.133, 0.133, 0.133]);
   gl.uniform3fv(gl.getUniformLocation(prog, "edgeC"), opt.edge ?? [0.616, 0.956, 0.133]);
   gl.uniform3fv(gl.getUniformLocation(prog, "hiC"), opt.hi ?? [0.35, 0.35, 0.35]);
@@ -115,11 +117,30 @@ export function mount(host: HTMLElement, opt: { ink?: [number, number, number]; 
     }
   };
   let lx = -1, ly = -1, lastIn = -1e9;
+  // The footer game: real smearing (not the idle finger) charges it; when full, the wordmark melts away.
+  let energy = 0, melt = 0, melted = false;
+  const feed = (k: number) => {
+    if (!opt.onEnergy || energy >= 1) return;
+    energy = Math.min(1, energy + k);
+    opt.onEnergy(energy);
+  };
+  const onTap = (e: PointerEvent) => {
+    if (!opt.onEnergy) return;
+    const b = canvas.getBoundingClientRect();
+    const x = ((e.clientX - b.left) / b.width) * TW, y = ((e.clientY - b.top) / b.height) * TH;
+    for (let i = 0; i < 6; i++) { const a = (i / 6) * 6.28; stamp(x + Math.cos(a) * 6, y + Math.sin(a) * 6, Math.cos(a) * 0.8, Math.sin(a) * 0.8, 14); }
+    feed(0.2);
+    lastIn = performance.now();
+  };
+  host.addEventListener("pointerdown", onTap);
   const onMove = (e: PointerEvent) => {
     const b = canvas.getBoundingClientRect();
     if (e.clientY < b.top - 40 || e.clientY > b.bottom + 40) { lx = -1; return; }
     const x = ((e.clientX - b.left) / b.width) * TW, y = ((e.clientY - b.top) / b.height) * TH;
-    if (lx >= 0) stamp(x, y, (x - lx) * 0.1, (y - ly) * 0.22, e.pointerType === "mouse" ? 13 : 17);
+    if (lx >= 0) {
+      stamp(x, y, (x - lx) * 0.1, (y - ly) * 0.22, e.pointerType === "mouse" ? 13 : 17);
+      if (y > -4 && y < TH + 4) feed(Math.hypot(x - lx, (y - ly) * 2.5) / 620);
+    }
     lx = x; ly = y;
     lastIn = performance.now();
   };
@@ -149,6 +170,11 @@ export function mount(host: HTMLElement, opt: { ink?: [number, number, number]; 
     }
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
     gl.uniform1f(uTime, t);
+    if (energy >= 1 && melt < 1) {
+      melt = Math.min(1, melt + 0.011);
+      if (melt > 0.7 && !melted) { melted = true; opt.onMelted?.(); }
+    }
+    gl.uniform1f(uMelt, melt);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
@@ -164,6 +190,7 @@ export function mount(host: HTMLElement, opt: { ink?: [number, number, number]; 
     cancelAnimationFrame(raf);
     io.disconnect(); ro.disconnect();
     removeEventListener("pointermove", onMove);
+    host.removeEventListener("pointerdown", onTap);
     svgs.forEach((s) => (s.style.opacity = ""));
     canvas.remove();
     gl.getExtension("WEBGL_lose_context")?.loseContext();

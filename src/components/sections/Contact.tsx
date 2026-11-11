@@ -45,7 +45,23 @@ export function Contact() {
       liquidIO = new IntersectionObserver(([e]) => {
         if (!e.isIntersecting) return;
         liquidIO!.disconnect();
-        import("./liquidMark").then((m) => { stopLiquid = m.mount(host, { hi: [0.35, 0.35, 0.35] }) ?? (() => {}); });
+        import("./liquidMark").then((m) => {
+          stopLiquid = m.mount(host, {
+            hi: [0.35, 0.35, 0.35],
+            onEnergy: (e) => {
+              const el = root.current!.querySelector<HTMLElement>("[data-game]");
+              if (!el) return;
+              el.style.setProperty("--e", e.toFixed(3));
+              el.dataset.state = e >= 1 ? "full" : e > 0.02 ? "on" : "";
+              el.querySelector("b")!.textContent = `${Math.round(e * 100)}%`;
+            },
+            onMelted: () => {
+              const prize = root.current!.querySelector<HTMLElement>("[data-prize]")!;
+              prize.style.visibility = "visible";
+              gsap.fromTo(prize.querySelectorAll("[data-pz]"), { yPercent: 120, opacity: 0, rotate: 4 }, { yPercent: 0, opacity: 1, rotate: 0, duration: 1.1, ease: "elastic.out(1,0.55)", stagger: 0.08 });
+            },
+          }) ?? (() => {});
+        });
       }, { rootMargin: "600px" });
       liquidIO.observe(host);
     }
@@ -188,8 +204,22 @@ export function Contact() {
             </nav>
             <p className="t-meta text-night/75">© 2026 HRVT — tervezve és fejlesztve házon belül</p>
           </div>
-          <div data-wm-wrap="" className="overflow-hidden pb-[2.4vw]" aria-hidden>
-            <div data-wm-foot="">
+          <p data-game="" aria-hidden className="game t-meta mb-3 flex items-center gap-3 text-[0.62rem] text-night/75 [@media(prefers-reduced-motion:reduce)]:hidden">
+            <span className="game-hint">↯ Kend szét a feliratot. Vagy koppints rá.</span>
+            <span className="relative h-[3px] w-24 overflow-hidden rounded-full bg-night/15"><span className="absolute inset-0 origin-left scale-x-[var(--e,0)] bg-night" /></span>
+            <b className="font-normal">0%</b>
+          </p>
+          <div data-wm-wrap="" className="relative overflow-hidden pb-[2.4vw]">
+            <div data-prize="" className="invisible absolute inset-0 z-[2] flex flex-col items-center justify-center gap-[2vw] pb-[2.4vw]">
+              <p data-pz="" className="f-gv text-night" style={{ fontSize: "clamp(3rem, 11vw, 11rem)", lineHeight: 0.9 }}>
+                Na, írj már.
+              </p>
+              <a data-pz="" href={`mailto:${EMAIL}?subject=Sz%C3%A9tkentem%20a%20feliratot`} className="pill pill--night h-14 pl-6" data-cursor="Írj">
+                Megnyerted az első egyeztetést
+                <span className="pill-dot h-10 w-10"><ArrowIcon /></span>
+              </a>
+            </div>
+            <div data-wm-foot="" aria-hidden>
               <Wordmark className="h-auto w-full" />
             </div>
           </div>
