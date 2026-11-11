@@ -153,7 +153,7 @@ type Lay = { mob: boolean; nav: { logo: R; links: R[]; btn: R }; head: R; lh: nu
 function layout(W: number, H: number): Lay {
   const mob = W < 768;
   if (mob) {
-    const p = W * 0.06, y0 = H * 0.135, cw = W - p * 2;
+    const p = W * 0.06, y0 = H * 0.165, cw = W - p * 2;
     const lh = Math.min(W * 0.1, H * 0.05);
     return {
       mob,
@@ -485,7 +485,7 @@ export function mount({ host, sec, canvas, tag, line, content }: { host: HTMLEle
     gl.viewport(0, 0, canvas.width, canvas.height);
     L = layout(W, H);
     lens.x = lens.tx = L.mob ? W * 0.62 : W * 0.7;
-    lens.y = lens.ty = L.mob ? H * 0.3 : H * 0.42;
+    lens.y = lens.ty = L.mob ? H * 0.33 : H * 0.42;
     paintAll();
   };
 
@@ -529,7 +529,7 @@ export function mount({ host, sec, canvas, tag, line, content }: { host: HTMLEle
 
     // Idle wander (a slow Lissajous) when nobody steers it.
     if (now - lastInput > 2600 && !soft) {
-      const cx = L.mob ? W * 0.5 : W * 0.66, cy = L.mob ? H * 0.31 : H * 0.44;
+      const cx = L.mob ? W * 0.5 : W * 0.66, cy = L.mob ? H * 0.34 : H * 0.44;
       lens.tx = cx + Math.sin(t * 0.37) * (L.mob ? W * 0.28 : W * 0.2);
       lens.ty = cy + Math.sin(t * 0.53 + 1) * (L.mob ? H * 0.11 : H * 0.2);
     }
