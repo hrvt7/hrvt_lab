@@ -8,6 +8,7 @@ import { gsap, ScrollTrigger, prefersReduced, onReady } from "@/lib/gsap";
  * Lenis smooth scroll on GSAP's ticker + declarative reveals:
  *  [data-rise]  — each child rises out of a clipped baseline (staggered)
  *  [data-fade]  — soft lift-in (value = delay)
+ *  [data-words] — words sharpen one by one, scrubbed by scroll
  *  [data-theme] — tells the nav whether it sits on night or kiwi
  */
 export function Motion() {
@@ -49,6 +50,29 @@ export function Motion() {
             delay: Number(el.dataset.rise || 0),
             scrollTrigger: { trigger: el, start: "top 90%" },
           });
+        });
+        // [data-words]: the paragraph sharpens word by word as it crosses the screen.
+        gsap.utils.toArray<HTMLElement>("[data-words]").forEach((el) => {
+          const walk = (n: Node) => {
+            if (n.nodeType === 3) {
+              const parts = (n.textContent || "").split(/(\s+)/);
+              const f = document.createDocumentFragment();
+              parts.forEach((p) => {
+                if (!p.trim()) return f.appendChild(document.createTextNode(p));
+                const sp = document.createElement("span");
+                sp.className = "wd";
+                sp.textContent = p;
+                f.appendChild(sp);
+              });
+              n.parentNode!.replaceChild(f, n);
+            } else if (n.nodeType === 1) [...n.childNodes].forEach(walk);
+          };
+          if (!el.querySelector(".wd")) [...el.childNodes].forEach(walk);
+          gsap.fromTo(
+            el.querySelectorAll(".wd"),
+            { filter: "blur(5px) opacity(0.2)", y: 6 },
+            { filter: "blur(0px) opacity(1)", y: 0, ease: "none", stagger: 0.08, scrollTrigger: { trigger: el, start: "top 88%", end: "top 45%", scrub: 0.4 } },
+          );
         });
         gsap.utils.toArray<HTMLElement>("[data-fade]").forEach((el) => {
           gsap.to(el, {

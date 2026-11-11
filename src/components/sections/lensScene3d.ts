@@ -23,6 +23,7 @@ type Theme = {
   acc: string;
   onAcc: string;
   font: (px: number) => string;
+  logoFont: (px: number) => string;
   logo: string;
   head: [string, string];
   sub: string;
@@ -42,7 +43,8 @@ const THEMES: Theme[] = [
     mute: "#b9b39f",
     acc: "#e0673f",
     onAcc: "#16231b",
-    font: (px) => `italic 500 ${px}px Georgia, "Times New Roman", serif`,
+    font: (px) => `italic 400 ${px * 1.12}px "Instrument Serif", Georgia, serif`,
+    logoFont: (px) => `400 ${px * 1.5}px "Allura", cursive`,
     logo: "Kert Bisztró",
     head: ["Friss tészta,", "lassú esték."],
     sub: "Szezonális étlap, kertre nyíló terasz, asztalfoglalás két érintéssel.",
@@ -80,7 +82,8 @@ const THEMES: Theme[] = [
     mute: "#c7a3b4",
     acc: "#ff7aa8",
     onAcc: "#24112b",
-    font: (px) => `400 ${px}px "Didot", "Bodoni 72", Georgia, serif`,
+    font: (px) => `italic 600 ${px}px "Bodoni Moda Variable", "Didot", Georgia, serif`,
+    logoFont: (px) => `italic 500 ${px}px "Bodoni Moda Variable", Georgia, serif`,
     logo: "Lila Szalon",
     head: ["Szépség,", "időre foglalva."],
     sub: "Haj, köröm, smink. Szabad időpontok élőben, emlékeztető SMS-ben.",
@@ -116,7 +119,8 @@ const THEMES: Theme[] = [
     mute: "#93a3b8",
     acc: "#ff6a1a",
     onAcc: "#0d1726",
-    font: (px) => `900 ${px}px "Arial Black", "Helvetica Neue", Impact, sans-serif`,
+    font: (px) => `400 ${px * 0.92}px "Bagel Fat One", "Arial Black", sans-serif`,
+    logoFont: (px) => `800 ${px * 0.8}px "Unbounded Variable", "Arial Black", sans-serif`,
     logo: "GARÁZS 24",
     head: ["SZERVIZ,", "AMI NEM VÁR."],
     sub: "Időpont még ma, fix árajánlat előre, autó kész SMS-értesítéssel.",
@@ -287,7 +291,7 @@ function paintSite(g: Ctx, W: number, H: number, L: Lay, t: Theme) {
 
   // nav
   g.fillStyle = t.ink;
-  fit(g, t.logo, t.font, L.nav.logo.w, L.mob ? 19 : 24);
+  fit(g, t.logo, t.logoFont, L.nav.logo.w * 1.15, L.mob ? 19 : 24);
   g.fillText(t.logo, L.nav.logo.x, L.nav.logo.y + L.nav.logo.h / 2);
   g.font = `500 ${13}px ${SANS}`;
   g.fillStyle = t.mute;
@@ -591,7 +595,8 @@ export function mount({ host, sec, canvas, tag, line, content }: { host: HTMLEle
   }
   const fractS = (x: number) => x - Math.floor(x);
   const start = () => { if (!raf) raf = requestAnimationFrame(frame); };
-  document.fonts?.ready.then(() => { W = 0; size(); });
+  const faces = ["400 40px \"Instrument Serif\"", "italic 400 40px \"Instrument Serif\"", "400 40px Allura", "italic 600 40px \"Bodoni Moda Variable\"", "400 40px \"Bagel Fat One\"", "800 40px \"Unbounded Variable\""];
+  Promise.all(faces.map((f) => document.fonts.load(f, "ÁÉáéőű"))).catch(() => {}).then(() => { W = 0; size(); });
   start();
 
   return () => {

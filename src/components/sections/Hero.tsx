@@ -10,6 +10,8 @@ import { Scramble } from "../Scramble";
 import { ArrowIcon } from "../Icons";
 
 const LINES = ["Egyedi", "weboldalt", "építek, ami"];
+/** Each rolling word arrives in its own typeface: wide grotesk, Bodoni italic, melting display, script. */
+const WORD_FONT = ["f-unb", "f-bod text-[1.14em] leading-[1.02]", "f-cli", "f-gv text-[1.3em] leading-[0.95]"];
 
 function Letters({ text }: { text: string }) {
   return (
@@ -120,7 +122,7 @@ function Content({ ink = false }: { ink?: boolean }) {
           <span className={`relative -mt-[0.24em] inline-block h-[1.22em] overflow-hidden align-top ${ink ? "" : "text-kiwi"}`}>
             <span data-roll="" className="block">
               {[...HERO_WORDS, HERO_WORDS[0]].map((w, i) => (
-                <span key={i} className="block h-[1.22em] pt-[0.24em]">
+                <span key={i} className={`block h-[1.22em] pt-[0.24em] ${WORD_FONT[i % HERO_WORDS.length]}`}>
                   {i === 0 && !ink ? <Letters text={w + "."} /> : w + "."}
                 </span>
               ))}

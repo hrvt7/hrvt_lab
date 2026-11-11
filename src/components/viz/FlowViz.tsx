@@ -1,47 +1,47 @@
 "use client";
+import { useRef } from "react";
+import { useClock, seg } from "./useClock";
 
-const NODES = [
-  { x: 30, y: 120, l: "Űrlap" },
-  { x: 150, y: 120, l: "Ellenőrzés" },
-  { x: 275, y: 55, l: "E-mail" },
-  { x: 275, y: 185, l: "Értesítés" },
-  { x: 395, y: 55, l: "Válasz" },
-  { x: 395, y: 185, l: "Naptár" },
-];
-const EDGES = [
-  "M70 120 H110",
-  "M190 120 C230 120 220 55 245 55",
-  "M190 120 C230 120 220 185 245 185",
-  "M305 55 H365",
-  "M305 185 H365",
-];
+const FIELDS: [string, string][] = [["Név", "Kovács Anna"], ["Telefon", "+36 30 123 4567"], ["Mikor?", "Csütörtök 10:00"]];
 
-/** A workflow graph with data pulses travelling its edges (pure CSS motion). */
+/** A visitor fills the booking form; a beat later the owner's phone lights up with the request. */
 export function FlowViz() {
+  const ref = useRef<HTMLDivElement>(null);
+  const t = useClock(ref, 10);
+  const press = seg(t, 4.6, 4.8) * (1 - seg(t, 4.85, 5.1));
+  const sent = t > 5;
+  const n = seg(t, 5.6, 6.2);
   return (
-    <div className="flex h-full flex-col p-5 md:p-6">
-      <p className="mb-2 font-mono text-[0.72rem] text-ash">űrlap · ajánlatkérés → hozzád</p>
-      <svg viewBox="0 0 440 240" className="w-full flex-1" aria-hidden>
-        {EDGES.map((d, i) => (
-          <g key={i}>
-            <path d={d} fill="none" stroke="rgba(242,242,238,.14)" strokeWidth="1.5" />
-            <path d={d} fill="none" stroke="#89e900" strokeWidth="1.5" strokeDasharray="4 16" style={{ animation: `dash 1.2s linear infinite` }} />
-            <circle r="3.5" fill="#89e900" style={{ offsetPath: `path("${d}")`, animation: `flowdot 2.4s ${i * 0.35}s cubic-bezier(.7,0,.2,1) infinite` }} />
-          </g>
-        ))}
-        {NODES.map((n, i) => (
-          <g key={n.l} transform={`translate(${n.x} ${n.y})`}>
-            <rect x="-40" y="-17" width="80" height="34" rx="17" fill={i === 1 ? "#89e900" : "#2c2c2c"} stroke="rgba(242,242,238,.16)" />
-            <text textAnchor="middle" dy="4" fontSize="11" fontFamily="var(--font-mono)" fill={i === 1 ? "#222" : "#f2f2ee"}>
-              {n.l}
-            </text>
-          </g>
-        ))}
-      </svg>
-      <style>{`@keyframes flowdot{0%{offset-distance:0%;opacity:0}15%{opacity:1}85%{opacity:1}100%{offset-distance:100%;opacity:0}}`}</style>
-      <div className="mt-2 flex justify-between font-mono text-[0.66rem] text-ash">
-        <span>űrlap → e-mail</span>
-        <span className="text-kiwi">azonnali értesítés</span>
+    <div ref={ref} className="grid h-full grid-cols-[1.2fr_1fr] items-center gap-4 p-4 md:p-6">
+      <div className="rounded-xl bg-[#f3ead8] p-4 text-[#16231b]">
+        <p className="f-ins text-[1.25rem] leading-none">Időpontot kérek</p>
+        <div className="mt-3 space-y-2.5">
+          {FIELDS.map(([k, v], i) => {
+            const c = Math.floor(seg(t, 0.4 + i * 1.3, 1.5 + i * 1.3) * v.length);
+            const on = c > 0 && c < v.length;
+            return (
+              <label key={k} className="block">
+                <span className="text-[0.6rem] font-semibold uppercase tracking-wider opacity-80">{k}</span>
+                <span className={`mt-0.5 block rounded-md border bg-white/70 px-2.5 py-1.5 text-[0.74rem] ${on ? "border-[#e0673f]" : "border-[#16231b]/15"}`}>
+                  {v.slice(0, c)}{on && <span className="ml-px inline-block h-3 w-px translate-y-0.5 bg-[#16231b]" />}&nbsp;
+                </span>
+              </label>
+            );
+          })}
+        </div>
+        <span className="mt-3 flex items-center justify-center rounded-full py-2 text-[0.72rem] font-semibold text-[#16231b] transition-colors" style={{ background: sent ? "#6f8f3a" : "#e0673f", transform: `scale(${1 - press * 0.06})`, color: sent ? "#f3ead8" : "#16231b" }}>
+          {sent ? "Elküldve ✓" : "Küldés"}
+        </span>
+      </div>
+      <div className="relative mx-auto aspect-[9/17] w-full max-w-[150px] rounded-[22px] border-[3px] border-night-4 bg-[radial-gradient(circle_at_30%_20%,#3a3a3a,#141414)] p-2">
+        <p className="mt-5 text-center font-display text-[1.3rem] leading-none text-paper">10:02</p>
+        <p className="text-center font-mono text-[0.5rem] text-ash">csütörtök</p>
+        <div className="mt-4 rounded-xl bg-paper/95 p-2 text-night shadow-lg" style={{ opacity: n, transform: `translateY(${(1 - n) * -14}px) scale(${0.9 + n * 0.1})` }}>
+          <p className="flex items-center gap-1 text-[0.5rem] font-semibold uppercase opacity-80"><i className="h-1.5 w-1.5 rounded-full bg-kiwi" />Weboldal · most</p>
+          <p className="mt-0.5 text-[0.62rem] font-semibold leading-tight">Új időpontkérés</p>
+          <p className="text-[0.56rem] leading-tight opacity-75">Kovács Anna · csüt. 10:00</p>
+        </div>
+        <div className="mt-2 rounded-lg bg-kiwi/90 px-2 py-1 text-[0.52rem] font-semibold text-night" style={{ opacity: seg(t, 6.8, 7.3) }}>+ naptárba téve</div>
       </div>
     </div>
   );

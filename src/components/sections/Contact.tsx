@@ -37,6 +37,38 @@ export function Contact() {
       }
     }, root);
 
+    // Liquid wordmark (WebGL), mounted lazily when the footer is near.
+    let stopLiquid = () => {};
+    let liquidIO: IntersectionObserver | null = null;
+    if (!reduced) {
+      const host = root.current!.querySelector<HTMLElement>("[data-wm-foot]")!;
+      liquidIO = new IntersectionObserver(([e]) => {
+        if (!e.isIntersecting) return;
+        liquidIO!.disconnect();
+        import("./liquidMark").then((m) => { stopLiquid = m.mount(host, host.querySelector("svg")!) ?? (() => {}); });
+      }, { rootMargin: "600px" });
+      liquidIO.observe(host);
+    }
+
+    // Type shuffle: every beat one letter of the headline tries on another typeface, then returns.
+    const FACES = ["f-ins", "f-bod", "f-gv", "f-all", "f-bag"];
+    let shuffle: ReturnType<typeof setInterval> | undefined;
+    if (!reduced) {
+      const ls = [...word.current!.querySelectorAll<HTMLElement>("[data-bl]")].slice(0, -1);
+      shuffle = setInterval(() => {
+        const r = word.current!.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > innerHeight) return;
+        const l = ls[Math.floor(Math.random() * ls.length)];
+        if (l.dataset.f) return;
+        const f = FACES[Math.floor(Math.random() * FACES.length)];
+        l.dataset.f = f;
+        l.classList.add(f);
+        l.style.textTransform = "uppercase";
+        gsap.fromTo(l, { rotateX: -90, opacity: 0 }, { rotateX: 0, opacity: 1, duration: 0.5, ease: "back.out(2)" });
+        setTimeout(() => { gsap.to(l, { rotateX: 90, opacity: 0, duration: 0.25, ease: "power2.in", onComplete: () => { l.classList.remove(f); l.style.textTransform = ""; delete l.dataset.f; gsap.fromTo(l, { rotateX: -90, opacity: 0 }, { rotateX: 0, opacity: 1, duration: 0.45, ease: "back.out(2)" }); } }); }, 1700);
+      }, 650);
+    }
+
     // Letters lean toward the pointer, each with its own inertia.
     let cleanup = () => {};
     if (isFinePointer() && !reduced) {
@@ -64,6 +96,9 @@ export function Contact() {
     }
     return () => {
       cleanup();
+      clearInterval(shuffle);
+      liquidIO?.disconnect();
+      stopLiquid();
       ctx.revert();
     };
   }, []);
@@ -97,7 +132,7 @@ export function Contact() {
 
           <div className="mt-12 grid gap-10 md:mt-16 md:grid-cols-12 md:items-end">
             <div className="md:col-span-7">
-              <p className="t-lead mb-10 max-w-[42ch] text-night/75">
+              <p className="t-lead mb-10 max-w-[42ch] text-night/75" data-words="">
                 Írd le pár mondatban, milyen weboldalt szeretnél. Egy munkanapon belül személyesen válaszolok — általában már egy
                 első ötlettel.
               </p>

@@ -421,3 +421,13 @@ html.lenis body { height: auto; }
 
 /* Short phones: the tagline gives its room to the 3D phone. */
 @media (max-width: 767px) and (min-aspect-ratio: 10/19) { .hero-tag { display: none; } }
+
+/* Accent typefaces — each section borrows a different voice */
+.f-unb { font-family: "Unbounded Variable", sans-serif; font-variation-settings: "wght" 800; letter-spacing: -0.02em; }
+.f-bod { font-family: "Bodoni Moda Variable", serif; font-style: italic; font-weight: 600; text-transform: none; letter-spacing: -0.01em; }
+.f-cli { font-family: "Climate Crisis Variable", sans-serif; font-variation-settings: "YEAR" var(--yr, 1979); letter-spacing: 0; }
+.f-gv { font-family: "Great Vibes", cursive; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.f-all { font-family: "Allura", cursive; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.f-ins { font-family: "Instrument Serif", serif; font-style: italic; text-transform: none; letter-spacing: -0.01em; font-weight: 400; }
+.f-bag { font-family: "Bagel Fat One", sans-serif; letter-spacing: 0; font-weight: 400; }
+.wd { display: inline-block; will-change: opacity, filter; }

@@ -110,8 +110,8 @@ export function Services() {
               </Meta>
             </div>
             <div className="md:col-span-9">
-              <Rise as="h2" className="t-xl" lines={[<>Weboldal készítés</>, <>Szombathelyen.</>]} />
-              <p className="t-lead mt-8 max-w-[46ch] text-night/75" data-fade="">
+              <Rise as="h2" className="t-xl" lines={[<>Weboldal készítés</>, <span className="f-gv text-[1.25em] leading-[0.9]">Szombathelyen.</span>]} />
+              <p className="t-lead mt-8 max-w-[46ch] text-night/75" data-words="">
                 Egyedi weboldalt: megtervezve, megírva, megépítve. Ha a cégednek nincs jó oldala, vagy van, de nem hoz
                 érdeklődőt — <span className="text-night">azt megépítem.</span>
               </p>

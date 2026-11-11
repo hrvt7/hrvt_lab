@@ -1,3 +1,4 @@
+import "@/lib/fonts";
 import { Intro } from "@/components/Intro";
 import { Nav } from "@/components/Nav";
 
