@@ -27,10 +27,6 @@ const config: NextConfig = {
       { source: "/harlekin/", destination: "/harlekin/index.html" },
       { source: "/harlekin/adatkezeles", destination: "/harlekin/adatkezeles/index.html" },
       { source: "/harlekin/adatkezeles/", destination: "/harlekin/adatkezeles/index.html" },
-      { source: "/harlekin-teszt", destination: "/harlekin-teszt/index.html" },
-      { source: "/harlekin-teszt/", destination: "/harlekin-teszt/index.html" },
-      { source: "/harlekin-teszt/adatkezeles", destination: "/harlekin-teszt/adatkezeles/index.html" },
-      { source: "/harlekin-teszt/adatkezeles/", destination: "/harlekin-teszt/adatkezeles/index.html" },
     ];
   },
 };
