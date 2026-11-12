@@ -289,6 +289,8 @@ export function Stefri() {
   useEffect(() => {
     const click = (e: MouseEvent) => { const el = (e.target as HTMLElement).closest<HTMLElement>("[data-track]"); if (el) track(el.dataset.track!); };
     const scroll = () => setBar(scrollY > innerHeight * 2.6);
+    const w = window as unknown as { __hrvtReady?: boolean };
+    if (!w.__hrvtReady) { w.__hrvtReady = true; dispatchEvent(new Event("hrvt:ready")); }
     const cart = (e: Event) => setN((e as CustomEvent<number>).detail);
     addEventListener("sf:cart", cart);
     document.addEventListener("click", click);
