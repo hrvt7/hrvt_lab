@@ -1,7 +1,6 @@
 import { Stage } from "@/components/l/Stage";
 import { Fx } from "@/components/l/Fx";
 import { Composer } from "@/components/l/Composer";
-import { Eye } from "@/components/l/Eye";
 import { Wordmark } from "@/components/Logo";
 import { EMAIL, HERO_WORDS, NAV, PHONE, PHONE_TEL, SERVICES, STEPS, TURNKEY } from "@/lib/content";
 
@@ -108,7 +107,6 @@ export default function Page() {
           </div>
         </section>
 
-        <Eye />
 
         {/* Mit vállalok: one service on stage at a time */}
         <section id="szolgaltatasok" className="l-stage" data-l-stage="" data-l-sec="" style={{ ["--n" as string]: SERVICES.length }}>
