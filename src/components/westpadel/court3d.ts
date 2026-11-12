@@ -154,7 +154,7 @@ export function mount({ canvas, hero, onStage, onBurst, onImpact }: Opts): Api {
   const ball2 = new Mesh(ballG, ballM); scene2.add(ball2);
 
   let W = 1, H = 1, mob = false, heroTop = 0, heroRange = 1, docH = 1, raf = 0, ps = -1, tPrev = performance.now(), stage = -1, burst = -1, lastKey = "", spin = 0;
-  let bounds: number[] = [], lastSect: number | null = null;
+  let bounds: number[] = [], lastSect: number | null = null, sy = -1;
   const camPos = new Vector3(), camAim = new Vector3(), tmp = new Vector3();
 
   const measure = () => {
@@ -188,7 +188,10 @@ export function mount({ canvas, hero, onStage, onBurst, onImpact }: Opts): Api {
     if (Math.abs(target - ps) < 0.00003) ps = target;
     const p = Math.min(1, ps), t = now / 1000;
     const idle = p < 0.025 && !reduced;
-    const key = `${ps.toFixed(5)}|${scrollY | 0}|${idle ? (t * 30) | 0 : 0}`;
+    // the page ball follows an eased scroll position, so uneven scroll steps never show as jumps
+    sy = sy < 0 || reduced ? scrollY : sy + (scrollY - sy) * (1 - Math.exp(-dt * 7));
+    if (Math.abs(scrollY - sy) < 0.05) sy = scrollY;
+    const key = `${ps.toFixed(5)}|${sy.toFixed(2)}|${idle ? (t * 30) | 0 : 0}`;
     if (key === lastKey) return;
     lastKey = key;
 
@@ -221,18 +224,18 @@ export function mount({ canvas, hero, onStage, onBurst, onImpact }: Opts): Api {
       renderer.render(scene, cam);
     } else {
       // after the hero: the ball rides the page in screen space, crossing from margin to margin
-      const y0 = scrollY + H * 0.5, total = Math.max(1, docH - (heroTop + heroRange + H));
-      const u = Math.min(1, Math.max(0, (scrollY - heroTop - heroRange) / total));
+      const total = Math.max(1, docH - (heroTop + heroRange + H));
+      const u = Math.min(1, Math.max(0, (sy - heroTop - heroRange) / total));
       const rad = mob ? 15 : 24, pad = rad + (mob ? 6 : 26);
-      const cyc = (scrollY - heroTop - heroRange) / (H * 0.9);
-      const tri = Math.abs(((cyc % 2) + 2) % 2 - 1); // 0..1..0
-      const x = pad + (W - pad * 2) * (mob ? (tri > 0.5 ? 1 : 0) * 0 + (0.08 + tri * 0.84) : tri);
+      const cyc = (sy - heroTop - heroRange) / (H * 0.9);
+      const sway = 0.5 - 0.5 * Math.cos(cyc * Math.PI); // eases into each margin instead of a sharp turn
+      const x = pad + (W - pad * 2) * (mob ? 0.08 + sway * 0.84 : sway);
       const y = H * (mob ? 0.2 : 0.3) + Math.abs(Math.sin(cyc * Math.PI)) * H * (mob ? 0.16 : 0.22);
       ball2.position.set(x, y, 0); ball2.scale.setScalar(rad);
       ball2.rotation.set(0, 0, cyc * 5); ball2.rotateX(cyc * 3);
       ball2.visible = u < 0.985;
       // crossing a section edge: tell the page where the ball "hit" it
-      let sect = -1; for (let i = 0; i < bounds.length; i++) if (y0 - H * 0.5 + y >= bounds[i]) sect = i;
+      let sect = -1; for (let i = 0; i < bounds.length; i++) if (sy + y >= bounds[i]) sect = i;
       if (sect !== lastSect) { if (lastSect !== null) { const i = Math.max(sect, lastSect); onImpact(x, bounds[i] - scrollY, i); } lastSect = sect; }
       if (burst !== 1) { burst = 1; onBurst(1, 50, 50); }
       renderer.render(scene2, cam2);
