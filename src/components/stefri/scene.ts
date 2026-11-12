@@ -5,8 +5,8 @@
 type G = CanvasRenderingContext2D;
 const C = { sky1: "#f6efe2", sky2: "#f3d9a8", sun: "#e8b23a", far: "#c9d3a6", mid: "#9fb873", near: "#6f9a4a", field: "#e3c873", road: "#4a3a33", line: "#f6efe2", ink: "#2a1a14", red: "#c8201c", green: "#1f6b3a", white: "#fffdf7", roof: "#b5482f", wall: "#f3e6cf" };
 const WORLD = 5200; // world length in px at scale 1
-const SIGNS: [number, string, string][] = [[520, "MAGYARORSZÁG", "border"], [1750, "Tanakajd", "town"], [3050, "Vasszécseny", "town"], [4550, "A te utcád", "stop"]];
-const VILLAGES = [1900, 3200, 4700];
+const SIGNS: [number, string, string][] = [[230, "Vép", "town"], [1350, "Tanakajd", "town"], [2450, "Vasszécseny", "town"], [3520, "Sárvár", "town"], [4550, "A te utcád", "stop"]];
+const VILLAGES = [1500, 2600, 3680, 4700];
 
 function hill(g: G, W: number, base: number, amp: number, off: number, freq: number, color: string, H: number) {
   g.fillStyle = color;
