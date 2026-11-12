@@ -35,12 +35,12 @@ function Hero({ bind }: { bind: (r: { sec: HTMLElement; caps: HTMLElement; ggc: 
   const sec = useRef<HTMLElement>(null), caps = useRef<HTMLDivElement>(null), ggc = useRef<HTMLDivElement>(null), edge = useRef<HTMLDivElement>(null);
   useEffect(() => { bind({ sec: sec.current!, caps: caps.current!, ggc: ggc.current!, edge: edge.current! }); }, [bind]);
   return (
-    <section ref={sec} id="top" className="relative bg-[var(--ink)]" style={{ height: "470svh" }}>
+    <section ref={sec} id="top" data-st="0" className="relative bg-[var(--ink)]" style={{ height: "470svh" }}>
       {/* layer 1: the two worlds */}
       <div className="sticky top-0 h-[100svh] overflow-hidden">
         <div className="world bg-[radial-gradient(90%_70%_at_20%_10%,#3a0a1e_0%,#0b0709_60%)]">
           <p className="rush bigword bottom-[-2vw] left-[-1vw] text-[34vw] leading-none text-transparent opacity-40 md:text-[23vw]" style={{ WebkitTextStroke: "2px #ff2e7e" }} aria-hidden>RUSH</p>
-          <div className="lit pinkonly absolute bottom-0 left-0 h-[34%] w-full md:bottom-auto md:left-auto md:right-[4%] md:top-[11%] md:h-[78%] md:w-[38%]">
+          <div className="drphoto lit pinkonly absolute bottom-0 left-0 h-[34%] w-full md:bottom-auto md:left-auto md:right-[4%] md:top-[11%] md:h-[78%] md:w-[38%]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/diamondrush/stadium.webp" alt="Cheerleader pomponokkal, kitárt karral a stadion gyepén" width={899} height={814} className="bw h-full w-full object-cover object-[50%_30%]" />
           </div>
@@ -246,7 +246,7 @@ export function DiamondRush() {
         api = m.mount({
           canvas: canvas.current!, hero: sec, end, slot,
           onFrame: ({ stage, cx, cy, nx, ny }) => {
-            if (stage !== st) { st = stage; caps.setAttribute("data-st", String(stage)); }
+            if (stage !== st) { st = stage; caps.setAttribute("data-st", String(stage)); sec.setAttribute("data-st", String(stage)); }
             const dx = -ny, dy = nx, L = 3, P = (x: number, y: number) => `${(x * 100).toFixed(2)}% ${(y * 100).toFixed(2)}%`;
             ggc.style.setProperty("--clip", `polygon(${P(cx + dx * L, cy + dy * L)},${P(cx - dx * L, cy - dy * L)},${P(cx - dx * L + nx * L, cy - dy * L + ny * L)},${P(cx + dx * L + nx * L, cy + dy * L + ny * L)})`);
             edge.style.transform = `translate(${cx * innerWidth}px, ${cy * edge.parentElement!.clientHeight}px) rotate(${Math.atan2(dy * innerHeight, dx * innerWidth)}rad)`;

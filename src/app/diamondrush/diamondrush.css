@@ -62,3 +62,5 @@
 .dr .flip[data-mode="fellepes"] .tabs button[aria-pressed="true"] { background:var(--ink); color:var(--lgold); }
 
 @media (prefers-reduced-motion:reduce){ .js .dr .w { clip-path:none; animation:none !important; } .dr * { transition-duration:.01ms !important; animation-duration:.01ms !important; } }
+
+@media (max-width:767px){ .dr .drphoto { transition:opacity .4s; } .dr [data-st="0"] .drphoto, .dr [data-st="3"] .drphoto { opacity:0; } }
