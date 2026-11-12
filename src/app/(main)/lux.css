@@ -325,48 +325,16 @@ html:has(.l) .l input { cursor: text !important; }
 /* The section title rides on its own plate, so the outlined words pass behind it, not through it. */
 .l-walk[data-live] .l-walk-intro { position: relative; z-index: 1; background: var(--moss); }
 
-/* ================= Váz: the page shows its own frame ================= */
-.l-switch { display: inline-flex; align-items: center; gap: 0.55rem; min-height: 44px; padding: 0; background: none; border: 0; color: inherit; font: inherit; font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; cursor: pointer; }
-.l-switch-track { position: relative; width: 38px; height: 22px; border: 1px solid currentColor; border-radius: 999px; transition: background 0.4s var(--slow); }
-.l-switch-knob { position: absolute; left: 3px; top: 3px; width: 14px; height: 14px; border-radius: 50%; background: currentColor; transition: transform 0.5s var(--slow); }
-/* A tiny grid printed on the knob says what the switch does before anyone reads the label. */
-.l-switch-knob::after { content: ""; position: absolute; inset: 3px; background: linear-gradient(90deg, transparent 45%, var(--sw-cut, #323232) 45% 55%, transparent 55%), linear-gradient(transparent 45%, var(--sw-cut, #323232) 45% 55%, transparent 55%); opacity: 0.9; }
-html[data-l-nav="light"] .l-switch { --sw-cut: #fedc00; }
-.l-switch[aria-checked="true"] .l-switch-knob { transform: translateX(16px); }
-.l-switch-label { display: none; }
-@media (min-width: 400px) { .l-switch-label { display: inline; } }
-@media (max-width: 899px) { .l-nav { gap: 0.8rem; } .l-nav-cta { padding: 0 1em; } }
-
-.l-grid { position: fixed; inset: 0; z-index: 45; pointer-events: none; mix-blend-mode: difference; visibility: hidden; }
-html.l-vaz .l-grid { visibility: visible; }
-.l-grid-in { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: clamp(12px, 1.6vw, 24px); height: 100%; box-shadow: inset 1px 0 0 rgba(254, 220, 0, 0.55), inset -1px 0 0 rgba(254, 220, 0, 0.55); }
-.l-grid-in i { display: block; background: rgba(254, 220, 0, 0.07); box-shadow: inset 1px 0 0 rgba(254, 220, 0, 0.4), inset -1px 0 0 rgba(254, 220, 0, 0.4); transform: scaleY(0); transform-origin: 50% 0; transition: transform 0.7s var(--slow) calc(var(--k) * 35ms); }
-html.l-vaz .l-grid-in i { transform: none; }
-@media (max-width: 899px) { .l-grid-in { grid-template-columns: repeat(4, minmax(0, 1fr)); } .l-grid-in i:nth-child(n + 5) { display: none; } }
-.l-grid-read { position: fixed; left: var(--pad); bottom: 14px; z-index: 46; margin: 0; padding: 4px 8px; white-space: nowrap; font-family: ui-monospace, "Geist Mono Variable", monospace; font-size: 10px; letter-spacing: 0.06em; background: #323232; color: #fedc00; box-shadow: inset 0 0 0 1px #fedc00; visibility: hidden; pointer-events: none; }
-html.l-vaz .l-grid-read { visibility: visible; }
-@media (max-width: 899px) { html.l-bar-on .l-grid-read { bottom: calc(78px + env(safe-area-inset-bottom)); } }
-
-html.l-vaz .l main :is(h1, h2, h3, p, .l-btn, .l-link, .l-seal, dl, .l-odo) { outline: 1px dashed currentColor; outline-offset: 3px; }
-html.l-vaz .l main :is(h1, h2, h3)[data-spec] { position: relative; }
-html.l-vaz .l main :is(h1, h2, h3)[data-spec]::before { content: attr(data-spec); position: absolute; left: -1px; bottom: 100%; margin-bottom: 4px; padding: 3px 6px; white-space: nowrap; font-family: ui-monospace, "Geist Mono Variable", monospace; font-size: 10px; font-weight: 400; font-style: normal; line-height: 1.2; letter-spacing: 0.04em; text-transform: none; text-shadow: none; background: var(--ink); color: var(--bg); transform: none; z-index: 2; }
-html.l-vaz .l-h1[data-sun]::after { content: "Árnyék: a nap állása Szombathely fölött most · " attr(data-sun); position: absolute; right: 0; top: 100%; margin-top: 6px; padding: 3px 6px; white-space: nowrap; font-family: ui-monospace, "Geist Mono Variable", monospace; font-size: 10px; letter-spacing: 0.04em; text-transform: none; text-shadow: none; background: var(--ink); color: var(--bg); }
-
 /* ================= Napárnyék label + Sebességmérő ================= */
 .l-sun { display: none; }
 @media (min-width: 900px) { .l-sun { display: inline; } }
 .l-speed { margin: 1.6rem 0 0; font-size: 0.95rem; color: var(--soft); }
 .l-speed b { font-family: var(--f-d); font-weight: 400; font-size: 2em; line-height: 1; letter-spacing: 0.01em; color: var(--butter); font-variant-numeric: tabular-nums; vertical-align: -0.12em; }
 .l-speed span { display: block; margin-top: 0.3rem; font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; }
-@media (prefers-reduced-motion: reduce) { .l-switch-knob, .l-grid-in i { transition: none; } }
-/* While the frame is on, the header (and its switch) stays in reach. */
-html.l-vaz.l-nav-off .l-nav { transform: none; }
 
 /* The shadow copy of the headline sits exactly under it. */
 .l-h1 { position: relative; isolation: isolate; }
 .l-h1-sh { position: absolute; inset: 0; z-index: -1; color: transparent; pointer-events: none; }
 .l-h1-sh > span { display: block; }
 @media (min-width: 900px) { .l-h1-sh > span:nth-child(-n + 2) { display: inline; } }
-html.l-vaz .l-h1 .l-h1-sh { outline: 0; }
-@media (max-width: 899px) { html.l-vaz .l-h1[data-sun]::after { display: none; } }
 @media (max-width: 379px) { .l-clock { display: none; } }

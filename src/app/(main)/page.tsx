@@ -3,7 +3,6 @@ import { Fx } from "@/components/l/Fx";
 import { Composer } from "@/components/l/Composer";
 import { Sun } from "@/components/l/Sun";
 import { Speed } from "@/components/l/Speed";
-import { VazGrid, VazSwitch } from "@/components/l/Vaz";
 import { Wordmark } from "@/components/Logo";
 import { EMAIL, HERO_WORDS, NAV, PHONE, PHONE_TEL, SERVICES, STEPS, TURNKEY } from "@/lib/content";
 
@@ -32,7 +31,6 @@ export default function Page() {
       <Fx />
       <Sun />
       <Speed />
-      <VazGrid />
       <span className="l-progress" data-l-progress="" aria-hidden />
 
       <header className="l-nav">
@@ -46,7 +44,6 @@ export default function Page() {
             </a>
           ))}
         </nav>
-        <VazSwitch />
         <a href="#kapcsolat" className="l-nav-cta" data-track="ajanlatkeres">
           Kérek egy weboldalt
         </a>
