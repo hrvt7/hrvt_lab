@@ -80,7 +80,9 @@ export function mount(host: HTMLElement, sec: HTMLElement, canvas: HTMLCanvasEle
   let W = 0, H = 0, dpr = 1, raf = 0, vis = true, last = -1, stage = -1, tPrev = performance.now(), idle = 0;
   const size = () => {
     W = host.clientWidth; H = host.clientHeight; dpr = Math.min(devicePixelRatio || 1, 2);
-    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr); last = -1;
+    const cw = Math.round(W * dpr), ch = Math.round(H * dpr);
+    if (canvas.width !== cw || canvas.height !== ch) { canvas.width = cw; canvas.height = ch; }
+    last = -1;
   };
   const draw = (p: number, t: number) => {
     const mob = W < 768;
@@ -116,28 +118,35 @@ export function mount(host: HTMLElement, sec: HTMLElement, canvas: HTMLCanvasEle
     SIGNS.forEach(([sx, text, kind]) => { const x = sx * s - cam + vanX; if (x > -200 && x < W + 200) sign(g, x, ground, s, text, kind); });
     // van
     const dist = cam + idle;
-    van(g, vanX, ground + (H - ground) * 0.3, s * (mob ? 1.05 : 1), dist / (26 * s), reduced ? 0 : Math.sin(t * 9) * 1.2 * (p > 0.985 ? 0 : 1));
+    van(g, vanX, ground + (H - ground) * 0.3, s * (mob ? 1.05 : 1), dist / (26 * s), reduced ? 0 : Math.sin(dist * 0.012 / s) * 1.4);
     // exhaust puffs
     if (!reduced && p < 0.985) for (let i = 0; i < 3; i++) { const k = (t * 1.6 + i / 3) % 1; g.fillStyle = `rgba(255,253,247,${0.5 * (1 - k)})`; g.beginPath(); g.arc(vanX - 165 * s - k * 60 * s, ground + (H - ground) * 0.3 - 22 * s - k * 22 * s, (6 + k * 12) * s, 0, 7); g.fill(); }
   };
+  // Scroll position is read cheaply (no layout) and eased, so the camera glides instead of
+  // jumping with every scroll event; touch scrolling delivers uneven steps otherwise.
+  let top = 0, range = 1, ps = -1;
+  const measure = () => { top = sec.getBoundingClientRect().top + scrollY; range = Math.max(1, sec.offsetHeight - H); };
   const frame = (now: number) => {
     raf = 0;
     if (!vis) return;
     if (!reduced) raf = requestAnimationFrame(frame);
-    const r = sec.getBoundingClientRect();
-    const p = Math.min(1, Math.max(0, -r.top / Math.max(1, sec.offsetHeight - H)));
-    const dt = (now - tPrev) / 1000; tPrev = now;
+    const target = Math.min(1, Math.max(0, (scrollY - top) / range));
+    const dt = Math.min(0.05, (now - tPrev) / 1000); tPrev = now;
+    ps = ps < 0 || reduced ? target : ps + (target - ps) * (1 - Math.exp(-dt * 9));
+    if (Math.abs(target - ps) < 0.00002) ps = target;
+    const p = ps;
     if (p < 0.01) idle += dt * 60; // wheels keep turning gently at the very top
     const st = p < 0.2 ? 0 : p < 0.48 ? 1 : p < 0.78 ? 2 : 3;
     if (st !== stage) { stage = st; onStage(st); }
     draw(p, now / 1000); last = p;
   };
   const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
-  const ro = new ResizeObserver(() => { size(); kick(); });
+  const ro = new ResizeObserver(() => { size(); measure(); kick(); });
+  ro.observe(sec);
   ro.observe(host);
   const io = new IntersectionObserver(([e]) => { vis = e.isIntersecting; if (vis) kick(); }, { rootMargin: "100px" });
   io.observe(host);
-  size(); kick();
+  size(); measure(); kick();
   if (reduced) addEventListener("scroll", kick, { passive: true });
   document.fonts?.ready.then(kick);
   void last;
