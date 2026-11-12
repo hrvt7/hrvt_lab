@@ -1,6 +1,9 @@
 import { Stage } from "@/components/l/Stage";
 import { Fx } from "@/components/l/Fx";
 import { Composer } from "@/components/l/Composer";
+import { Sun } from "@/components/l/Sun";
+import { Speed } from "@/components/l/Speed";
+import { VazGrid, VazSwitch } from "@/components/l/Vaz";
 import { Wordmark } from "@/components/Logo";
 import { EMAIL, HERO_WORDS, NAV, PHONE, PHONE_TEL, SERVICES, STEPS, TURNKEY } from "@/lib/content";
 
@@ -27,6 +30,9 @@ export default function Page() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(LD) }} />
       <Stage />
       <Fx />
+      <Sun />
+      <Speed />
+      <VazGrid />
       <span className="l-progress" data-l-progress="" aria-hidden />
 
       <header className="l-nav">
@@ -40,6 +46,7 @@ export default function Page() {
             </a>
           ))}
         </nav>
+        <VazSwitch />
         <a href="#kapcsolat" className="l-nav-cta" data-track="ajanlatkeres">
           Kérek egy weboldalt
         </a>
@@ -53,6 +60,7 @@ export default function Page() {
               <span>Weboldal készítés</span>
               <span>
                 Szombathely <span className="l-clock" data-l-clock="" aria-hidden />
+                <span className="l-sun" data-l-sun="" title="A cím árnyéka a nap valódi állását követi Szombathely fölött." />
               </span>
             </p>
             <h1 className="l-h1">
@@ -141,6 +149,11 @@ export default function Page() {
                         <li key={t}>{t}</li>
                       ))}
                     </ul>
+                    {i === 1 && (
+                      <p className="l-speed" data-l-speed="" hidden>
+                        Ez az oldal nálad <b data-l-speed-n="" /> alatt töltött be. <span>Mérve, nem ígérve.</span>
+                      </p>
+                    )}
                   </article>
                 ))}
               </div>
