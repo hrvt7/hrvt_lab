@@ -32,3 +32,14 @@
 .sf .sf-van { left:-.35rem; top:calc(var(--p,0) * (100% - 2.5rem)); transform:rotate(90deg); }
 @media (min-width:768px){ .sf .sf-van { top:-.8rem; left:calc(var(--p,0) * (100% - 3.5rem)); transform:none; } }
 @media (max-width:639px){ .sf .row { grid-template-columns:1fr auto; } .sf .row .row-n { grid-column:1 / -1; } .sf .row > :nth-child(2) { text-align:left; } }
+
+/* Headings: no HRVT liquid stretch here. Words drive in from the left and brake with a little suspension bounce; the coloured words get a marker underline. */
+.sf main :is(h1,h2) { transform:none; }
+.sf .w { display:inline-block; transform-origin:0 100%; }
+.js .sf .w { opacity:0; }
+.js .sf [data-t].in .w, .js .sf [data-st="0"] .cap-0 .w, .js .sf [data-st="1"] .cap-1 .w, .js .sf [data-st="2"] .cap-2 .w, .js .sf [data-st="3"] .cap-3 .w { animation:sfRoll .8s cubic-bezier(.2,.9,.3,1) both; animation-delay:calc(var(--i) * 75ms + 60ms); }
+@keyframes sfRoll { 0%{opacity:0;transform:translateX(-1.1em) skewX(-18deg)} 55%{opacity:1;transform:translateX(.06em) skewX(7deg)} 78%{transform:translateX(-.02em) skewX(-3deg)} 100%{opacity:1;transform:none} }
+.sf .hl { background:linear-gradient(var(--must),var(--must)) 0 96% / 0 .13em no-repeat; padding-bottom:.04em; -webkit-box-decoration-break:clone; box-decoration-break:clone; }
+.sf [data-t].in .hl, .sf [data-st="0"] .cap-0 .hl, .sf [data-st="1"] .cap-1 .hl, .sf [data-st="2"] .cap-2 .hl, .sf [data-st="3"] .cap-3 .hl { animation:sfLine .7s cubic-bezier(.6,0,.2,1) .8s both; }
+@keyframes sfLine { from{background-size:0 .13em} to{background-size:100% .13em} }
+@media (prefers-reduced-motion:reduce){ .js .sf .w { opacity:1; animation:none !important; } .sf .hl { animation:none !important; background-size:100% .13em; } }

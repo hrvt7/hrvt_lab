@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { cloneElement, Fragment, isValidElement, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { CATS, CATALOG, EMAIL, FAQ, FB, MESSENGER, PHONE, PHONE2, PHONE2_TEL, PHONE_TEL, wa, type Item } from "./data";
 
 const ft = (n: number) => n.toLocaleString("hu-HU").replace(/ | /g, " ") + " Ft";
@@ -7,6 +7,18 @@ const ft = (n: number) => n.toLocaleString("hu-HU").replace(/ | /g, " ") + " 
 function track(name: string, props?: Record<string, unknown>) {
   const w = window as unknown as { va?: (e: string, p: unknown) => void; plausible?: (n: string, o?: unknown) => void; gtag?: (...a: unknown[]) => void };
   try { w.va?.("event", { name, ...props }); w.plausible?.(name, { props }); w.gtag?.("event", name, props); } catch {}
+}
+
+/** Splits heading text into word spans so each word can "drive in" on its own. */
+function T({ children }: { children: ReactNode }) {
+  let i = 0;
+  const walk = (n: ReactNode): ReactNode => {
+    if (typeof n === "string") return n.split(/(\s+)/).map((p, k) => (p.trim() ? <span key={k} className="w" style={{ "--i": i++ } as CSSProperties}>{p}</span> : p));
+    if (Array.isArray(n)) return n.map((c, k) => <Fragment key={k}>{walk(c)}</Fragment>);
+    if (isValidElement<{ children?: ReactNode }>(n)) return cloneElement(n, undefined, walk(n.props.children));
+    return n;
+  };
+  return <>{walk(children)}</>;
 }
 
 /** Sets --p (0..1) on the element while it crosses the viewport. */
@@ -47,7 +59,7 @@ function Hero() {
         <canvas ref={cv} aria-hidden className="absolute inset-0 h-full w-full" />
         <div className={`${capBox} cap-0`}>
           <p className="mb-3 inline-flex items-center gap-2 rounded-full border-2 border-[var(--ink)] bg-white px-3 py-1 text-sm font-bold">Mozgóbolt · 2014 óta · közel 100 településen</p>
-          <h1 className="disp max-w-[13ch] text-[clamp(2.6rem,8.2vw,6.2rem)]">Jön az autó. <span className="text-[var(--red)]">Hozza a felvágottat.</span></h1>
+          <h1 className="disp max-w-[13ch] text-[clamp(2.6rem,8.2vw,6.2rem)]"><T>Jön az autó. <span className="hl text-[var(--red)]">Hozza a felvágottat.</span></T></h1>
           <p className="mt-4 max-w-[34ch] text-[1.1rem] font-medium md:text-[1.25rem]">Osztrák virsli, sonka, kolbász és gyorsfagyasztott finomságok: minden héten ugyanakkor, a te utcádban.</p>
           <div className="mt-5 flex flex-wrap gap-3">
             <a href="#mikor" className="btn btn-red" data-track="mikor_jon_hero">Mikor jön hozzám?</a>
@@ -55,15 +67,15 @@ function Hero() {
           </div>
         </div>
         <div className={`${capBox} cap-1`}>
-          <p className="disp max-w-[14ch] text-[clamp(2.1rem,6vw,4.6rem)]">Hetente kétszer <span className="text-[var(--green)]">friss áru,</span> egyenesen a gyártótól.</p>
+          <p className="disp max-w-[14ch] text-[clamp(2.1rem,6vw,4.6rem)]"><T>Hetente kétszer <span className="hl text-[var(--green)]">friss áru,</span> egyenesen a gyártótól.</T></p>
           <p className="mt-3 max-w-[32ch] font-medium">A burgenlandi Stefri Frischeteamtől hozzuk, közvetítő nélkül.</p>
         </div>
         <div className={`${capBox} cap-2`}>
-          <p className="disp max-w-[15ch] text-[clamp(2.1rem,6vw,4.6rem)]">Ugyanazon a napon, <span className="text-[var(--red)]">ugyanabban az órában.</span></p>
+          <p className="disp max-w-[15ch] text-[clamp(2.1rem,6vw,4.6rem)]"><T>Ugyanazon a napon, <span className="hl text-[var(--red)]">ugyanabban az órában.</span></T></p>
           <p className="mt-3 max-w-[32ch] font-medium">Az időpontot pontosan tartjuk, így nem kell találgatnod, mikor érünk oda.</p>
         </div>
         <div className={`${capBox} cap-3`}>
-          <p className="disp max-w-[13ch] text-[clamp(2.1rem,6vw,4.6rem)]">Megállunk <span className="text-[var(--red)]">nálad is.</span></p>
+          <p className="disp max-w-[13ch] text-[clamp(2.1rem,6vw,4.6rem)]"><T>Megállunk <span className="hl text-[var(--red)]">nálad is.</span></T></p>
           <p className="mt-3 max-w-[32ch] font-medium">15 000 Ft feletti vásárlásnál 10 km-en belül házhoz is visszük.</p>
           <a href="#mikor" className="btn btn-red mt-5" data-track="mikor_jon_hero2">Megnézem, mikor jön</a>
         </div>
@@ -82,7 +94,7 @@ function Finder() {
       <div className="wrap2 grid items-center gap-10 md:grid-cols-2">
         <div>
           <p className="mb-3 text-sm font-bold uppercase tracking-widest text-[#ffe08a]">Menetrend</p>
-          <h2 className="disp text-[clamp(2.2rem,5.4vw,4.2rem)]">Mikor jön hozzám az autó?</h2>
+          <h2 data-t className="disp text-[clamp(2.2rem,5.4vw,4.2rem)]"><T>Mikor jön hozzám az autó?</T></h2>
           <p className="mt-4 max-w-[38ch] text-[1.1rem] text-white/90">Írd be a településed nevét, és egy koppintással megkérdezheted. A válaszban megkapod a napot és az órát, ami aztán minden héten ugyanaz.</p>
           <label htmlFor="town" className="mt-7 block text-sm font-bold">Településed neve</label>
           <input id="town" value={town} onChange={(e) => setTown(e.target.value)} autoComplete="address-level2" placeholder="pl. Vasszécseny" className="mt-2 h-14 w-full max-w-md rounded-xl border-2 border-[var(--ink)] bg-white px-4 text-[1.15rem] font-bold text-[var(--ink)] placeholder:font-medium placeholder:text-[var(--mute)]" />
@@ -124,7 +136,7 @@ function Kinalat() {
     <section id="kinalat" className="py-20 md:py-28">
       <div className="wrap2">
         <p className="mb-3 text-sm font-bold uppercase tracking-widest text-[var(--red)]">Kínálat és árak</p>
-        <h2 className="disp max-w-[16ch] text-[clamp(2.2rem,5.4vw,4.2rem)]">Írd össze, mi kerüljön a papírba.</h2>
+        <h2 data-t className="disp max-w-[16ch] text-[clamp(2.2rem,5.4vw,4.2rem)]"><T>Írd össze, mi kerüljön a papírba.</T></h2>
         <p className="mt-4 max-w-[52ch] text-[var(--mute)]">Az árak kilogrammra értendők, az áfát tartalmazzák, és tájékoztató jellegűek. Állítsd be a mennyiséget, a cetlit pedig egy gombbal elküldheted nekünk.</p>
         <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
           <div className="min-w-0">
@@ -183,7 +195,7 @@ function Hogyan() {
     <section ref={ref} id="hogyan" className="bg-[var(--paper2)] py-20 md:py-28">
       <div className="wrap2">
         <p className="mb-3 text-sm font-bold uppercase tracking-widest text-[var(--red2)]">Így megy</p>
-        <h2 className="disp max-w-[14ch] text-[clamp(2.2rem,5.4vw,4.2rem)]">Három megálló a vacsoráig.</h2>
+        <h2 data-t className="disp max-w-[14ch] text-[clamp(2.2rem,5.4vw,4.2rem)]"><T>Három megálló a vacsoráig.</T></h2>
         {/* a little road: the van rides it as you scroll, stops light up when it passes */}
         <div className="relative mt-14">
           <div className="absolute left-5 top-0 h-full w-3 rounded-full bg-[var(--ink)] md:left-0 md:top-6 md:h-3 md:w-full" aria-hidden>
@@ -226,12 +238,12 @@ function Eredet() {
         </div>
         <div>
           <p className="mb-3 text-sm font-bold uppercase tracking-widest text-[var(--green)]">Honnan jön</p>
-          <h2 className="disp text-[clamp(2.2rem,5.4vw,4.2rem)]">Burgenlandból, közvetítő nélkül.</h2>
+          <h2 data-t className="disp text-[clamp(2.2rem,5.4vw,4.2rem)]"><T>Burgenlandból, közvetítő nélkül.</T></h2>
           <p className="mt-4 max-w-[46ch]">A húskészítményeket közvetlenül az osztrák gyártótól, a Stefri Frischeteamtől hozzuk, hetente kétszer. Kiváló minőségű sertés- és marhahúsból készülnek.</p>
           <ul className="mt-6 grid gap-3 font-bold">
-            <li className="flex gap-3"><span className="text-[var(--red)]">●</span>2014 óta járjuk a környéket</li>
-            <li className="flex gap-3"><span className="text-[var(--red)]">●</span>Közel 100 településen állunk meg</li>
-            <li className="flex gap-3"><span className="text-[var(--red)]">●</span>Hetente kétszer friss áru a gyártótól</li>
+            <li className="flex gap-3"><span className="hl text-[var(--red)]">●</span>2014 óta járjuk a környéket</li>
+            <li className="flex gap-3"><span className="hl text-[var(--red)]">●</span>Közel 100 településen állunk meg</li>
+            <li className="flex gap-3"><span className="hl text-[var(--red)]">●</span>Hetente kétszer friss áru a gyártótól</li>
           </ul>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/stefri/stefri-frischeteam.png" alt="Stefri Frischeteam" width={150} height={109} loading="lazy" className="mt-7 h-16 w-auto" />
@@ -247,7 +259,7 @@ function Gyik() {
     <section id="gyik" className="bg-[var(--paper2)] py-20 md:py-28">
       <div className="wrap2">
         <p className="mb-3 text-sm font-bold uppercase tracking-widest text-[var(--red2)]">Gyakori kérdések</p>
-        <h2 className="disp max-w-[14ch] text-[clamp(2.2rem,5.4vw,4.2rem)]">Árcédulák, válaszokkal.</h2>
+        <h2 data-t className="disp max-w-[14ch] text-[clamp(2.2rem,5.4vw,4.2rem)]"><T>Árcédulák, válaszokkal.</T></h2>
         <p className="mt-3 text-[var(--mute)]">Koppints egy cédulára, megfordul.</p>
         <div className="mt-12 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
           {FAQ.map(([q, a], i) => (
@@ -269,7 +281,7 @@ function Kapcsolat() {
   return (
     <section id="kapcsolat" className="bg-[var(--red)] py-20 text-white md:py-28">
       <div className="wrap2">
-        <h2 className="disp text-[clamp(2.4rem,7vw,5.6rem)]">Rendelés, kérdés? Hívj.</h2>
+        <h2 data-t className="disp text-[clamp(2.4rem,7vw,5.6rem)]"><T>Rendelés, kérdés? Hívj.</T></h2>
         <a href={`tel:${PHONE_TEL}`} data-track="hivas" className="disp mt-6 block w-max max-w-full text-[clamp(2rem,8.4vw,6.4rem)] underline decoration-[var(--must)] decoration-[.08em] underline-offset-[.12em]">{PHONE}</a>
         <p className="mt-3 text-white/90">Második szám: <a className="font-bold underline" href={`tel:${PHONE2_TEL}`} data-track="hivas">{PHONE2}</a>. Mindkettő WhatsAppon is elérhető.</p>
         <div className="mt-8 flex flex-wrap gap-3">
@@ -291,11 +303,13 @@ export function Stefri() {
     const scroll = () => setBar(scrollY > innerHeight * 2.6);
     const w = window as unknown as { __hrvtReady?: boolean };
     if (!w.__hrvtReady) { w.__hrvtReady = true; dispatchEvent(new Event("hrvt:ready")); }
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -12% 0px" });
+    document.querySelectorAll(".sf [data-t]").forEach((el) => io.observe(el));
     const cart = (e: Event) => setN((e as CustomEvent<number>).detail);
     addEventListener("sf:cart", cart);
     document.addEventListener("click", click);
     addEventListener("scroll", scroll, { passive: true });
-    return () => { document.removeEventListener("click", click); removeEventListener("scroll", scroll); removeEventListener("sf:cart", cart); };
+    return () => { document.removeEventListener("click", click); removeEventListener("scroll", scroll); removeEventListener("sf:cart", cart); io.disconnect(); };
   }, []);
   return (
     <div className="sf pb-[4.5rem] md:pb-0">
