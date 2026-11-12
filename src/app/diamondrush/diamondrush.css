@@ -1,0 +1,64 @@
+.dr { --ink:#0b0709; --ink2:#160d11; --pink:#ff2e7e; --blush:#ffd9e6; --gold:#c9a24a; --gold2:#8a6a1f; --lgold:#ecd392; --cream:#fbf3ea; --mute:#b9a7ae; background:var(--ink); color:#fff; font-family:"DM Sans Variable",system-ui,sans-serif; font-size:1.06rem; line-height:1.55; }
+.dr main :is(h1,h2) { transform:none; }
+.dr .rush { font-family:"Anton",Impact,sans-serif; text-transform:uppercase; font-style:italic; line-height:.92; letter-spacing:.005em; transform:skewX(-6deg); display:inline-block; }
+.dr .ggc { font-family:"Playfair Display Variable",Georgia,serif; font-style:italic; font-weight:560; line-height:1; letter-spacing:-.015em; }
+.dr .eyebrow { font-size:.78rem; font-weight:700; letter-spacing:.22em; text-transform:uppercase; }
+.dr .wrapd { width:min(1180px,100% - 2.5rem); margin-inline:auto; }
+.dr .btn { display:inline-flex; align-items:center; justify-content:center; gap:.6rem; min-height:3.3rem; padding:0 1.7rem; font-weight:800; letter-spacing:.02em; position:relative; transition:transform .3s cubic-bezier(.2,.9,.3,1.4), box-shadow .3s; clip-path:polygon(1rem 0,100% 0,calc(100% - 1rem) 100%,0 100%); }
+.dr .btn:hover { transform:translateY(-3px) scale(1.03); }
+.dr .btn:active { transform:scale(.97); }
+.dr .btn-pink { background:var(--pink); color:var(--ink); }
+.dr .btn-gold { background:linear-gradient(100deg,var(--gold),var(--lgold) 50%,var(--gold)); color:var(--ink); background-size:200% 100%; animation:drSheen 4s linear infinite; }
+.dr .btn-line { background:#fff; color:var(--ink); }
+@keyframes drSheen { to { background-position:-200% 0; } }
+.dr :is(a,button,input,textarea):focus-visible { outline:3px solid var(--pink); outline-offset:3px; }
+.dr .on-cream :is(a,button,input,textarea):focus-visible { outline-color:var(--ink); }
+
+/* hero: two stacked worlds, the second one clipped by the diamond edge */
+.dr .world { position:absolute; inset:0; overflow:hidden; }
+.dr .world-ggc { background:var(--cream); color:var(--ink); clip-path:var(--clip, polygon(50% 0,100% 0,100% 100%,50% 100%)); }
+.dr .bw { filter:none; }
+.dr .lit { overflow:hidden; }
+.dr .edge { position:absolute; left:0; top:0; width:300vmax; height:3px; margin:-1.5px 0 0 -150vmax; background:linear-gradient(90deg,transparent 20%,var(--pink) 42%,#fff 50%,var(--lgold) 58%,transparent 80%); transform-origin:50% 50%; box-shadow:0 0 22px 2px rgba(255,255,255,.55); will-change:transform; }
+.dr .bigword { position:absolute; white-space:nowrap; pointer-events:none; user-select:none; }
+
+.dr .cap { position:absolute; opacity:0; transform:translateY(26px); transition:opacity .45s, transform .7s cubic-bezier(.2,.8,.2,1); pointer-events:none; }
+.dr [data-st="0"] .cap-0, .dr [data-st="1"] .cap-1, .dr [data-st="2"] .cap-2, .dr [data-st="3"] .cap-3 { opacity:1; transform:none; pointer-events:auto; }
+/* words are cut in like facets: each one is revealed by a slanted blade */
+.dr .w { display:inline-block; }
+.js .dr .w { clip-path:polygon(0 0,0 0,-30% 100%,-30% 100%); }
+.js .dr [data-t].in .w, .js .dr [data-st="0"] .cap-0 .w, .js .dr [data-st="1"] .cap-1 .w, .js .dr [data-st="2"] .cap-2 .w, .js .dr [data-st="3"] .cap-3 .w { animation:drCut .7s cubic-bezier(.2,.8,.2,1) both; animation-delay:calc(var(--i) * 70ms + 60ms); }
+@keyframes drCut { 0%{clip-path:polygon(0 -10%,0 -10%,-30% 110%,-30% 110%);transform:translateY(.25em)} 100%{clip-path:polygon(-10% -10%,140% -10%,110% 110%,-40% 110%);transform:none} }
+
+/* manifesto photo: assembled from shards */
+.dr .shards { position:relative; aspect-ratio:52/93; }
+.dr .shards i { position:absolute; inset:0; background:var(--img) center/cover; transform:translate(calc(var(--dx) * (1 - var(--p,1))), calc(var(--dy) * (1 - var(--p,1)))) rotate(calc(var(--r) * (1 - var(--p,1)))); opacity:calc(.2 + var(--p,1) * .8); will-change:transform; }
+
+/* Diamond Rush: counter-moving giant words, photo opening from a rhombus */
+.dr .tape { white-space:nowrap; will-change:transform; }
+.dr .tape span { -webkit-text-stroke:2px var(--pink); color:transparent; padding-right:.35em; }
+.dr .tape span:nth-child(even) { -webkit-text-stroke:0; color:var(--pink); }
+.dr .rhomb { clip-path:polygon(calc(50% - var(--p,1) * 50%) 0, calc(50% + var(--p,1) * 50%) 0, 100% calc(50% - var(--p,1) * 50%), 100% calc(50% + var(--p,1) * 50%), calc(50% + var(--p,1) * 50%) 100%, calc(50% - var(--p,1) * 50%) 100%, 0 calc(50% + var(--p,1) * 50%), 0 calc(50% - var(--p,1) * 50%)); }
+.dr .gig { border-top:1px solid rgba(255,255,255,.18); transition:padding .35s cubic-bezier(.2,.8,.2,1), background .35s; }
+.dr .gig:hover { padding-left:1.2rem; background:linear-gradient(90deg,rgba(255,46,126,.18),transparent); }
+
+/* Golden Girls Club: words under a travelling spotlight */
+.dr .spot { color:rgba(138,106,31,.42); background:radial-gradient(circle at var(--sx,50%) var(--sy,50%), var(--ink) 0, var(--ink) 9rem, rgba(11,7,9,0) 17rem); -webkit-background-clip:text; background-clip:text; }
+.dr .arch { border-radius:999px 999px 0 0; overflow:hidden; }
+.dr .crown path { stroke-dasharray:1; stroke-dashoffset:calc(1 - var(--p,1)); }
+
+/* the two-sided form */
+.dr .flip { transition:background .6s, color .6s; }
+.dr .flip[data-mode="tanc"] { background:var(--ink2); color:#fff; }
+.dr .flip[data-mode="fellepes"] { background:var(--cream); color:var(--ink); }
+.dr .chip { min-height:2.9rem; padding:0 1.1rem; border:2px solid currentColor; font-weight:700; transition:background .25s, color .25s, transform .25s; clip-path:polygon(.6rem 0,100% 0,calc(100% - .6rem) 100%,0 100%); background:transparent; }
+.dr .flip[data-mode="tanc"] .chip[aria-pressed="true"] { background:var(--pink); color:var(--ink); border-color:var(--pink); transform:scale(1.04); }
+.dr .flip[data-mode="fellepes"] .chip[aria-pressed="true"] { background:var(--ink); color:var(--lgold); border-color:var(--ink); transform:scale(1.04); }
+.dr .field { width:100%; min-height:3.2rem; padding:.7rem 1rem; background:transparent; border:0; border-bottom:2px solid currentColor; font:inherit; font-weight:600; color:inherit; }
+.dr .field::placeholder { color:inherit; opacity:.55; }
+.dr .tabs { display:inline-grid; grid-auto-flow:column; position:relative; border:2px solid currentColor; clip-path:polygon(1rem 0,100% 0,calc(100% - 1rem) 100%,0 100%); }
+.dr .tabs button { min-height:3.2rem; padding:0 1.6rem; font-weight:800; position:relative; z-index:1; transition:color .3s; }
+.dr .flip[data-mode="tanc"] .tabs button[aria-pressed="true"] { background:var(--pink); color:var(--ink); }
+.dr .flip[data-mode="fellepes"] .tabs button[aria-pressed="true"] { background:var(--ink); color:var(--lgold); }
+
+@media (prefers-reduced-motion:reduce){ .js .dr .w { clip-path:none; animation:none !important; } .dr * { transition-duration:.01ms !important; animation-duration:.01ms !important; } }
