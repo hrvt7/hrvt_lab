@@ -80,3 +80,12 @@ export const STEPS = [
     body: "Beállítom a domaint és a tárhelyet, elindítjuk az oldalt, és bekapcsoljuk a mérést. Utána sem tűnök el: a valódi látogatókból mindig kiderül valami, amin érdemes javítani.",
   },
 ] as const;
+
+/** Questions people ask before ordering; every answer restates something the page already promises. */
+export const FAQ = [
+  ["Sablonból vagy oldalépítőből dolgozol?", "Nem. Az oldalt az alapoktól, kézzel írt kóddal építem fel, ezért gyorsan betölt, és nem kell hetente frissítgetni."],
+  ["Ki írja a szöveget, és honnan lesznek képek?", "A szöveget én írom meg abból, amit a cégedről elmondasz. A képekhez a saját fotóidból dolgozom; ha kell, AI-val készült kép és videó egészíti ki."],
+  ["Mi lesz a régi oldalammal és a domainnel?", "A domaint és a tárhelyet beállítom, az új oldalt élesítem, és a régi oldaladat is átköltöztetem."],
+  ["Mennyibe kerül, és mikorra lesz kész?", "Ez a feladattól függ. Az első hívás után egyoldalas tervet kapsz, rögzített keretekkel, így előre tudod, mire számíthatsz."],
+  ["Mi történik az élesítés után?", "Bekapcsoljuk a mérést, így látod, melyik gomb hozza az érdeklődőket. Utána sem tűnök el: a valódi látogatókból mindig kiderül valami, amin érdemes javítani."],
+] as const;

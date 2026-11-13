@@ -1,37 +1,47 @@
-# HRVT — Design system v3 (Night & Kiwi, liquid)
+# HRVT — Design system v4 („Nyers jelből kész oldal")
 
-**Concept:** bold color blocking and kinetic, condensed type. Night (#222222) is the base, Kiwi (#89E900) the single loud voice; whole sections flip to kiwi.
+## Brief
+Egyedi weboldal készítés, Szombathely. A látogató egy helyi vállalkozó, aki 10 másodperc alatt azt akarja látni: ez más, mint a sablonoldalak, és hogyan kérhet ajánlatot. Világ: jel, raszter, képpont. Az egy dolog: az oldal a szeme előtt renderelődik ki nyers ASCII-zajból éles weboldallá, és a keze (kurzor, ujj, a telefon döntése) visszabontja.
 
-## Color
-| Token | Hex | Use |
+**Kerülendő (a sablon, amit nem készítünk):** kártyarács ikonokkal, harmonika-GYIK, lila gradiens, üveghatás, „Get started" gomb, stockfotó.
+
+## Szín (logó kit, rögzített)
+| Token | Hex | Szerep |
 |---|---|---|
-| night | #222222 | base background, text on kiwi |
-| night-2 / 3 / 4 | #1a1a1a / #2c2c2c / #3a3a3a | deeper surfaces, cards, chips |
-| kiwi | #89E900 | accent, CTAs, whole-section fields |
-| paper | #F2F2EE | text on night |
-| smoke / ash | #9A9A93 / #6A6A65 | secondary / tertiary text |
+| night | #222222 | alap |
+| night-2 / 3 | #1a1a1a / #2c2c2c | mélyebb felület, keret |
+| kiwi | #89E900 | az egyetlen hangos hang: jel, CTA, egész szekciók |
+| paper | #F2F2EE | szöveg nighton |
+| smoke | #A8A8A0 | másodlagos szöveg (kontraszt nighton 6.6:1) |
 
-Ratio ≈ 60 night · 25 paper · 15 kiwi.
+Arány ≈ 60 night · 25 paper · 15 kiwi. Kiwi szekción a szöveg night (kontraszt 10.6:1).
 
-## Type
-- **Rugis** — logo only, shipped as outlined SVG (`src/lib/logo.ts`), never as a webfont.
-- **Lexend Giga (variable 100–900)** — all headlines, uppercase, wide, weight 650, line-height 1.08 (leaves room for Hungarian accents Á É Í Ó Ö Ő Ú Ü Ű).
-- **Geist** — body. **Geist Mono** — labels, data, `[01]` indices.
+## Betű (új pár ehhez az oldalhoz)
+- **Doto** (variable, OFL, `@fontsource-variable/doto`) — a NYERS állapot: pontmátrix. Címsorok kiinduló alakja, számok, állapotjelzők. ő/ű/Ő/Ű ellenőrizve (fontTools).
+- **Funnel Display** (variable 300–800, OFL, `@fontsource-variable/funnel-display`) — a KÉSZ állapot: éles címsor. ő/ű/Ő/Ű ellenőrizve.
+- **Geist** törzsszöveg, **Geist Mono** címkék és ASCII-rámpa (kit).
+- Logó: Rugis-ból körvonalazott SVG (`src/lib/logo.ts`), webfontként soha. A Rugis ingyenes változata csak személyes használatra szól: kereskedelmi licenc Ádámnál ellenőrizendő.
+- Display line-height 1.02, ékezetnek hely.
 
-## Motion vocabulary (all new)
-1. **Kiwi curtain intro** — the Rugis wordmark draws itself, then the screen lifts away in 8 vertical strips.
-2. **Weight lens** — hero letters thin out near the cursor (variable `wght` per letter); entrance animates weight 100 → 800.
-3. **Slot word** — "Szoftvert építek, ami ___." rolls dolgozik / elad / spórol / lenyűgöz.
-4. **Épül a szemed előtt (WebGL / three.js)** — the hero is a 520svh scroll scene with a sticky 3D canvas. Wireframe blocks float beside the headline; scrolling assembles them into an exploded page (01 Drótváz), fills them grey (02 Elrendezés), sweeps real textures in (03 Design), flattens the page to face the camera where a cursor clicks the CTA (04 Éles oldal), then the camera dives into the kiwi button and the screen becomes the kiwi Services section. Desktop builds a browser page, phones build a phone page. Collapses to a plain hero with reduced motion or no WebGL.
-5. **Tube fill** — the "Weboldal, kulcsrakészen" rows fill with kiwi left to right as they cross the screen, text turning to ink. The contact section keeps the curved liquid rise.
-6. **Stacked cards** — services stick and sink back (scale + dim) as the next one slides over.
-7. **Live visualisations** — AI answer stream, automation graph with pulses, deploy log, self-assembling layout, 3D wireframe gear.
-8. **Pixel resolve** — case images resolve from coarse kiwi-tinted pixels to full resolution.
-9. **Strain-wave model** — computed 202/200-tooth harmonic gear, draggable.
-10. **Odometer** — process step number rolls 01 → 04.
-11. **Scramble** — mono labels decode from random glyphs on view and hover.
-12. **Crosshair cursor** — with live page coordinates; becomes a kiwi tag on targets.
-13. **Magnetic letters** — "Beszéljünk." leans toward the pointer.
-15. **Laptop stage (WebGL)** — the Lamelix case arrives as a closed 3D laptop (kiwi monogram on the lid), opens on scroll, the screen boots into the screenshot and slowly pans. The pixel-resolve image is the fallback.
+## Rács és arányok
+Tartalom max 1320 px, margó `clamp(18px, 3.4vw, 56px)`. Sarok: 0 (éles, raszteres világ); csak a tárcsa és a csomópontok kerekek. Árnyék nincs.
 
-All of it respects `prefers-reduced-motion`.
+## Mozgás-szókincs (13, mind a koncepcióból)
+1. **Jel-mező** — a hero WebGL fragment shadere: áramló zajmező Bayer-ditheringgel és ASCII-glifatlasszal, ebből áll össze a HRVT felirat.
+2. **Felbontás-görgetés** — a hero görgetésre 22 px-es ASCII-cellákból 3 px-es raszteren át éles feliratig tisztul.
+3. **Visszabontó lencse** — a kurzor körül a kép visszaesik durva cellákra és kitér; mobilon az ujj és a telefon döntése (giroszkóp) mozgatja a lencsét.
+4. **Felbontás-tárcsa** — húzható tárcsa (állapotgép: nyugvó → fogva → visszarugózik), kézzel állítja a jelenet felbontását; billentyűvel is.
+5. **Kirajzolódó jelenetek** — a négy vállalás kódból rajzolt képe (oldalterv, forráskód, találat, űrlap) görgetésre renderelődik ki.
+6. **Pontmátrix-váltás** — a címsorok betűnként váltanak Doto-ról Funnel Displayre, elrendezés-ugrás nélkül.
+7. **Render-sor** — a „kulcsrakészen" tételei munkafolyamatként futnak: várólistán → renderelés (ASCII-pörgő, blokk-sáv) → kész (kirajzolódó pipa).
+8. **Váltottsoros összeállás** — a tételekkel együtt egy minioldal sávonként épül fel.
+9. **Zajból tiszta jel** — a folyamat függőleges jelvonala fent zajos, lent egyenes; a görgetés húzza végig, a csomópontok állapotot váltanak.
+10. **Dekódolt válasz** — a kérdésekre adott válaszok glifazajból fejtődnek ki, ahogy a képernyőre érnek.
+11. **Neved a mezőben** — a kapcsolat-szekcióban a beírt cégnév óriás raszterként jelenik meg a háttérben.
+12. **Raszteres átfordulás** — a night és kiwi szekciók közti él 75 / 50 / 25%-os raszter-sávokon vált.
+13. **Gomb-állapotgép** — CTA: nyugvó → rámutatva menetelő képpont-keret → megnyomva „elküldve" visszajelzés.
+
+Mind tiszteli a `prefers-reduced-motion` beállítást (álló, kész állapot). WebGL nélkül a hero éles SVG-feliratra esik vissza; tesztkapcsoló: `?gl=0`.
+
+## Mobil
+Külön elrendezés: a hero felirata 86vw, a szöveg alatta; a vállalások nem tűzöttek, blokkonként renderelődnek; a lencse érintésre és döntésre él; alul rögzített sáv (Ajánlatkérés · Hívás) a hero után.

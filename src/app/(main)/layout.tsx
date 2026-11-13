@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/league-gothic/wdth.css";
-import "@fontsource-variable/outfit";
-import "./lux.css";
+import "@fontsource-variable/funnel-display";
+import "@fontsource-variable/doto";
+import "./sig.css";
 
 export const metadata: Metadata = {
   title: "Weboldal készítés Szombathely – egyedi, sablon nélkül | HRVT",
@@ -19,13 +19,8 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport: Viewport = { themeColor: "#fedc00", colorScheme: "dark" };
+export const viewport: Viewport = { themeColor: "#222222", colorScheme: "dark" };
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <style>{`html{background:#323232}`}</style>
-      {children}
-    </>
-  );
+  return children;
 }

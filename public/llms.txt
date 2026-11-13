@@ -2,6 +2,15 @@
 
 > Egyedi weboldal készítés és honlapkészítés Szombathelyen és Vas megyében, sablon nélkül. Design, szöveg, fejlesztés, keresőoptimalizálás és élesítés egy kézben.
 
+## Oldalak
+
+- [Főoldal](https://hrvt.vercel.app/): szolgáltatások, folyamat, gyakori kérdések és kapcsolat egy oldalon.
+- [Mit vállalok](https://hrvt.vercel.app/#szolgaltatasok): egyedi design, fejlesztés, szöveg és keresők, űrlap és foglalás.
+- [Weboldal készítés Szombathelyen, kulcsrakészen](https://hrvt.vercel.app/#weboldal): tervezés, szöveg, kép és mozgás, fejlesztés, űrlap, keresők, domain és tárhely, mérés és karbantartás.
+- [Folyamat](https://hrvt.vercel.app/#folyamat): megértés, terv, építés, élesítés.
+- [Kérdések](https://hrvt.vercel.app/#kerdesek): sablon, szöveg és képek, régi oldal és domain, ár és határidő, élesítés utáni teendők.
+- [Kapcsolat](https://hrvt.vercel.app/#kapcsolat): ajánlatkérés e-mailben vagy SMS-ben.
+
 ## Szolgáltatások
 
 - Egyedi design: az arculat, az elrendezés és a mozgás a megrendelő saját anyagaiból készül, elsőként telefonra tervezve.
@@ -12,7 +21,7 @@
 
 ## Kapcsolat
 
-- Weboldal: https://hrvt.vercel.app/
 - Telefon: +36 30 525 2336
+- E-mail: hrvtadam.7@icloud.com
 - Helyszín: Szombathely, Vas megye
 - Válaszidő: 1 munkanap

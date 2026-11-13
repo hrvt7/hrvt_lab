@@ -1,290 +1,351 @@
-import { Stage } from "@/components/l/Stage";
-import { Fx } from "@/components/l/Fx";
-import { Composer } from "@/components/l/Composer";
-import { Sun } from "@/components/l/Sun";
-import { Speed } from "@/components/l/Speed";
+import { Field } from "@/components/sig/Field";
+import { Sig } from "@/components/sig/Sig";
 import { Wordmark } from "@/components/Logo";
-import { EMAIL, HERO_WORDS, NAV, PHONE, PHONE_TEL, SERVICES, STEPS, TURNKEY } from "@/lib/content";
-
-const pad = (n: number) => String(n).padStart(2, "0");
+import { EMAIL, FAQ, NAV, PHONE, PHONE_TEL, SERVICES, STEPS, TURNKEY } from "@/lib/content";
 
 const LD = {
   "@context": "https://schema.org",
-  "@type": "ProfessionalService",
-  name: "HRVT",
-  url: "https://hrvt.vercel.app",
-  description: "Egyedi weboldal készítés és honlapkészítés Szombathelyen és Vas megyében: design, szöveg, fejlesztés, keresőoptimalizálás és élesítés egy kézben, sablon nélkül.",
-  serviceType: ["Weboldal készítés", "Honlapkészítés", "Webfejlesztés", "Keresőoptimalizálás"],
-  telephone: PHONE_TEL,
-  email: EMAIL,
-  areaServed: [{ "@type": "City", name: "Szombathely" }, { "@type": "AdministrativeArea", name: "Vas megye" }],
-  knowsLanguage: "hu",
+  "@graph": [
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://hrvt.vercel.app/#hrvt",
+      name: "HRVT",
+      url: "https://hrvt.vercel.app",
+      description:
+        "Egyedi weboldal készítés és honlapkészítés Szombathelyen és Vas megyében: design, szöveg, fejlesztés, keresőoptimalizálás és élesítés egy kézben, sablon nélkül.",
+      serviceType: ["Weboldal készítés", "Honlapkészítés", "Webfejlesztés", "Keresőoptimalizálás"],
+      telephone: PHONE_TEL,
+      email: EMAIL,
+      address: { "@type": "PostalAddress", addressLocality: "Szombathely", addressRegion: "Vas", addressCountry: "HU" },
+      areaServed: [{ "@type": "City", name: "Szombathely" }, { "@type": "AdministrativeArea", name: "Vas megye" }],
+      knowsLanguage: "hu",
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: FAQ.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
+    },
+  ],
 };
 
-const SEAL = "Weboldal készítés · Szombathely · Sablon nélkül · ";
+const SCENES = ["design", "code", "search", "form"] as const;
+const MAIL = `mailto:${EMAIL}?subject=${encodeURIComponent("Weboldalt szeretnék")}&body=${encodeURIComponent("Szia! Weboldalt szeretnék kérni.")}`;
+const SMS = `sms:${PHONE_TEL}?&body=${encodeURIComponent("Szia! Weboldalt szeretnék kérni.")}`;
 
 export default function Page() {
   return (
-    <div className="l">
+    <div className="sig">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(LD) }} />
-      <Stage />
-      <Fx />
-      <Sun />
-      <Speed />
-      <span className="l-progress" data-l-progress="" aria-hidden />
+      <Sig email={EMAIL} tel={PHONE_TEL} />
 
-      <header className="l-nav">
-        <a href="#top" aria-label="HRVT — a lap tetejére" className="l-nav-logo">
-          <Wordmark className="l-nav-wm" />
+      <header className="sig-nav">
+        <a href="#top" aria-label="HRVT, a lap tetejére" className="sig-nav-logo">
+          <Wordmark className="sig-nav-wm" />
         </a>
-        <nav aria-label="Fő menü" className="l-nav-links">
+        <nav aria-label="Fő menü" className="sig-nav-links">
           {NAV.map((n) => (
             <a key={n.href} href={n.href}>
               {n.label}
             </a>
           ))}
         </nav>
-        <a href="#kapcsolat" className="l-nav-cta" data-track="ajanlatkeres">
-          Kérek egy weboldalt
+        <a href="#kapcsolat" className="sig-btn sig-btn--sm" data-track="ajanlatkeres">
+          <span>Kérek egy weboldalt</span>
         </a>
       </header>
 
       <main>
-        {/* Nyitókép */}
-        <section id="top" className="l-hero l-inv" data-l-sec="" data-l-tone="light">
-          <div className="l-wrap l-hero-in">
-            <p className="l-label" data-l-hero="">
-              <span>Weboldal készítés</span>
-              <span>
-                Szombathely <span className="l-clock" data-l-clock="" aria-hidden />
-                <span className="l-sun" data-l-sun="" title="A cím árnyéka a nap valódi állását követi Szombathely fölött." />
+        {/* 1. Jel-mező */}
+        <section id="top" className="sig-hero" data-sig-hero="" data-sig-p="0" data-theme="night">
+          <div className="sig-hero-pin">
+            <Field />
+            <div className="sig-mark-fallback" aria-hidden>
+              <Wordmark className="sig-mark-svg" />
+            </div>
+            <p className="sig-hero-top sig-mono">
+              <span>Weboldal készítés, Szombathely</span>
+              <span aria-hidden className="sig-res">
+                felbontás <b data-sig-res="">nyers</b>
               </span>
             </p>
-            <h1 className="l-h1">
-              <span>Egyedi </span>
-              <span>weboldalt </span>
-              <span>készítek. </span>
-              <em>
-                <span>Sablon </span>
-                <span>nélkül.</span>
-              </em>
-            </h1>
-            <div className="l-hero-foot">
-              <div>
-                <p className="l-roll" data-l-hero="">
-                  <span className="l-sr">Weboldal, ami {HERO_WORDS.join(", ")}.</span>
-                  <span aria-hidden>Weboldal, ami</span>
-                  <span className="l-roll-w" aria-hidden>
-                    <span data-l-roll="">
-                      {HERO_WORDS.map((w) => (
-                        <i key={w}>{w}.</i>
-                      ))}
-                    </span>
-                  </span>
-                </p>
-                <p className="l-lead" data-l-hero="">
-                  Design, szöveg, fejlesztés, keresőoptimalizálás és élesítés egy kézben. Azzal beszélsz, aki az oldaladat készíti.
-                </p>
-                <div className="l-cta" data-l-hero="">
-                  <a href="#kapcsolat" className="l-btn l-btn--solid" data-track="ajanlatkeres" data-l-magnet="">
-                    Kérek egy weboldalt
-                  </a>
-                  <a href={`tel:${PHONE_TEL}`} className="l-link" data-track="hivas">
-                    {PHONE}
-                  </a>
-                </div>
+            <div className="sig-hero-copy">
+              <h1 className="sig-h1">
+                Egyedi weboldalt készítek. <em>Sablon nélkül.</em>
+              </h1>
+              <p className="sig-lead">
+                Design, szöveg, fejlesztés, keresők és élesítés egy kézben, Szombathelyen és Vas megyében.
+              </p>
+              <div className="sig-cta">
+                <a href="#kapcsolat" className="sig-btn" data-track="ajanlatkeres">
+                  <span>Kérek egy weboldalt</span>
+                </a>
+                <a href={`tel:${PHONE_TEL}`} className="sig-link" data-track="hivas">
+                  Hívj: {PHONE}
+                </a>
               </div>
-              <a href="#szolgaltatasok" className="l-seal" data-l-hero="">
-                <span className="l-sr">Tovább a szolgáltatásokhoz</span>
-                <svg viewBox="0 0 200 200" aria-hidden>
-                  <defs>
-                    <path id="l-seal-path" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" />
-                  </defs>
-                  <text>
-                    <textPath href="#l-seal-path" textLength="486">
-                      {SEAL}
-                    </textPath>
-                  </text>
-                </svg>
-                <span aria-hidden>↓</span>
-              </a>
+              <button type="button" className="sig-tilt sig-mono" data-sig-tilt="" hidden>
+                Döntés bekapcsolása
+              </button>
             </div>
           </div>
         </section>
 
-
-        {/* Mit vállalok: one service on stage at a time */}
-        <section id="szolgaltatasok" className="l-stage" data-l-stage="" data-l-sec="" style={{ ["--n" as string]: SERVICES.length }}>
-          <div className="l-stage-pin">
-            <div className="l-wrap l-stage-grid">
-              <div className="l-stage-side">
-                <h2 className="l-label l-label--h">Mit vállalok</h2>
-                <p className="l-odo" aria-hidden>
-                  <span data-l-odo="">
-                    {SERVICES.map((s) => (
-                      <i key={s.n}>{s.n}</i>
-                    ))}
-                  </span>
-                  <small>/ {pad(SERVICES.length)}</small>
-                </p>
-                <ol className="l-index" aria-hidden>
-                  {SERVICES.map((s, i) => (
-                    <li key={s.n} data-l-idx="" data-on={i === 0 ? "" : undefined}>
-                      {s.title}
-                    </li>
-                  ))}
-                </ol>
-              </div>
-              <div className="l-stage-main">
-                {SERVICES.map((s, i) => (
-                  <article key={s.n} data-l-item="" data-on={i === 0 ? "" : undefined}>
-                    <h3>{s.title}</h3>
-                    <p className="l-lede">{s.lede}</p>
-                    <p className="l-body">{s.body}</p>
-                    <ul className="l-tags">
-                      {s.tags.map((t) => (
-                        <li key={t}>{t}</li>
-                      ))}
-                    </ul>
-                    {i === 1 && (
-                      <p className="l-speed" data-l-speed="" hidden>
-                        Ez az oldal nálad <b data-l-speed-n="" /> alatt töltött be. <span>Mérve, nem ígérve.</span>
-                      </p>
-                    )}
-                  </article>
-                ))}
-              </div>
-            </div>
+        {/* 2. Mit vállalok */}
+        <section id="szolgaltatasok" className="sig-sv" data-theme="night">
+          <div className="sig-wrap sig-head">
+            <p className="sig-mono sig-kicker">Mit vállalok</p>
+            <h2 className="sig-h2" data-dot="">
+              Négy dolog, amit kézzel készítek el.
+            </h2>
           </div>
-        </section>
-
-        {/* Kulcsrakészen: a slow sideways walk past eight columns */}
-        <section id="weboldal" className="l-walk" data-l-walk="" data-l-sec="">
-          <div className="l-walk-pin">
-            <p className="l-slip" aria-hidden>
-              <span data-l-slip="">{TURNKEY.map(([t]) => t).join(" · ")}</span>
-            </p>
-            <div className="l-walk-track" data-l-track="">
-              <div className="l-walk-intro">
-                <p className="l-label">Kulcsrakészen</p>
-                <h2 className="l-h2" data-l-lines="">
-                  Weboldal készítés Szombathelyen, <em>kulcsrakészen.</em>
-                </h2>
-                <p className="l-walk-hint" aria-hidden>
-                  Nyolc tétel <span>→</span>
-                </p>
-              </div>
-              {TURNKEY.map(([t, d], i) => (
-                <article key={t} className="l-col">
-                  <span className="l-col-n">{pad(i + 1)}</span>
-                  <div>
-                    <h3>{t}</h3>
-                    <p>{d}</p>
+          <div className="sig-stage" data-sig-stage="">
+            <div className="sig-stage-in sig-wrap">
+              {SERVICES.map((s, i) => (
+                <article key={s.n} className={`sig-svc${i === 0 ? " is-on" : ""}`} data-sig-svc="">
+                  <div className="sig-svc-view">
+                    <canvas data-sig-scene={SCENES[i]} role="img" aria-label={`${s.title}: kódból rajzolt ábra, amely görgetésre kitisztul`} />
+                  </div>
+                  <div className="sig-svc-text">
+                    <p className="sig-num" aria-hidden>
+                      {s.n}
+                    </p>
+                    <h3 className="sig-h3">{s.title}</h3>
+                    <p className="sig-lede">{s.lede}</p>
+                    <p className="sig-body">{s.body}</p>
+                    <p className="sig-tags sig-mono">{s.tags.join(" / ")}</p>
                   </div>
                 </article>
               ))}
+              <div
+                className="sig-dial"
+                data-sig-dial=""
+                role="slider"
+                tabIndex={0}
+                aria-label="Felbontás: húzd, vagy használd a nyílbillentyűket"
+                aria-valuemin={1}
+                aria-valuemax={21}
+                aria-valuenow={21}
+                aria-valuetext="21 képpontos cellák"
+              >
+                <svg viewBox="0 0 120 120" aria-hidden>
+                  <g className="sig-dial-ticks">
+                    {Array.from({ length: 21 }, (_, i) => {
+                      const a = ((-225 + i * 13.5) * Math.PI) / 180;
+                      const r0 = 50, r1 = i % 5 === 0 ? 40 : 44;
+                      return (
+                        <line
+                          key={i}
+                          x1={(60 + r0 * Math.cos(a)).toFixed(2)}
+                          y1={(60 + r0 * Math.sin(a)).toFixed(2)}
+                          x2={(60 + r1 * Math.cos(a)).toFixed(2)}
+                          y2={(60 + r1 * Math.sin(a)).toFixed(2)}
+                        />
+                      );
+                    })}
+                  </g>
+                  <g data-sig-dial-knob="">
+                    <circle cx="60" cy="60" r="30" className="sig-dial-body" />
+                    <rect x="58" y="32" width="4" height="14" className="sig-dial-mark" />
+                  </g>
+                </svg>
+                <p className="sig-mono">
+                  <b data-sig-dial-val="">21 px</b>
+                  <span>húzd: felbontás</span>
+                </p>
+              </div>
             </div>
-            <span className="l-walk-bar" aria-hidden>
-              <i data-l-bar="" />
-            </span>
+          </div>
+          <div className="sig-wrap sig-go">
+            <a href="#kapcsolat" className="sig-btn" data-track="ajanlatkeres">
+              <span>Kérek egy weboldalt</span>
+            </a>
+            <a href={`tel:${PHONE_TEL}`} className="sig-link" data-track="hivas">
+              Hívj: {PHONE}
+            </a>
           </div>
         </section>
 
-        {/* Folyamat: the page turns to butter */}
-        <section id="folyamat" className="l-proc l-inv" data-l-sec="" data-l-tone="light">
-          <div className="l-wrap l-proc-grid">
-            <div className="l-proc-side">
-              <p className="l-label" data-l-in="">
-                A honlapkészítés menete
-              </p>
-              <h2 className="l-h2" data-l-lines="">
-                Négy lépés, és <em>él az oldalad.</em>
+        <div className="sig-edge sig-edge--in" aria-hidden />
+
+        {/* 3. Kulcsrakészen */}
+        <section id="weboldal" className="sig-tk" data-theme="kiwi">
+          <div className="sig-wrap">
+            <div className="sig-head">
+              <p className="sig-mono sig-kicker">Kulcsrakészen</p>
+              <h2 className="sig-h2" data-dot="">
+                Weboldal készítés Szombathelyen, kulcsrakészen.
               </h2>
             </div>
-            <ol className="l-steps">
-              {STEPS.map((st) => (
-                <li key={st.n} data-l-step="">
-                  <span className="l-rule" data-l-rule="" aria-hidden />
-                  <span className="l-dot" aria-hidden />
-                  <span className="l-step-n" aria-hidden>
-                    {st.n}
-                  </span>
-                  <div>
-                    <h3>{st.title}</h3>
-                    <p>{st.body}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
+            <div className="sig-tk-grid">
+              <div className="sig-tk-view">
+                <canvas data-sig-site="" role="img" aria-label="Egy minioldal, amely a nyolc tétellel együtt sávonként épül fel" />
+              </div>
+              <ol className="sig-jobs" data-sig-jobs="">
+                {TURNKEY.map(([t, d]) => (
+                  <li key={t} className="sig-job" data-sig-job="" data-state="queued">
+                    <span className="sig-job-state sig-mono" aria-hidden>
+                      <i data-sig-spin="">[ ]</i>
+                      <svg viewBox="0 0 24 24">
+                        <path d="M4 12.5l5.2 5.2L20 6.5" pathLength={1} />
+                      </svg>
+                    </span>
+                    <div>
+                      <h3 className="sig-job-t">{t}</h3>
+                      <p>{d}</p>
+                      <span className="sig-job-bar sig-mono" data-sig-bar="" aria-hidden>
+                        ░░░░░░░░░░░░
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+            <a href="#kapcsolat" className="sig-btn sig-btn--ink" data-track="ajanlatkeres">
+              <span>Kérek egy weboldalt</span>
+            </a>
           </div>
         </section>
 
-        {/* Kapcsolat */}
-        <footer id="kapcsolat" className="l-contact" data-l-sec="">
-          <div className="l-wrap">
-            <p className="l-label" data-l-in="">
-              Kapcsolat
-            </p>
-            <h2 className="l-mega" data-l-lines="">
-              Beszél<em>jünk.</em>
-            </h2>
-            <div className="l-contact-grid">
-              <div>
-                <p className="l-lede" data-l-in="">
-                  Írd meg néhány mondatban, milyen weboldalt szeretnél. Egy munkanapon belül személyesen válaszolok.
-                </p>
-                <Composer />
-              </div>
-              <dl className="l-facts" data-l-in="">
-                <div>
-                  <dt>Telefon</dt>
-                  <dd>
-                    <a href={`tel:${PHONE_TEL}`} data-track="hivas">
-                      {PHONE}
-                    </a>
-                  </dd>
-                </div>
-                <div>
-                  <dt>E-mail</dt>
-                  <dd>
-                    <a href={`mailto:${EMAIL}?subject=Weboldal`} data-track="email">
-                      {EMAIL}
-                    </a>
-                    <button type="button" className="l-copy" data-l-copy={EMAIL}>
-                      másolás
-                    </button>
-                  </dd>
-                </div>
-                <div>
-                  <dt>Helyszín</dt>
-                  <dd>Szombathely, Vas megye</dd>
-                </div>
-                <div>
-                  <dt>Válaszidő</dt>
-                  <dd>1 munkanap</dd>
-                </div>
-              </dl>
+        <div className="sig-edge sig-edge--out" aria-hidden />
+
+        {/* 4. Folyamat */}
+        <section id="folyamat" className="sig-pr" data-theme="night">
+          <div className="sig-wrap">
+            <div className="sig-head">
+              <p className="sig-mono sig-kicker">Folyamat</p>
+              <h2 className="sig-h2" data-dot="">
+                Négy lépés, és él az oldalad.
+              </h2>
             </div>
-            <div className="l-foot">
-              <nav aria-label="Lábléc">
-                {NAV.map((n) => (
-                  <a key={n.href} href={n.href}>
-                    {n.label}
-                  </a>
+            <div className="sig-steps" data-sig-steps="">
+              <canvas data-sig-wave="" aria-hidden />
+              <ol>
+                {STEPS.map((s) => (
+                  <li key={s.n} className="sig-step" data-sig-step="">
+                    <span className="sig-node" aria-hidden />
+                    <div className="sig-step-c">
+                      <p className="sig-step-n" aria-hidden>
+                        {s.n}
+                      </p>
+                      <h3 className="sig-h3">{s.title}</h3>
+                      <p className="sig-body">{s.body}</p>
+                    </div>
+                  </li>
                 ))}
-              </nav>
-              <p>© 2026 HRVT · A vállalkozás bejegyzése folyamatban van.</p>
-            </div>
-            <div className="l-big" data-l-big-wrap="" aria-hidden>
-              <div data-l-big="">
-                <Wordmark className="l-big-wm" />
-              </div>
+              </ol>
             </div>
           </div>
-        </footer>
+          <div className="sig-wrap sig-go">
+            <a href="#kapcsolat" className="sig-btn" data-track="ajanlatkeres">
+              <span>Kérek egy weboldalt</span>
+            </a>
+            <a href={`tel:${PHONE_TEL}`} className="sig-link" data-track="hivas">
+              Hívj: {PHONE}
+            </a>
+          </div>
+        </section>
+
+        {/* 5. Kérdések */}
+        <section id="kerdesek" className="sig-faq" data-theme="night">
+          <div className="sig-wrap">
+            <div className="sig-head">
+              <p className="sig-mono sig-kicker">Kérdések</p>
+              <h2 className="sig-h2" data-dot="">
+                Amit előre megkérdeznek.
+              </h2>
+            </div>
+            <dl className="sig-qa">
+              {FAQ.map(([q, a]) => (
+                <div key={q} className="sig-qa-row">
+                  <dt>{q}</dt>
+                  <dd className="sig-qa-a">
+                    <canvas data-sig-meter="" aria-hidden />
+                    <span data-sig-decode="">{a}</span>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <a href="#kapcsolat" className="sig-link sig-link--big" data-track="ajanlatkeres">
+              Más kérdésed van? Írd meg.
+            </a>
+          </div>
+        </section>
+
+        <div className="sig-edge sig-edge--in" aria-hidden />
+
+        {/* 6. Kapcsolat */}
+        <section id="kapcsolat" className="sig-ct" data-theme="kiwi">
+          <div className="sig-wrap sig-ct-in">
+            <div className="sig-head">
+              <p className="sig-mono sig-kicker">Kapcsolat</p>
+              <h2 className="sig-h2 sig-h2--xl" data-dot="">
+                Beszéljünk.
+              </h2>
+              <p className="sig-lead">Írd be a neved és a vállalkozásodat, a többit megbeszéljük. Egy munkanapon belül személyesen válaszolok.</p>
+            </div>
+            <div className="sig-ct-bg" aria-hidden>
+              <canvas data-sig-name="" />
+            </div>
+            <form className="sig-form" data-sig-form="" action={MAIL} method="get">
+              <label>
+                <span className="sig-mono">Neved</span>
+                <input name="nev" autoComplete="name" data-sig-in="name" />
+              </label>
+              <label>
+                <span className="sig-mono">Vállalkozásod</span>
+                <input name="ceg" autoComplete="organization" data-sig-in="biz" />
+              </label>
+              <label className="sig-form-wide">
+                <span className="sig-mono">Mire van szükséged? (nem kötelező)</span>
+                <textarea name="uzenet" rows={3} data-sig-in="msg" />
+              </label>
+              <div className="sig-form-go">
+                <a href={MAIL} className="sig-btn sig-btn--ink" data-sig-send="mail" data-track="urlap_kuldes">
+                  <span>Elküldöm e-mailben</span>
+                </a>
+                <a href={SMS} className="sig-btn sig-btn--line" data-sig-send="sms" data-track="sms">
+                  <span>Inkább SMS-ben</span>
+                </a>
+                <a href={`tel:${PHONE_TEL}`} className="sig-btn sig-btn--line" data-track="hivas">
+                  <span>Hívj: {PHONE}</span>
+                </a>
+                <p className="sig-form-note sig-mono" data-sig-note="" role="status" aria-live="polite" />
+              </div>
+            </form>
+            <ul className="sig-nap">
+              <li>
+                <span className="sig-mono">Telefon</span>
+                <a href={`tel:${PHONE_TEL}`} data-track="hivas">
+                  {PHONE}
+                </a>
+              </li>
+              <li>
+                <span className="sig-mono">E-mail</span>
+                <a href={`mailto:${EMAIL}`} data-track="email">
+                  {EMAIL}
+                </a>
+              </li>
+              <li>
+                <span className="sig-mono">Hol</span>
+                <span>Szombathely, Vas megye</span>
+              </li>
+            </ul>
+          </div>
+        </section>
       </main>
 
-      <div className="l-bar">
+      <footer className="sig-ft" data-theme="night">
+        <div className="sig-wrap">
+          <Wordmark className="sig-ft-wm" title="HRVT" />
+          <div className="sig-ft-row">
+            <p>
+              Egyedi weboldal készítés Szombathelyen és Vas megyében. <br />A vállalkozás bejegyzése folyamatban van.
+            </p>
+            <p className="sig-mono">© 2026 HRVT</p>
+          </div>
+        </div>
+      </footer>
+
+      <div className="sig-bar" data-sig-bar-m="">
         <a href="#kapcsolat" data-track="ajanlatkeres">
           Kérek egy weboldalt
         </a>

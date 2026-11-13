@@ -1,0 +1,370 @@
+/* HRVT főoldal v4 — „Nyers jelből kész oldal". Everything is namespaced under .sig */
+.sig {
+  --night: #222222;
+  --night-2: #1a1a1a;
+  --night-3: #2c2c2c;
+  --kiwi: #89e900;
+  --paper: #f2f2ee;
+  --smoke: #a8a8a0;
+  --line: rgba(242, 242, 238, 0.16);
+  --disp: "Funnel Display Variable", "Arial Black", sans-serif;
+  --dot: "Doto Variable", "Geist Mono Variable", monospace;
+  --mono: "Geist Mono Variable", "Geist Mono", ui-monospace, monospace;
+  --m: clamp(18px, 3.4vw, 56px);
+  background: var(--night);
+  color: var(--paper);
+}
+.sig *,
+.sig *::before,
+.sig *::after { box-sizing: border-box; }
+:where(.sig) a { color: inherit; }
+.sig :focus-visible { outline: 3px solid var(--kiwi); outline-offset: 3px; }
+.sig [data-theme="kiwi"] :focus-visible { outline-color: var(--night); }
+.sig canvas { display: block; width: 100%; height: 100%; }
+.sig-wrap { max-width: 1432px; margin-inline: auto; padding-inline: var(--m); }
+.sig-mono { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.sig-kicker { color: var(--smoke); margin: 0 0 1.1rem; }
+[data-theme="kiwi"] .sig-kicker { color: var(--night); }
+
+/* ---------- type ---------- */
+.sig-h1,
+.sig-h2,
+.sig-h3 { font-family: var(--disp); font-weight: 800; letter-spacing: -0.025em; line-height: 1.02; margin: 0; text-wrap: balance; }
+.sig-h1 { font-size: clamp(2.05rem, 4.5vw, 4.5rem); max-width: 13ch; }
+.sig-h1 em { font-style: normal; color: var(--kiwi); }
+.sig-h2 { font-size: clamp(2.1rem, 5.6vw, 5.4rem); max-width: 15ch; }
+.sig-h2--xl { font-size: clamp(3.4rem, 11vw, 10rem); }
+.sig-h3 { font-size: clamp(1.7rem, 2.9vw, 2.9rem); font-weight: 700; }
+.sig-head { padding-block: clamp(4.5rem, 11vw, 9rem) clamp(2.2rem, 5vw, 4.5rem); }
+.sig-lead { font-size: clamp(1.02rem, 1.25vw, 1.22rem); line-height: 1.5; margin: 0; max-width: 34rem; }
+.sig-w { display: inline-block; white-space: nowrap; }
+.sig-ch { display: inline-block; text-align: center; }
+.sig-ch.is-raw { font-family: var(--dot); font-weight: 900; color: var(--kiwi); letter-spacing: 0; }
+[data-theme="kiwi"] .sig-ch.is-raw { color: var(--night); }
+
+/* ---------- buttons: a small state machine (rest, hover = marching pixels, sent) ---------- */
+.sig-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 3.4rem;
+  padding: 0.9rem 1.5rem;
+  background: var(--kiwi);
+  color: var(--night);
+  font-weight: 650;
+  font-size: 1.02rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.12s steps(2);
+}
+.sig-btn--sm { min-height: 2.75rem; padding: 0.55rem 1rem; font-size: 0.92rem; }
+.sig-btn--ink { background: var(--night); color: var(--kiwi); }
+.sig-btn--line { background: transparent; color: var(--night); box-shadow: inset 0 0 0 2px var(--night); }
+.sig-btn::after {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  opacity: 0;
+  --c: currentColor;
+  color: var(--kiwi);
+  background:
+    repeating-linear-gradient(90deg, var(--c) 0 6px, transparent 0 12px) 0 0 / 100% 3px no-repeat,
+    repeating-linear-gradient(90deg, var(--c) 0 6px, transparent 0 12px) 0 100% / 100% 3px no-repeat,
+    repeating-linear-gradient(0deg, var(--c) 0 6px, transparent 0 12px) 0 0 / 3px 100% no-repeat,
+    repeating-linear-gradient(0deg, var(--c) 0 6px, transparent 0 12px) 100% 0 / 3px 100% no-repeat;
+  pointer-events: none;
+}
+.sig-btn--ink::after,
+.sig-btn--line::after,
+html[data-nav="kiwi"] .sig-nav .sig-btn::after { color: var(--night); }
+.sig-btn:hover::after,
+.sig-btn:focus-visible::after { opacity: 1; animation: sig-march 0.5s steps(4) infinite; }
+@keyframes sig-march {
+  to { background-position: 12px 0, -12px 100%, 0 -12px, 100% 12px; }
+}
+.sig-btn:active { transform: translate(2px, 2px); }
+.sig-btn[data-state="sent"] { background: var(--paper); color: var(--night); box-shadow: none; }
+.sig-btn[data-state="sent"] span::before { content: "✓ "; }
+.sig-link { font-weight: 600; text-decoration: underline; text-underline-offset: 0.3em; text-decoration-thickness: 2px; padding-block: 0.7rem; display: inline-block; }
+.sig-link:hover { color: var(--kiwi); }
+.sig-link--big { font-family: var(--disp); font-size: clamp(1.3rem, 2.2vw, 2rem); margin-top: 3rem; }
+
+/* ---------- nav ---------- */
+.sig-nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0.9rem var(--m);
+  color: var(--paper);
+  background: var(--night);
+}
+.sig-nav-logo { display: flex; align-items: center; min-height: 2.75rem; margin-right: auto; }
+.sig-nav-wm { height: 1.15rem; width: auto; }
+.sig-nav-links { display: none; gap: 1.8rem; font-size: 0.95rem; font-weight: 550; }
+.sig-nav-links a { text-decoration: none; padding: 0.7rem 0; }
+.sig-nav-links a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.35em; }
+html[data-nav="kiwi"] .sig-nav { color: var(--night); background: var(--kiwi); }
+html[data-nav="kiwi"] .sig-nav .sig-btn { background: var(--night); color: var(--kiwi); }
+@media (min-width: 900px) {
+  .sig-nav-links { display: flex; }
+}
+
+/* ---------- 1. hero ---------- */
+.sig-hero { position: relative; height: 230svh; }
+.sig-hero-pin { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+.sig-field { position: absolute; inset: 4.55rem 0 0 0; width: 100%; height: calc(100% - 4.55rem) !important; opacity: 0; transition: opacity 0.5s; touch-action: pan-y; }
+.sig-hero.is-gl .sig-field { opacity: 1; }
+.sig-mark-fallback { position: absolute; left: 50%; top: 25%; width: min(86vw, 52svh); transform: translate(-50%, -50%); color: var(--kiwi); }
+.sig-mark-svg { width: 100%; height: auto; display: block; }
+.sig-hero.is-gl .sig-mark-fallback { visibility: hidden; }
+.sig-hero-top {
+  position: absolute;
+  z-index: 1;
+  inset: 5.1rem var(--m) auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0;
+  color: var(--paper);
+}
+.sig-hero-top b { font-weight: 600; color: var(--kiwi); }
+.sig-hero-top span { white-space: nowrap; }
+@media (max-width: 899.98px) {
+  .sig-res { display: none; }
+  .sig-tk .sig-btn { display: none; }
+}
+body:has(.sig) [data-old-cursor] span.left-3 { display: none; }
+.sig-go { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1.6rem; padding-block: 1rem clamp(4rem, 9vw, 8rem); }
+.sig-hero-copy {
+  position: absolute;
+  inset: auto var(--m) clamp(1.2rem, 4svh, 3rem);
+  display: grid;
+  gap: 1.1rem;
+}
+.sig-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1.6rem; }
+.sig-tilt { justify-self: start; color: var(--paper); background: none; border: 0; min-height: 2.75rem; padding: 0; text-decoration: underline; text-underline-offset: 0.3em; }
+@media (max-height: 700px) and (max-width: 899.98px) {
+  .sig-tilt { display: none; }
+  .sig-hero .sig-lead { font-size: 0.95rem; }
+}
+@media (min-width: 900px) {
+  .sig-hero { height: 250svh; }
+  .sig-mark-fallback { top: 36%; width: min(80vw, 110svh); }
+  .sig-hero-copy { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: end; gap: 4vw; }
+  .sig-hero-copy > .sig-h1 { grid-row: 1 / span 3; }
+  .sig-hero-copy > :not(.sig-h1) { grid-column: 2; }
+}
+
+/* ---------- 2. services ---------- */
+.sig-sv { position: relative; }
+.sig-svc { margin-bottom: 4.5rem; }
+.sig-svc-view { height: clamp(250px, 68vw, 460px); }
+.sig-svc-text { padding-top: 1.4rem; }
+.sig-num { font-family: var(--dot); font-weight: 900; font-size: clamp(3rem, 6vw, 5.4rem); line-height: 1; color: var(--kiwi); margin: 0 0 0.4rem; }
+.sig-lede { font-size: clamp(1.1rem, 1.45vw, 1.35rem); line-height: 1.4; margin: 0.9rem 0 0; max-width: 30rem; }
+.sig-body { color: var(--smoke); margin: 0.8rem 0 0; max-width: 32rem; line-height: 1.6; }
+.sig-tags { color: var(--paper); margin: 1.3rem 0 0; line-height: 1.9; }
+.sig-dial { display: none; }
+@media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+  html.js .sig-stage { height: 100svh; }
+  html.js .sig-stage-in { position: relative; height: 100%; }
+  html.js .sig-svc {
+    position: absolute;
+    inset: 11svh var(--m) 11svh;
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 4.5vw;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s steps(4), visibility 0.25s;
+  }
+  html.js .sig-svc.is-on { opacity: 1; visibility: visible; }
+  html.js .sig-svc-view { height: min(78svh, 640px); }
+  html.js .sig-svc-text { padding: 0 0 6rem; }
+  html.js .sig-dial {
+    position: absolute;
+    right: var(--m);
+    bottom: 9svh;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    touch-action: none;
+    user-select: none;
+    cursor: grab;
+  }
+  .sig-dial svg { width: 104px; height: 104px; overflow: visible; }
+  .sig-dial-ticks line { stroke: var(--smoke); stroke-width: 1.5; }
+  .sig-dial-body { fill: var(--night-3); stroke: var(--paper); stroke-width: 1.5; }
+  .sig-dial-mark { fill: var(--kiwi); }
+  .sig-dial [data-sig-dial-knob] { transform-box: view-box; transform-origin: 60px 60px; transform: rotate(-135deg); }
+  .sig-dial[data-state="held"] .sig-dial-body { fill: var(--kiwi); }
+  .sig-dial[data-state="held"] .sig-dial-mark { fill: var(--night); }
+  .sig-dial[data-state="held"] { cursor: grabbing; }
+  .sig-dial p { margin: 0; display: grid; gap: 0.2rem; color: var(--smoke); }
+  .sig-dial b { font-family: var(--dot); font-weight: 900; font-size: 1.7rem; letter-spacing: 0; color: var(--kiwi); text-transform: none; min-width: 5ch; }
+}
+@media (min-width: 900px) and (prefers-reduced-motion: reduce) {
+  .sig-svc { display: grid; grid-template-columns: 1.4fr 1fr; gap: 4.5vw; align-items: center; }
+}
+
+/* ---------- raster edges between night and kiwi ---------- */
+.sig-edge { height: 36px; }
+.sig-edge--in {
+  background:
+    conic-gradient(var(--kiwi) 25%, transparent 0) 0 0 / 12px 12px repeat-x,
+    repeating-conic-gradient(var(--kiwi) 0 25%, transparent 0 50%) 0 12px / 12px 12px repeat-x,
+    conic-gradient(var(--night) 25%, var(--kiwi) 0) 0 24px / 12px 12px repeat-x,
+    var(--night);
+}
+.sig-edge--out {
+  background:
+    conic-gradient(var(--night) 25%, var(--kiwi) 0) 0 0 / 12px 12px repeat-x,
+    repeating-conic-gradient(var(--kiwi) 0 25%, transparent 0 50%) 0 12px / 12px 12px repeat-x,
+    conic-gradient(var(--kiwi) 25%, transparent 0) 0 24px / 12px 12px repeat-x,
+    var(--night);
+}
+
+/* ---------- 3. kulcsrakészen ---------- */
+.sig-tk { background: var(--kiwi); color: var(--night); padding-bottom: clamp(4rem, 9vw, 8rem); }
+.sig-tk-grid { display: grid; gap: 1.5rem; }
+.sig-tk-view { position: sticky; top: 4.5rem; z-index: 2; height: 30svh; background: var(--kiwi); padding: 0 0 0.6rem; }
+.sig-jobs { list-style: none; margin: 0; padding: 0; }
+.sig-job { display: grid; grid-template-columns: 2.9rem minmax(0, 1fr); gap: 0.4rem; padding: 1.25rem 0 1.1rem; border-top: 2px solid var(--night); }
+.sig-job-state { position: relative; font-size: 0.95rem; letter-spacing: 0; padding-top: 0.45rem; font-weight: 600; }
+.sig-job-state i { font-style: normal; }
+.sig-job-state svg { position: absolute; left: 0; top: 0.2rem; width: 1.7rem; height: 1.7rem; fill: none; stroke: var(--night); stroke-width: 3; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 0.35s steps(6); }
+.sig-job[data-state="done"] .sig-job-state svg { stroke-dashoffset: 0; }
+.sig-job-t { font-family: var(--dot); font-weight: 900; font-size: clamp(1.2rem, 2.4vw, 2.2rem); line-height: 1.15; margin: 0; white-space: nowrap; }
+.sig-job[data-state="done"] .sig-job-t { font-family: var(--disp); font-weight: 750; letter-spacing: -0.02em; }
+.sig-job p { margin: 0.35rem 0 0.55rem; max-width: 34rem; line-height: 1.5; }
+.sig-job-bar { display: block; letter-spacing: 0.02em; font-size: 0.8rem; line-height: 1; }
+.sig-tk .sig-btn { margin-top: 2.5rem; }
+@media (min-width: 900px) {
+  .sig-tk-grid { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr); gap: 6vw; align-items: start; }
+  .sig-tk-view { top: 13svh; height: min(74svh, 660px); padding: 0; z-index: 0; }
+  .sig-job { grid-template-columns: 3.6rem minmax(0, 1fr); padding: 1.6rem 0 1.4rem; }
+}
+
+/* ---------- 4. folyamat ---------- */
+.sig-pr { padding-bottom: 1rem; }
+.sig-steps { position: relative; }
+.sig-steps canvas { position: absolute; top: 0; left: 0; width: 56px; height: 100%; }
+.sig-steps ol { list-style: none; margin: 0; padding: 0; position: relative; }
+.sig-step { display: grid; grid-template-columns: 56px minmax(0, 1fr); padding-bottom: clamp(3.5rem, 12svh, 8rem); }
+.sig-step:last-child { padding-bottom: 1rem; }
+.sig-node { grid-column: 1; grid-row: 1; justify-self: center; width: 20px; height: 20px; margin-top: 1.5rem; background: var(--night); box-shadow: inset 0 0 0 2px var(--paper); transition: background 0.2s steps(3), transform 0.3s steps(4); }
+.sig-step[data-state="near"] .sig-node { box-shadow: inset 0 0 0 2px var(--kiwi); transform: rotate(45deg) scale(1.25); }
+.sig-step[data-state="done"] .sig-node { background: var(--kiwi); box-shadow: none; transform: rotate(45deg); }
+.sig-step-c { grid-column: 2; grid-row: 1; padding-left: 0.6rem; }
+.sig-step-n { font-family: var(--dot); font-weight: 900; font-size: clamp(3.2rem, 7vw, 6.5rem); line-height: 1; margin: 0 0 0.5rem; color: var(--smoke); }
+.sig-step[data-state="done"] .sig-step-n { font-family: var(--disp); font-weight: 800; color: var(--kiwi); letter-spacing: -0.03em; }
+@media (min-width: 900px) {
+  .sig-steps canvas { left: 50%; width: 140px; margin-left: -70px; }
+  .sig-step { grid-template-columns: minmax(0, 1fr) 140px minmax(0, 1fr); }
+  .sig-node { grid-column: 2; }
+  .sig-step-c { grid-column: 3; padding: 0; max-width: 30rem; }
+  .sig-step:nth-child(odd) .sig-step-c { grid-column: 1; justify-self: end; text-align: right; }
+  .sig-step:nth-child(odd) .sig-body { margin-left: auto; }
+}
+
+/* ---------- 5. kérdések ---------- */
+.sig-faq { padding-bottom: clamp(4rem, 9vw, 8rem); }
+.sig-qa { margin: 0; }
+.sig-qa-row { display: grid; gap: 1rem; padding: 2.2rem 0; border-top: 2px solid var(--paper); }
+.sig-qa dt { position: relative; padding-left: 1.1em; font-family: var(--disp); font-weight: 700; font-size: clamp(1.5rem, 3vw, 2.9rem); line-height: 1.08; letter-spacing: -0.02em; text-wrap: balance; }
+.sig-qa dt::before { content: "?"; position: absolute; left: 0; top: 0; font-family: var(--dot); font-weight: 900; color: var(--kiwi); }
+.sig-qa-row[data-done] dt::before { font-family: var(--disp); }
+.sig-qa-a canvas { display: block; height: 22px; margin-bottom: 1rem; }
+.sig-qa dd { margin: 0; }
+.sig-qa [data-sig-decode] { display: block; position: relative; font-size: clamp(1.1rem, 1.5vw, 1.4rem); line-height: 1.5; overflow: hidden; --k: 1; }
+/* the raster curtain: a dithered leading edge, then solid night */
+.sig-qa [data-sig-decode]::after {
+  content: "";
+  position: absolute;
+  inset: 0 -2px 0 0;
+  background:
+    conic-gradient(var(--night) 25%, transparent 0) 0 0 / 8px 8px repeat-y,
+    repeating-conic-gradient(var(--night) 0 25%, transparent 0 50%) 8px 0 / 8px 8px repeat-y,
+    conic-gradient(transparent 25%, var(--night) 0) 16px 0 / 8px 8px repeat-y,
+    linear-gradient(var(--night), var(--night)) 24px 0 / 100% 100% no-repeat;
+  transform: translateX(calc(var(--k) * (100% + 26px) - 26px));
+}
+@media (min-width: 900px) {
+  .sig-qa-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 5vw; padding: 3rem 0; align-items: start; }
+}
+
+/* ---------- 6. kapcsolat ---------- */
+.sig-ct { position: relative; background: var(--kiwi); color: var(--night); overflow: hidden; padding-bottom: clamp(4rem, 9vw, 7rem); }
+.sig-ct-in { position: relative; }
+.sig-ct-bg { height: 120px; margin-bottom: 2rem; box-shadow: inset 0 0 0 2px var(--night); }
+.sig-ct .sig-head { padding-bottom: 2.4rem; }
+.sig-ct .sig-lead { margin-top: 1.4rem; font-weight: 500; }
+.sig-form { display: grid; gap: 1.2rem; max-width: 56rem; }
+.sig-form label { display: grid; gap: 0.5rem; }
+.sig-form input,
+.sig-form textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 1.1rem;
+  color: var(--night);
+  background: var(--kiwi);
+  border: 2px solid var(--night);
+  border-radius: 0;
+  padding: 0.85rem 1rem;
+  min-height: 3.4rem;
+  resize: vertical;
+}
+.sig-form input:focus,
+.sig-form textarea:focus { background: var(--paper); }
+.sig-form-go { display: flex; flex-wrap: wrap; gap: 1.1rem; align-items: center; margin-top: 0.6rem; }
+.sig-form-note { flex-basis: 100%; margin: 0; min-height: 1.4em; text-transform: none; letter-spacing: 0.01em; font-size: 0.85rem; }
+.sig-nap { list-style: none; margin: 3.2rem 0 0; padding: 1.6rem 0 0; border-top: 2px solid var(--night); display: grid; gap: 1.2rem; }
+.sig-nap li { display: grid; gap: 0.25rem; font-size: 1.15rem; font-weight: 600; }
+.sig-nap a { padding-block: 0.55rem; text-underline-offset: 0.3em; overflow-wrap: anywhere; }
+@media (min-width: 900px) {
+  .sig-form { grid-template-columns: 1fr 1fr; max-width: 54%; }
+  .sig-ct-bg { position: absolute; inset: calc(clamp(4.5rem, 11vw, 9rem) + 13vw) 0 auto 58%; height: min(46svh, 420px); margin: 0; }
+  .sig-form-wide,
+  .sig-form-go { grid-column: 1 / -1; }
+  .sig-nap { grid-template-columns: repeat(3, auto); justify-content: start; gap: 5vw; }
+}
+
+/* ---------- footer ---------- */
+.sig-ft { padding: clamp(3rem, 7vw, 6rem) 0 2rem; }
+.sig-ft-wm { width: 100%; height: auto; display: block; color: var(--paper); }
+.sig-ft-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin-top: 2rem; color: var(--smoke); font-size: 0.95rem; }
+.sig-ft-row p { margin: 0; }
+
+/* ---------- mobile bar ---------- */
+.sig-bar {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 45;
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;
+  height: 3.5rem;
+  transform: translateY(101%);
+  transition: transform 0.25s steps(5);
+  font-weight: 650;
+}
+.sig-bar.is-on { transform: none; }
+.sig-bar a { display: grid; place-items: center; text-decoration: none; background: var(--kiwi); color: var(--night); box-shadow: inset 0 2px 0 var(--night); }
+.sig-bar a + a { background: var(--night); color: var(--kiwi); box-shadow: inset 0 2px 0 var(--kiwi); }
+html[data-nav="kiwi"] .sig-bar a { background: var(--night); color: var(--kiwi); box-shadow: none; }
+html[data-nav="kiwi"] .sig-bar a + a { background: var(--paper); color: var(--night); box-shadow: none; }
+@media (max-width: 899.98px) {
+  .sig { padding-bottom: 3.5rem; }
+  .sig-nav .sig-btn { display: none; }
+}
+@media (min-width: 900px) {
+  .sig-bar { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sig-btn:hover::after { animation: none; }
+  .sig-bar { transition: none; }
+}
