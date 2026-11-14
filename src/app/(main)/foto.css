@@ -41,25 +41,34 @@ html:has(.foto) { background: #3a3936; }
 .foto .ft-top { opacity: 0; transition: opacity .5s ease; }
 .ft-past .foto .ft-top { opacity: 1; }
 
-/* ---------- 2 Rack focus gallery ---------- */
+/* ---------- 2 Rack focus gallery (CSS scroll-driven: runs on the compositor, no JS per frame) ---------- */
 .foto .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.foto .fz { position: relative; }
-.foto .fz-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
-.foto .fz-stack { list-style: none; margin: 0; padding: 0; position: absolute; inset: 0; }
+.foto .fz { --item: 72svh; position: relative; padding: 14svh 0; view-timeline: --fz block; }
+.foto .fz-list { list-style: none; margin: 0; padding: 0; position: relative; z-index: 1; }
+.foto .fz-item { height: var(--item); display: grid; place-items: center; scroll-snap-align: center; view-timeline: --it block; }
 .foto .fz-frame {
-  position: absolute; left: 50%; top: 50%;
-  height: min(70svh, 760px, calc((100vw - 128px) / var(--arn)));
-  aspect-ratio: var(--ar); translate: -50% -50%;
-  will-change: transform, opacity; visibility: hidden;
+  position: relative; display: block; padding: 0; border: 0; cursor: pointer; overflow: clip; background: #262624;
+  height: min(62svh, 720px, calc((100vw - 128px) / var(--arn))); aspect-ratio: var(--ar);
+  box-shadow: 0 40px 90px rgba(0, 0, 0, .45);
 }
-.foto .fz-frame button { position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: #151514; overflow: hidden; cursor: pointer; box-shadow: 0 40px 90px rgba(0, 0, 0, .45); }
 .foto .fz-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-/* Out of focus: blurred and black-and-white (static filters, so only opacity moves). */
-.foto .fz-soft { filter: grayscale(1) blur(16px) brightness(.88); transform: scale(1.1); }
-.foto .fz-sharp { opacity: 0; will-change: opacity; }
+/* Out of focus = a 48 px greyscale thumbnail stretched up: the blur costs nothing at scroll time. */
+.foto .fz-soft { transform: scale(1.08); }
+.foto .fz-sharp { opacity: 0; transition: opacity .35s ease; }
+.foto .fz-item.is-focus .fz-sharp { opacity: 1; }
 
-/* The lens' focus-distance scale, turning with the gallery. */
-.foto .fz-scale { position: absolute; z-index: 120; right: var(--pad); top: 50%; translate: 0 -50%; width: 64px; height: 300px; overflow: hidden; pointer-events: none;
+@supports (animation-timeline: view()) {
+  .foto .fz-frame { animation: fzFrame linear both; animation-timeline: --it; animation-range: cover 0% cover 100%; will-change: transform, opacity; }
+  .foto .fz-sharp, .foto .fz-item.is-focus .fz-sharp { transition: none; animation: fzSharp linear both; animation-timeline: --it; animation-range: cover 0% cover 100%; will-change: opacity; }
+  .foto .fz-scale-track { animation: fzScale linear both; animation-timeline: --fz; animation-range: contain 0% contain 100%; }
+}
+@keyframes fzFrame { 0% { transform: scale(.74); opacity: .3; } 42%, 58% { transform: scale(1); opacity: 1; } 100% { transform: scale(.74); opacity: .3; } }
+@keyframes fzSharp { 0%, 28% { opacity: 0; } 40%, 60% { opacity: 1; } 72%, 100% { opacity: 0; } }
+@keyframes fzScale { from { transform: translateY(0); } to { transform: translateY(calc((var(--n) - 1) * -44px)); } }
+
+/* HUD: lens scale + caption, pinned over the gallery while it scrolls. */
+.foto .fz-hud { position: sticky; z-index: 2; top: 0; height: 100svh; margin-bottom: -100svh; pointer-events: none; }
+.foto .fz-scale { position: absolute; right: var(--pad); top: 50%; translate: 0 -50%; width: 64px; height: 300px; overflow: hidden;
   -webkit-mask-image: linear-gradient(transparent, #000 32%, #000 68%, transparent); mask-image: linear-gradient(transparent, #000 32%, #000 68%, transparent); }
 .foto .fz-scale-track { position: absolute; left: 0; right: 0; top: calc(50% - 11px); will-change: transform; }
 .foto .fz-scale-track span { position: relative; display: block; height: 44px; line-height: 22px; padding-right: 22px; text-align: right; font-family: var(--mono); font-size: .78rem; color: var(--ash); transition: color .3s; }
@@ -68,13 +77,21 @@ html:has(.foto) { background: #3a3936; }
 .foto .fz-scale-track span.on { color: var(--paper); }
 .foto .fz-index { position: absolute; right: -2px; top: 50%; width: 0; height: 0; translate: 0 -50%; border: 6px solid transparent; border-right-color: var(--paper); }
 .foto .fz-unit { position: absolute; right: 22px; bottom: 6px; font-family: var(--mono); font-size: .75rem; font-weight: 400; color: var(--ash); }
-
-.foto .fz-cap { position: absolute; z-index: 120; left: var(--pad); bottom: max(22px, 3svh); display: flex; align-items: baseline; gap: 10px; margin: 0; font-family: var(--mono); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--paper); }
+.foto .fz-cap { position: absolute; left: var(--pad); bottom: max(22px, 3svh); display: flex; align-items: baseline; gap: 10px; margin: 0; font-family: var(--mono); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--paper); }
 .foto .fz-cap b { font-weight: 500; font-size: 1.6rem; letter-spacing: 0; }
 .foto .fz-cap em { font-style: normal; padding: 5px 10px; border-radius: 99px; background: var(--paper); color: var(--ink); }
 @media (max-width: 767px) {
+  .foto .fz { --item: 56svh; padding: 22svh 0; }
+  .foto .fz-frame { height: min(50svh, calc((100vw - 128px) / var(--arn))); }
   .foto .fz-scale { right: 4px; width: 50px; height: 240px; }
   .foto .fz-scale-track span { font-size: .75rem; padding-right: 18px; }
+}
+/* Phones: native snapping to each photo (no script fighting the momentum). */
+@media (pointer: coarse) {
+  html:has(.foto) { scroll-snap-type: y proximity; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .foto .fz-frame, .foto .fz-sharp, .foto .fz-scale-track { animation: none !important; }
 }
 
 /* ---------- 3 Contact ---------- */

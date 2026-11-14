@@ -1,6 +1,5 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { gsap, ScrollTrigger, onReady, prefersReduced } from "@/lib/gsap";
 import { CENTER, PHOTOS } from "@/lib/photos";
 import { EMAIL, PHONE, PHONE_TEL } from "@/lib/content";
 import { Wordmark } from "@/components/Logo";
@@ -26,105 +25,45 @@ const MARKS = ["0,5", "0,6", "0,7", "0,8", "1", "1,2", "1,5", "2", "2,5", "3", "
 
 /**
  * 2 — Rack focus: one photo at a time stands sharp and in colour; its neighbours wait above and below,
- * blurred and black-and-white. Scrolling turns the focus ring: the next photo racks into focus.
- * Every photo has two pre-rendered layers (blurred b/w + sharp colour); focus is a crossfade, so it stays smooth on phones.
+ * blurred and black-and-white. All motion is CSS scroll-driven (compositor thread, no JS per frame):
+ * each frame scales up and its sharp colour layer fades in as it reaches the middle of the screen.
+ * The blur is a tiny pre-rendered greyscale image scaled up, so no blur filter runs while scrolling.
+ * Phones snap natively to each photo. JS only tracks which photo is in the middle (for the caption).
  */
 function Focus({ onOpen }: { onOpen: (i: number) => void }) {
   const root = useRef<HTMLElement>(null);
   const [cur, setCur] = useState(0);
-  const st = useRef<ScrollTrigger | null>(null);
 
   useEffect(() => {
-    const el = root.current!;
-    const frames = [...el.querySelectorAll<HTMLElement>("[data-f]")];
-    const soft = frames.map((f) => f.querySelector<HTMLElement>(".fz-soft")!);
-    const sharp = frames.map((f) => f.querySelector<HTMLElement>(".fz-sharp")!);
-    const scale = el.querySelector<HTMLElement>(".fz-scale-track")!;
-    const reduced = prefersReduced();
-    let last = -1;
-    const paint = (f: number) => {
-      frames.forEach((fr, i) => {
-        const d = i - f;
-        const a = Math.abs(d);
-        if (a > 2.6) {
-          fr.style.visibility = "hidden";
-          return;
-        }
-        fr.style.visibility = "visible";
-        const k = Math.min(a, 2.6);
-        fr.style.transform = `translate3d(0, ${(d * 58).toFixed(2)}svh, 0) scale(${(1 - Math.min(k, 2) * 0.17).toFixed(4)})`;
-        fr.style.zIndex = String(100 - Math.round(a * 10));
-        fr.style.opacity = String(Math.max(0, 1 - Math.max(0, a - 1.4) / 1.2).toFixed(3));
-        const focus = Math.max(0, 1 - a * 1.6);
-        sharp[i].style.opacity = focus.toFixed(3);
-        soft[i].style.opacity = (1 - focus * 0.85).toFixed(3);
-      });
-      scale.style.transform = `translate3d(0, ${(-f * 44).toFixed(2)}px, 0)`;
-      const n = Math.round(f);
-      if (n !== last) {
-        last = n;
-        setCur(n);
-      }
-    };
-    paint(0);
-    let ctx: gsap.Context | null = null;
-    const off = onReady(() => {
-      ctx = gsap.context(() => {
-        st.current = ScrollTrigger.create({
-          trigger: el,
-          start: "top top",
-          end: "bottom bottom",
-          onUpdate: (s) => paint(s.progress * (N - 1)),
-          snap: reduced ? undefined : { snapTo: 1 / (N - 1), duration: { min: 0.25, max: 0.6 }, delay: 0.08, ease: "power2.inOut" },
-        });
-      }, el);
-    });
-    return () => {
-      off();
-      ctx?.revert();
-      st.current = null;
-    };
+    const items = [...root.current!.querySelectorAll<HTMLElement>("[data-f]")];
+    const io = new IntersectionObserver(
+      (es) =>
+        es.forEach((e) => {
+          e.target.classList.toggle("is-focus", e.isIntersecting);
+          if (e.isIntersecting) setCur(Number((e.target as HTMLElement).dataset.f));
+        }),
+      { rootMargin: "-45% 0px -45% 0px" },
+    );
+    items.forEach((it) => io.observe(it));
+    return () => io.disconnect();
   }, []);
 
-  // A click on a waiting (blurred) photo pulls focus to it; a click on the sharp one opens it big.
-  const pick = (i: number) => {
+  // A tap on a waiting (blurred) photo brings it to the middle; a tap on the sharp one opens it big.
+  const pick = (i: number, el: HTMLElement) => {
     if (i === cur) return onOpen(i);
-    const s = st.current;
-    if (!s) return onOpen(i);
-    const y = s.start + ((s.end - s.start) * i) / (N - 1);
-    const w = window as unknown as { __lenis?: { scrollTo: (t: number, o?: object) => void } };
-    if (w.__lenis) w.__lenis.scrollTo(y, { duration: 1.1 });
-    else window.scrollTo({ top: y, behavior: "smooth" });
+    const li = el.closest("li")!;
+    const w = window as unknown as { __lenis?: { scrollTo: (t: HTMLElement, o?: object) => void } };
+    if (w.__lenis) w.__lenis.scrollTo(li, { offset: -(innerHeight - li.offsetHeight) / 2, duration: 1 });
+    else li.scrollIntoView({ block: "center", behavior: "smooth" });
   };
 
   const p = PHOTOS[cur];
   return (
-    <section ref={root} id="kepek" className="fz" style={{ height: `${N * 70 + 30}svh` }} aria-labelledby="fz-h">
+    <section ref={root} id="kepek" className="fz" aria-labelledby="fz-h" style={{ ["--n" as string]: N }}>
       <h2 id="fz-h" className="sr">
         Fotók
       </h2>
-      <div className="fz-stage">
-        <ul className="fz-stack">
-          {PHOTOS.map((ph, i) => (
-            <li key={ph.id} className="fz-frame" data-f="" style={{ ["--ar" as string]: `${ph.w} / ${ph.h}`, ["--arn" as string]: (ph.w / ph.h).toFixed(4) }}>
-              <button type="button" onClick={() => pick(i)} aria-label={i === cur ? `${num(i)}. kép megnyitása nagyban: ${ph.alt}` : `Élesítés a ${num(i)}. képre: ${ph.alt}`}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="fz-soft" src={`/foto/m/${ph.id}.webp`} alt="" aria-hidden loading={i < 3 ? "eager" : "lazy"} decoding="async" />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  className="fz-sharp"
-                  src={`/foto/t/${ph.id}.webp`}
-                  srcSet={`/foto/m/${ph.id}.webp 640w, /foto/t/${ph.id}.webp 1024w`}
-                  sizes="(min-width: 900px) 46vh, 62vw"
-                  alt={ph.alt}
-                  loading={i < 3 ? "eager" : "lazy"}
-                  decoding="async"
-                />
-              </button>
-            </li>
-          ))}
-        </ul>
-
+      <div className="fz-hud" aria-live="polite">
         <div className="fz-scale" aria-hidden>
           <div className="fz-scale-track">
             {MARKS.map((m, i) => (
@@ -136,13 +75,38 @@ function Focus({ onOpen }: { onOpen: (i: number) => void }) {
           <i className="fz-index" />
           <b className="fz-unit">m</b>
         </div>
-
-        <p className="fz-cap" aria-live="polite">
+        <p className="fz-cap">
           <b>{num(cur)}</b>
           <span>/ {num(N - 1)}</span>
           <em>{p.tag}</em>
         </p>
       </div>
+      <ul className="fz-list">
+        {PHOTOS.map((ph, i) => (
+          <li key={ph.id} className="fz-item" data-f={i}>
+            <button
+              type="button"
+              className="fz-frame"
+              style={{ ["--ar" as string]: `${ph.w} / ${ph.h}`, ["--arn" as string]: (ph.w / ph.h).toFixed(4) }}
+              onClick={(e) => pick(i, e.currentTarget)}
+              aria-label={i === cur ? `${num(i)}. kép megnyitása nagyban: ${ph.alt}` : `${num(i)}. kép középre: ${ph.alt}`}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="fz-soft" src={`/foto/b/${ph.id}.webp`} alt="" aria-hidden decoding="async" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className="fz-sharp"
+                src={`/foto/t/${ph.id}.webp`}
+                srcSet={`/foto/m/${ph.id}.webp 640w, /foto/t/${ph.id}.webp 1024w`}
+                sizes="(min-width: 900px) 46vh, 62vw"
+                alt={ph.alt}
+                loading={i < 2 ? "eager" : "lazy"}
+                decoding="async"
+              />
+            </button>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
