@@ -17,7 +17,11 @@ export function Motion() {
     let lenis: Lenis | null = null;
     const w = window as unknown as { __lenis?: Lenis; __hrvtReady?: boolean };
 
-    if (!reduced) {
+    // Touch screens keep the browser's own scrolling: smooth-scroll libraries fight the native momentum there.
+
+    const touch = window.matchMedia("(pointer: coarse)").matches;
+
+    if (!reduced && !touch) {
       lenis = new Lenis({ lerp: 0.1, wheelMultiplier: 1, touchMultiplier: 1.3 });
       w.__lenis = lenis;
       lenis.on("scroll", ScrollTrigger.update);

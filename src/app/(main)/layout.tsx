@@ -1,17 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/funnel-display";
-import "@fontsource-variable/doto";
-import "./sig.css";
+import "./foto.css";
+import { Ready } from "@/components/Ready";
 
 export const metadata: Metadata = {
-  title: "Weboldal készítés Szombathely – egyedi, sablon nélkül | HRVT",
+  title: "HRVT — fotók: autók, pálya, épületek, részletek",
   description:
-    "Egyedi weboldal készítés és honlapkészítés Szombathelyen és Vas megyében. Design, szöveg, fejlesztés, keresőoptimalizálás és élesítés egy kézben, sablon nélkül.",
+    "A HRVT saját fotói: autók és pályanapok, épületek, természet és részletek. Görgess végig a fotóalagúton: minden kép fekete-fehér, amíg rá nem nézel.",
   alternates: { canonical: "/" },
-  keywords: ["weboldal készítés Szombathely", "honlapkészítés Szombathely", "egyedi weboldal", "webfejlesztő Szombathely", "weboldal készítés Vas megye"],
   openGraph: {
-    title: "HRVT – Egyedi weboldalt készítek. Sablon nélkül.",
-    description: "Weboldal készítés Szombathelyen és Vas megyében: design, szöveg, fejlesztés és élesítés egy kézben.",
+    title: "HRVT — fotók",
+    description: "Autók, pálya, épületek, részletek. Minden kép fekete-fehér, amíg rá nem nézel.",
     url: "/",
     siteName: "HRVT",
     type: "website",
@@ -19,8 +17,13 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport: Viewport = { themeColor: "#222222", colorScheme: "dark" };
+export const viewport: Viewport = { themeColor: "#0b0b0b", colorScheme: "dark" };
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <div className="foto">
+      <Ready />
+      {children}
+    </div>
+  );
 }
