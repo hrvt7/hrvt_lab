@@ -9,183 +9,139 @@ import { track } from "@/lib/track";
 const N = PHOTOS.length;
 const num = (i: number) => String(i + 1).padStart(2, "0");
 
-/** 1 — The tunnel: sticky WebGL scene with the intro, the live caption and the end line on top. */
-function Tunnel({ onOpen }: { onOpen: (i: number) => void }) {
-  const sec = useRef<HTMLElement>(null);
-  const host = useRef<HTMLDivElement>(null);
-  const cv = useRef<HTMLCanvasElement>(null);
-  const [sel, setSel] = useState(-1);
-  const [live, setLive] = useState(false);
-  const [touch, setTouch] = useState(false);
-
-  useEffect(() => {
-    setTouch(matchMedia("(pointer: coarse)").matches);
-    let dead = false;
-    let stop = () => {};
-    const off = onReady(() => {
-      const idle = (window as unknown as { requestIdleCallback?: (f: () => void, o?: object) => void }).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 150));
-      idle(
-        () =>
-          import("./tunnel3d").then((m) => {
-            if (dead || !host.current || !sec.current || !cv.current) return;
-            const h = host.current;
-            const s = m.mount({
-              host: h,
-              sec: sec.current,
-              canvas: cv.current,
-              photos: PHOTOS,
-              onSelect: setSel,
-              onOpen,
-              onProgress: (p) => h.style.setProperty("--p", p.toFixed(4)),
-            });
-            if (s) {
-              stop = s;
-              setLive(true);
-            }
-          }),
-        { timeout: 1200 },
-      );
-    });
-    return () => {
-      dead = true;
-      off();
-      stop();
-    };
-  }, [onOpen]);
-
-  const ph = sel >= 0 ? PHOTOS[sel] : null;
+/** 1 — Opening screen: only the HRVT wordmark over the blurred portrait. */
+function Hero() {
   return (
-    <section ref={sec} id="top" className="ft-tunnel" aria-label="Fotóalagút">
-      <div ref={host} className={`ft-stage${live ? " is-live" : ""}`} style={{ ["--p" as string]: 0 }}>
-        <canvas ref={cv} className="ft-canvas" aria-hidden />
-        {/* The portrait fills the screen behind the tunnel: sharp in the middle, blurred towards the edges. */}
-        <div className="ft-bg">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="ft-bg-soft" src={`/foto/m/${CENTER.id}.webp`} alt="" aria-hidden />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            className="ft-bg-sharp"
-            src={`/foto/f/${CENTER.id}.webp`}
-            srcSet={`/foto/m/${CENTER.id}.webp 640w, /foto/t/${CENTER.id}.webp 1024w, /foto/f/${CENTER.id}.webp 1600w`}
-            sizes="100vw"
-            alt={CENTER.alt}
-            fetchPriority="high"
-          />
-        </div>
-
-        <div className="ft-intro">
-          <h1 className="ft-h1">
-            <Wordmark className="ft-wm" title="HRVT" />
-            <span className="ft-sub">Fotók</span>
-          </h1>
-          <p className="ft-hint">
-            <i aria-hidden /> {touch ? "Görgess: az elöl lévő kép kap színt" : "Vidd az egeret egy képre: színt kap"}
-          </p>
-        </div>
-
-        <p className="ft-cap" aria-live="polite">
-          {ph ? (
-            <>
-              <b>{num(sel)}</b>
-              <span>/ {num(N - 1)}</span>
-              <em>{ph.tag}</em>
-              <span className="ft-cap-act">{touch ? "koppints a nagyításhoz" : "kattints a nagyításhoz"}</span>
-            </>
-          ) : (
-            <span className="ft-cap-idle">{num(N - 1)} kép · fekete-fehérben, amíg rá nem nézel</span>
-          )}
-        </p>
-
-        <p className="ft-end">
-          Minden kép saját fotó.
-          <a href="#kontaktlap">Lent mind egymás után</a>
-        </p>
-      </div>
+    <section id="top" className="fh" aria-label="HRVT">
+      <h1 className="fh-h1">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="fh-wm" src="/foto/hrvt-wordmark.svg" alt="HRVT — fotók" width={2541} height={907} fetchPriority="high" />
+      </h1>
     </section>
   );
 }
 
-/** 2 — Contact sheet: a strip of negatives. Desktop: pinned, scroll moves it sideways. Phone: swipe. */
-function Strip({ onOpen }: { onOpen: (i: number) => void }) {
+/** Focus-distance marks on the lens scale, one per photo (near → far), shown beside the gallery. */
+const MARKS = ["0,5", "0,6", "0,7", "0,8", "1", "1,2", "1,5", "2", "2,5", "3", "4", "5", "7", "10", "20", "∞"];
+
+/**
+ * 2 — Rack focus: one photo at a time stands sharp and in colour; its neighbours wait above and below,
+ * blurred and black-and-white. Scrolling turns the focus ring: the next photo racks into focus.
+ * Every photo has two pre-rendered layers (blurred b/w + sharp colour); focus is a crossfade, so it stays smooth on phones.
+ */
+function Focus({ onOpen }: { onOpen: (i: number) => void }) {
   const root = useRef<HTMLElement>(null);
-  const track$ = useRef<HTMLUListElement>(null);
-  const [active, setActive] = useState(-1);
+  const [cur, setCur] = useState(0);
+  const st = useRef<ScrollTrigger | null>(null);
 
   useEffect(() => {
     const el = root.current!;
-    const tr = track$.current!;
-    const frames = [...tr.querySelectorAll<HTMLElement>("[data-frame]")];
+    const frames = [...el.querySelectorAll<HTMLElement>("[data-f]")];
+    const soft = frames.map((f) => f.querySelector<HTMLElement>(".fz-soft")!);
+    const sharp = frames.map((f) => f.querySelector<HTMLElement>(".fz-sharp")!);
+    const scale = el.querySelector<HTMLElement>(".fz-scale-track")!;
+    const reduced = prefersReduced();
+    let last = -1;
+    const paint = (f: number) => {
+      frames.forEach((fr, i) => {
+        const d = i - f;
+        const a = Math.abs(d);
+        if (a > 2.6) {
+          fr.style.visibility = "hidden";
+          return;
+        }
+        fr.style.visibility = "visible";
+        const k = Math.min(a, 2.6);
+        fr.style.transform = `translate3d(0, ${(d * 58).toFixed(2)}svh, 0) scale(${(1 - Math.min(k, 2) * 0.17).toFixed(4)})`;
+        fr.style.zIndex = String(100 - Math.round(a * 10));
+        fr.style.opacity = String(Math.max(0, 1 - Math.max(0, a - 1.4) / 1.2).toFixed(3));
+        const focus = Math.max(0, 1 - a * 1.6);
+        sharp[i].style.opacity = focus.toFixed(3);
+        soft[i].style.opacity = (1 - focus * 0.85).toFixed(3);
+      });
+      scale.style.transform = `translate3d(0, ${(-f * 44).toFixed(2)}px, 0)`;
+      const n = Math.round(f);
+      if (n !== last) {
+        last = n;
+        setCur(n);
+      }
+    };
+    paint(0);
     let ctx: gsap.Context | null = null;
     const off = onReady(() => {
       ctx = gsap.context(() => {
-        const mm = gsap.matchMedia();
-        mm.add("(min-width: 900px) and (pointer: fine)", () => {
-          if (prefersReduced()) return;
-          gsap.to(tr, {
-            x: () => -(tr.scrollWidth - innerWidth),
-            ease: "none",
-            scrollTrigger: { trigger: el.querySelector(".fs-pin"), start: "top top", end: () => `+=${tr.scrollWidth - innerWidth}`, pin: true, scrub: 0.6, invalidateOnRefresh: true },
-          });
+        st.current = ScrollTrigger.create({
+          trigger: el,
+          start: "top top",
+          end: "bottom bottom",
+          onUpdate: (s) => paint(s.progress * (N - 1)),
+          snap: reduced ? undefined : { snapTo: 1 / (N - 1), duration: { min: 0.25, max: 0.6 }, delay: 0.08, ease: "power2.inOut" },
         });
       }, el);
-      requestAnimationFrame(() => ScrollTrigger.refresh());
     });
-    // Phone: the frame nearest the middle of the strip is the coloured one.
-    let raf = 0;
-    const onScroll = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = 0;
-        if (!matchMedia("(pointer: coarse)").matches) return;
-        const mid = innerWidth / 2;
-        let best = -1;
-        let bd = Infinity;
-        frames.forEach((f, i) => {
-          const r = f.getBoundingClientRect();
-          const d = Math.abs(r.left + r.width / 2 - mid);
-          if (d < bd) {
-            bd = d;
-            best = i;
-          }
-        });
-        setActive(best);
-      });
-    };
-    tr.addEventListener("scroll", onScroll, { passive: true });
-    const io = new IntersectionObserver(([e]) => e.isIntersecting && onScroll(), { threshold: 0.4 });
-    io.observe(tr);
     return () => {
       off();
       ctx?.revert();
-      tr.removeEventListener("scroll", onScroll);
-      io.disconnect();
-      cancelAnimationFrame(raf);
+      st.current = null;
     };
   }, []);
 
+  // A click on a waiting (blurred) photo pulls focus to it; a click on the sharp one opens it big.
+  const pick = (i: number) => {
+    if (i === cur) return onOpen(i);
+    const s = st.current;
+    if (!s) return onOpen(i);
+    const y = s.start + ((s.end - s.start) * i) / (N - 1);
+    const w = window as unknown as { __lenis?: { scrollTo: (t: number, o?: object) => void } };
+    if (w.__lenis) w.__lenis.scrollTo(y, { duration: 1.1 });
+    else window.scrollTo({ top: y, behavior: "smooth" });
+  };
+
+  const p = PHOTOS[cur];
   return (
-    <section ref={root} id="kontaktlap" className="fs" aria-labelledby="fs-h">
-      <div className="fs-pin">
-        <header className="fs-head">
-          <p className="ft-mono">Kontaktlap</p>
-          <h2 id="fs-h" className="ft-h2">
-            Mind a {N} kép, <span>egymás után.</span>
-          </h2>
-        </header>
-        <ul ref={track$} className="fs-track">
-          {PHOTOS.map((p, i) => (
-            <li key={p.id} className={`fs-frame${active === i ? " on" : ""}`} data-frame="" style={{ ["--ar" as string]: `${p.w} / ${p.h}` }}>
-              <button type="button" onClick={() => onOpen(i)} aria-label={`${num(i)}. kép megnyitása nagyban: ${p.alt}`}>
+    <section ref={root} id="kepek" className="fz" style={{ height: `${N * 70 + 30}svh` }} aria-labelledby="fz-h">
+      <h2 id="fz-h" className="sr">
+        Fotók
+      </h2>
+      <div className="fz-stage">
+        <ul className="fz-stack">
+          {PHOTOS.map((ph, i) => (
+            <li key={ph.id} className="fz-frame" data-f="" style={{ ["--ar" as string]: `${ph.w} / ${ph.h}`, ["--arn" as string]: (ph.w / ph.h).toFixed(4) }}>
+              <button type="button" onClick={() => pick(i)} aria-label={i === cur ? `${num(i)}. kép megnyitása nagyban: ${ph.alt}` : `Élesítés a ${num(i)}. képre: ${ph.alt}`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/foto/m/${p.id}.webp`} srcSet={`/foto/m/${p.id}.webp 640w, /foto/t/${p.id}.webp 1024w`} sizes="(min-width: 900px) 30vh, 62vw" alt={p.alt} loading="lazy" decoding="async" width={p.w} height={p.h} />
+                <img className="fz-soft" src={`/foto/m/${ph.id}.webp`} alt="" aria-hidden loading={i < 3 ? "eager" : "lazy"} decoding="async" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  className="fz-sharp"
+                  src={`/foto/t/${ph.id}.webp`}
+                  srcSet={`/foto/m/${ph.id}.webp 640w, /foto/t/${ph.id}.webp 1024w`}
+                  sizes="(min-width: 900px) 46vh, 62vw"
+                  alt={ph.alt}
+                  loading={i < 3 ? "eager" : "lazy"}
+                  decoding="async"
+                />
               </button>
-              <p className="fs-edge">
-                <span>{num(i)}A</span>
-                <span>{p.tag}</span>
-              </p>
             </li>
           ))}
         </ul>
+
+        <div className="fz-scale" aria-hidden>
+          <div className="fz-scale-track">
+            {MARKS.map((m, i) => (
+              <span key={i} className={i === cur ? "on" : ""}>
+                {m}
+              </span>
+            ))}
+          </div>
+          <i className="fz-index" />
+          <b className="fz-unit">m</b>
+        </div>
+
+        <p className="fz-cap" aria-live="polite">
+          <b>{num(cur)}</b>
+          <span>/ {num(N - 1)}</span>
+          <em>{p.tag}</em>
+        </p>
       </div>
     </section>
   );
@@ -256,22 +212,37 @@ export function Foto() {
   const step = useCallback((d: number) => setOpen((i) => (i < 0 ? i : (i + d + N) % N)), []);
   const close = useCallback(() => setOpen(-1), []);
 
+  useEffect(() => {
+    const hero = document.getElementById("top");
+    if (!hero) return;
+    const io = new IntersectionObserver(([e]) => document.documentElement.classList.toggle("ft-past", !e.isIntersecting), { threshold: 0.15 });
+    io.observe(hero);
+    return () => {
+      io.disconnect();
+      document.documentElement.classList.remove("ft-past");
+    };
+  }, []);
+
   return (
     <>
+      <div className="ft-backdrop" aria-hidden>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={`/foto/m/${CENTER.id}.webp`} alt="" fetchPriority="high" />
+      </div>
       <header className="ft-top">
         <a href="#top" aria-label="HRVT, a lap tetejére">
           <Wordmark className="ft-top-wm" />
         </a>
         <nav aria-label="Fő menü">
-          <a href="#kontaktlap">Képek</a>
+          <a href="#kepek">Képek</a>
           <a href="#kapcsolat" className="ft-top-cta">
             Kapcsolat
           </a>
         </nav>
       </header>
       <main>
-        <Tunnel onOpen={show} />
-        <Strip onOpen={show} />
+        <Hero />
+        <Focus onOpen={show} />
         <section id="kapcsolat" className="fc" aria-labelledby="fc-h">
           <p className="ft-mono">Kapcsolat</p>
           <h2 id="fc-h" className="ft-h2 fc-h">

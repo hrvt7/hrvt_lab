@@ -7,14 +7,13 @@
   --ash: #a3a29b;
   --pad: clamp(20px, 4vw, 56px);
   --mono: "Geist Mono Variable", ui-monospace, monospace;
-  background: var(--ink);
   color: var(--paper);
   font-family: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
 }
-html:has(.foto) { background: #0b0b0b; }
+html:has(.foto) { background: #3a3936; }
 .foto ::selection { background: var(--paper); color: var(--ink); }
 .foto :focus-visible { outline: 2px solid var(--paper); outline-offset: 4px; border-radius: 4px; }
-.foto .ft-mono, .foto .ft-cap, .foto .ft-hint, .foto .ft-end, .foto .fs-edge {
+.foto .ft-mono {
   font-family: var(--mono); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase;
 }
 .foto .ft-mono { color: var(--ash); }
@@ -27,75 +26,61 @@ html:has(.foto) { background: #0b0b0b; }
 .foto .ft-top nav a { color: #fff; font-size: .85rem; font-weight: 500; padding: 12px 14px; border-radius: 99px; }
 .foto .ft-top-cta { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .5); }
 
-/* ---------- 1 Tunnel ---------- */
-.foto .ft-tunnel { position: relative; height: 560svh; }
-.foto .ft-stage { position: sticky; top: 0; height: 100lvh; overflow: hidden; }
-.foto .ft-canvas { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; opacity: 0; transition: opacity 1.2s ease; }
-.foto .ft-stage.is-live .ft-canvas { opacity: 1; }
-/* The portrait behind the tunnel: a blurred full-bleed copy, and a sharp copy masked to the middle.
-   The sharp area opens up as the camera flies down the tunnel (--p 0 → 1). */
-.foto .ft-bg { position: absolute; z-index: 0; inset: 0 0 calc(100lvh - 100svh); overflow: hidden; }
-.foto .ft-bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; }
-@media (min-aspect-ratio: 1/1) { .foto .ft-bg img { object-position: 50% 3%; } }
-.foto .ft-bg-soft { filter: blur(26px) brightness(.92); transform: scale(1.12); }
-.foto .ft-bg-sharp {
-  --r: calc(18% + var(--p) * 70%);
-  -webkit-mask-image: radial-gradient(ellipse var(--r) calc(var(--r) * 1.05) at 50% 46%, #000 55%, transparent 100%);
-  mask-image: radial-gradient(ellipse var(--r) calc(var(--r) * 1.05) at 50% 46%, #000 55%, transparent 100%);
-  transform: scale(calc(1.06 - var(--p) * .06));
-}
-.foto .ft-intro { position: absolute; z-index: 2; inset: 0 0 calc(100lvh - 100svh); display: grid; place-content: center; justify-items: center; gap: 22px; text-align: center; pointer-events: none; opacity: calc(1 - var(--p) * 9); transform: translateY(calc(var(--p) * -60svh)); }
-.foto .ft-h1 { display: grid; justify-items: center; gap: 14px; margin: 0; }
-.foto .ft-wm { width: min(78vw, 640px); height: auto; color: var(--paper); filter: drop-shadow(0 6px 40px rgba(0, 0, 0, .85)); }
-.foto .ft-sub { font-family: var(--mono); font-size: .85rem; font-weight: 400; letter-spacing: .5em; text-transform: uppercase; padding-left: .5em; color: var(--paper); text-shadow: 0 2px 18px #000; }
-.foto .ft-hint { display: flex; align-items: center; gap: 10px; color: var(--paper); text-shadow: 0 2px 14px #000; margin-top: 6svh; }
-.foto .ft-hint i { width: 40px; height: 1px; background: var(--paper); transform-origin: left; animation: ftHint 2.4s cubic-bezier(.7, 0, .2, 1) infinite; }
-@keyframes ftHint { 0% { transform: scaleX(0); } 55% { transform: scaleX(1); } 100% { transform: scaleX(1) translateX(50px); opacity: 0; } }
+/* ---------- Backdrop: the portrait, fully blurred, behind the whole page ---------- */
+.foto .ft-backdrop { position: fixed; z-index: 0; top: 0; left: 0; right: 0; height: 100lvh; overflow: hidden; pointer-events: none; background: #3a3936; }
+.foto .ft-backdrop img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; filter: blur(34px) brightness(.9) saturate(.9); transform: scale(1.18); }
+/* A dark veil comes up once the opening screen is left, so text stays readable over the blur. */
+.foto .ft-backdrop::after { content: ""; position: absolute; inset: 0; background: rgba(8, 8, 8, .5); opacity: 0; transition: opacity .8s ease; }
+.ft-past .foto .ft-backdrop::after { opacity: 1; }
+.foto main, .foto .ff { position: relative; z-index: 1; }
 
-.foto .ft-cap { position: absolute; z-index: 2; left: var(--pad); right: var(--pad); bottom: calc(100lvh - 100svh + max(22px, 3svh)); display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0; color: var(--paper); pointer-events: none; text-shadow: 0 1px 12px #000; opacity: min(1, calc(var(--p) * 12)); }
-.foto .ft-cap b { font-weight: 500; font-size: 1.6rem; letter-spacing: 0; }
-.foto .ft-cap em { font-style: normal; padding: 5px 10px; border-radius: 99px; background: var(--paper); color: var(--ink); text-shadow: none; }
-.foto .ft-cap-act { color: var(--ash); }
-.foto .ft-cap-idle { color: var(--ash); }
+/* ---------- 1 Opening screen ---------- */
+.foto .fh { height: 100svh; display: grid; place-items: center; }
+.foto .fh-h1 { margin: 0; }
+.foto .fh-wm { display: block; width: min(80vw, 820px); height: auto; color: var(--paper); filter: drop-shadow(0 8px 50px rgba(0, 0, 0, .55)); }
+.foto .ft-top { opacity: 0; transition: opacity .5s ease; }
+.ft-past .foto .ft-top { opacity: 1; }
 
-.foto .ft-end { position: absolute; z-index: 2; left: 0; right: 0; bottom: calc(100lvh - 100svh + 4svh); display: grid; justify-items: center; gap: 12px; margin: 0; color: var(--paper); text-shadow: 0 2px 14px #000; opacity: clamp(0, calc((var(--p) - .9) * 14), 1); pointer-events: none; }
-.foto .ft-end a { pointer-events: auto; color: var(--paper); text-decoration: underline; text-underline-offset: 5px; padding: 10px; }
+/* ---------- 2 Rack focus gallery ---------- */
+.foto .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.foto .fz { position: relative; }
+.foto .fz-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+.foto .fz-stack { list-style: none; margin: 0; padding: 0; position: absolute; inset: 0; }
+.foto .fz-frame {
+  position: absolute; left: 50%; top: 50%;
+  height: min(70svh, 760px, calc((100vw - 128px) / var(--arn)));
+  aspect-ratio: var(--ar); translate: -50% -50%;
+  will-change: transform, opacity; visibility: hidden;
+}
+.foto .fz-frame button { position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: #151514; overflow: hidden; cursor: pointer; box-shadow: 0 40px 90px rgba(0, 0, 0, .45); }
+.foto .fz-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Out of focus: blurred and black-and-white (static filters, so only opacity moves). */
+.foto .fz-soft { filter: grayscale(1) blur(16px) brightness(.88); transform: scale(1.1); }
+.foto .fz-sharp { opacity: 0; will-change: opacity; }
 
-/* ---------- 2 Contact sheet ---------- */
-.foto .fs { position: relative; background: var(--ink); }
-.foto .fs-pin { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; gap: 4svh; padding: 12svh 0; overflow: hidden; }
-.foto .fs-head { padding: 0 var(--pad); display: grid; gap: 12px; }
-.foto .ft-h2 { margin: 0; font-weight: 500; font-size: clamp(2.2rem, 9vw, 3rem); line-height: 1.02; letter-spacing: -.035em; text-wrap: balance; }
-.foto .ft-h2 span { color: var(--ash); }
-.foto .fs-track {
-  display: flex; gap: 0; width: max-content; padding: 26px var(--pad);
-  /* film base with sprocket holes along both edges */
-  background:
-    radial-gradient(circle, var(--ink) 0 3.5px, transparent 4px) 0 7px / 22px 14px repeat-x,
-    radial-gradient(circle, var(--ink) 0 3.5px, transparent 4px) 0 calc(100% - 7px) / 22px 14px repeat-x,
-    #1b1a17;
-  will-change: transform;
-}
-.foto .fs-track { list-style: none; margin: 0; }
-.foto .fs-frame { flex: none; margin: 0; padding: 0 9px; display: grid; gap: 8px; }
-.foto .fs-edge { margin: 0; }
-.foto .fs-frame button { display: block; padding: 0; border: 0; background: #000; cursor: zoom-in; height: min(52svh, 520px); aspect-ratio: var(--ar); overflow: hidden; }
-.foto .fs-frame img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(1) contrast(1.08) brightness(.86); transform: scale(1.02); transition: filter .6s ease, transform .9s cubic-bezier(.22, 1, .36, 1); }
-.foto .fs-frame.on img, .foto .fs-frame button:hover img, .foto .fs-frame button:focus-visible img { filter: none; transform: scale(1); }
-.foto .fs-edge { display: flex; justify-content: space-between; color: #d9a441; font-size: .75rem; }
-.foto .fs-edge span:last-child { color: var(--ash); }
-@media (pointer: coarse), (max-width: 899px) {
-  .foto .fs-track { width: auto; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
-  .foto .fs-track::-webkit-scrollbar { display: none; }
-  .foto .fs-frame { scroll-snap-align: center; }
-  .foto .fs-frame button { height: min(58svh, 520px); }
-}
-@media (min-width: 900px) and (pointer: fine) {
-  .foto .fs-pin { height: 100svh; }
-  .foto .ft-h2 { font-size: clamp(3rem, 5vw, 5.2rem); }
+/* The lens' focus-distance scale, turning with the gallery. */
+.foto .fz-scale { position: absolute; z-index: 120; right: var(--pad); top: 50%; translate: 0 -50%; width: 64px; height: 300px; overflow: hidden; pointer-events: none;
+  -webkit-mask-image: linear-gradient(transparent, #000 32%, #000 68%, transparent); mask-image: linear-gradient(transparent, #000 32%, #000 68%, transparent); }
+.foto .fz-scale-track { position: absolute; left: 0; right: 0; top: calc(50% - 11px); will-change: transform; }
+.foto .fz-scale-track span { position: relative; display: block; height: 44px; line-height: 22px; padding-right: 22px; text-align: right; font-family: var(--mono); font-size: .78rem; color: var(--ash); transition: color .3s; }
+.foto .fz-scale-track span::after { content: ""; position: absolute; right: 0; top: 10px; width: 12px; height: 1.5px; background: currentColor; }
+.foto .fz-scale-track span::before { content: ""; position: absolute; right: 0; top: 32px; width: 6px; height: 1px; background: var(--ash); opacity: .6; }
+.foto .fz-scale-track span.on { color: var(--paper); }
+.foto .fz-index { position: absolute; right: -2px; top: 50%; width: 0; height: 0; translate: 0 -50%; border: 6px solid transparent; border-right-color: var(--paper); }
+.foto .fz-unit { position: absolute; right: 22px; bottom: 6px; font-family: var(--mono); font-size: .75rem; font-weight: 400; color: var(--ash); }
+
+.foto .fz-cap { position: absolute; z-index: 120; left: var(--pad); bottom: max(22px, 3svh); display: flex; align-items: baseline; gap: 10px; margin: 0; font-family: var(--mono); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--paper); }
+.foto .fz-cap b { font-weight: 500; font-size: 1.6rem; letter-spacing: 0; }
+.foto .fz-cap em { font-style: normal; padding: 5px 10px; border-radius: 99px; background: var(--paper); color: var(--ink); }
+@media (max-width: 767px) {
+  .foto .fz-scale { right: 4px; width: 50px; height: 240px; }
+  .foto .fz-scale-track span { font-size: .75rem; padding-right: 18px; }
 }
 
 /* ---------- 3 Contact ---------- */
+.foto .ft-h2 { margin: 0; font-weight: 500; font-size: clamp(2.2rem, 9vw, 3rem); line-height: 1.04; letter-spacing: -.035em; text-wrap: balance; }
+.foto .ft-h2 span { color: var(--ash); }
+@media (min-width: 900px) { .foto .ft-h2 { font-size: clamp(3rem, 5vw, 5.2rem); } }
 .foto .fc { padding: clamp(6rem, 14vw, 11rem) var(--pad); display: grid; gap: 18px; border-top: 1px solid var(--line); }
 .foto .fc-h { max-width: 16ch; }
 .foto .fc-act { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
