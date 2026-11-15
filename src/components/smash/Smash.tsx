@@ -29,7 +29,7 @@ function Hero() {
 }
 
 /** Focus-distance marks on the lens scale, one per photo (near → far). */
-const MARKS = ["0,5", "0,7", "1", "1,2", "1,5", "2", "3", "4", "5", "7", "10", "∞"];
+const MARKS = ["0,4", "0,5", "0,6", "0,7", "0,8", "1", "1,2", "1,5", "2", "2,5", "3", "4", "5", "7", "10", "15", "20", "∞"];
 
 /**
  * 2 — Rack focus: one photo at a time stands sharp and in colour; its neighbours wait above and below,
