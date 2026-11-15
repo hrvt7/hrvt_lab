@@ -1,0 +1,174 @@
+/* SMASH — autós galéria: fekete alap, a színt a kiválasztott kép és a SMASH-zöld adja. A fotós oldal szerkezete, saját arculattal. */
+.smash {
+  --ink: #0b0b0b;
+  --ink-2: #151514;
+  --line: #2a2a28;
+  --paper: #efeee9;
+  --ash: #a3a29b;
+  --pad: clamp(20px, 4vw, 56px);
+  --mono: "Geist Mono Variable", ui-monospace, monospace;
+  color: var(--paper);
+  font-family: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+}
+html:has(.smash) { background: #3a3936; }
+.smash ::selection { background: var(--paper); color: var(--ink); }
+.smash :focus-visible { outline: 2px solid var(--paper); outline-offset: 4px; border-radius: 4px; }
+.smash .ft-mono {
+  font-family: var(--mono); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase;
+}
+.smash .ft-mono { color: var(--ash); }
+
+/* ---------- Top bar ---------- */
+.smash .ft-top { position: fixed; z-index: 40; inset: 0 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 16px var(--pad); pointer-events: none; mix-blend-mode: difference; }
+.smash .ft-top > * { pointer-events: auto; }
+.smash .ft-top nav { display: flex; gap: 6px; }
+.smash .ft-top nav a { color: #fff; font-size: .85rem; font-weight: 500; padding: 12px 14px; border-radius: 99px; }
+.smash .ft-top-cta { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .5); }
+
+/* ---------- Backdrop: the portrait, fully blurred, behind the whole page ---------- */
+.smash .ft-backdrop { position: fixed; z-index: 0; top: 0; left: 0; right: 0; height: 100lvh; overflow: hidden; pointer-events: none; background: #3a3936; }
+.smash .ft-backdrop img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; filter: blur(34px) brightness(.9) saturate(.9); transform: scale(1.18); }
+/* A dark veil comes up once the opening screen is left, so text stays readable over the blur. */
+.smash .ft-backdrop::after { content: ""; position: absolute; inset: 0; background: rgba(8, 8, 8, .5); opacity: 0; transition: opacity .8s ease; }
+.sm-past .smash .ft-backdrop::after { opacity: 1; }
+.smash main, .smash .ff { position: relative; z-index: 1; }
+
+/* ---------- 1 Opening screen ---------- */
+.smash .fh { height: 100svh; display: grid; place-items: center; }
+.smash .fh-h1 { margin: 0; }
+.smash .ft-top { opacity: 0; transition: opacity .5s ease; }
+.sm-past .smash .ft-top { opacity: 1; }
+
+/* ---------- 2 Rack focus gallery (CSS scroll-driven: runs on the compositor, no JS per frame) ---------- */
+.smash .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.smash .fz { --item: 72svh; position: relative; padding: 14svh 0; view-timeline: --fz block; }
+.smash .fz-list { list-style: none; margin: 0; padding: 0; position: relative; z-index: 1; }
+.smash .fz-item { height: var(--item); display: grid; place-items: center; scroll-snap-align: center; view-timeline: --it block; }
+.smash .fz-frame {
+  position: relative; display: block; padding: 0; border: 0; cursor: pointer; overflow: clip; background: #262624;
+  height: min(62svh, 720px, calc((100vw - 128px) / var(--arn))); aspect-ratio: var(--ar);
+  box-shadow: 0 40px 90px rgba(0, 0, 0, .45);
+}
+.smash .fz-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Out of focus = a 48 px greyscale thumbnail stretched up: the blur costs nothing at scroll time. */
+.smash .fz-soft { transform: scale(1.08); }
+.smash .fz-sharp { opacity: 0; transition: opacity .35s ease; }
+.smash .fz-item.is-focus .fz-sharp { opacity: 1; }
+
+@supports (animation-timeline: view()) {
+  .smash .fz-frame { animation: fzFrame linear both; animation-timeline: --it; animation-range: cover 0% cover 100%; will-change: transform, opacity; }
+  .smash .fz-sharp, .smash .fz-item.is-focus .fz-sharp { transition: none; animation: fzSharp linear both; animation-timeline: --it; animation-range: cover 0% cover 100%; will-change: opacity; }
+  .smash .fz-scale-track { animation: fzScale linear both; animation-timeline: --fz; animation-range: contain 0% contain 100%; }
+  /* The counter fades out on the last photo, so it never rides up under the top bar. */
+  .smash .fz-cap, .smash .fz-scale { animation: fzCapOut linear both; animation-timeline: --fz; animation-range: contain 94% exit 6%; }
+}
+@keyframes fzFrame { 0% { transform: scale(.74); opacity: .3; } 42%, 58% { transform: scale(1); opacity: 1; } 100% { transform: scale(.74); opacity: .3; } }
+@keyframes fzSharp { 0%, 28% { opacity: 0; } 40%, 60% { opacity: 1; } 72%, 100% { opacity: 0; } }
+@keyframes fzCapOut { from { opacity: 1; } to { opacity: 0; } }
+@keyframes fzScale { from { transform: translateY(0); } to { transform: translateY(calc((var(--n) - 1) * -44px)); } }
+
+/* HUD: lens scale + caption, pinned over the gallery while it scrolls. */
+.smash .fz-hud { position: sticky; z-index: 2; top: 0; height: 100svh; margin-bottom: -100svh; pointer-events: none; }
+.smash .fz-scale { position: absolute; right: var(--pad); top: 50%; translate: 0 -50%; width: 64px; height: 300px; overflow: hidden;
+  -webkit-mask-image: linear-gradient(transparent, #000 32%, #000 68%, transparent); mask-image: linear-gradient(transparent, #000 32%, #000 68%, transparent); }
+.smash .fz-scale-track { position: absolute; left: 0; right: 0; top: calc(50% - 11px); will-change: transform; }
+.smash .fz-scale-track span { position: relative; display: block; height: 44px; line-height: 22px; padding-right: 22px; text-align: right; font-family: var(--mono); font-size: .78rem; color: var(--ash); transition: color .3s; }
+.smash .fz-scale-track span::after { content: ""; position: absolute; right: 0; top: 10px; width: 12px; height: 1.5px; background: currentColor; }
+.smash .fz-scale-track span::before { content: ""; position: absolute; right: 0; top: 32px; width: 6px; height: 1px; background: var(--ash); opacity: .6; }
+.smash .fz-scale-track span.on { color: var(--paper); }
+.smash .fz-index { position: absolute; right: -2px; top: 50%; width: 0; height: 0; translate: 0 -50%; border: 6px solid transparent; border-right-color: var(--paper); }
+.smash .fz-unit { position: absolute; right: 22px; bottom: 6px; font-family: var(--mono); font-size: .75rem; font-weight: 400; color: var(--ash); }
+.smash .fz-cap { position: absolute; right: var(--pad); bottom: max(22px, 3svh); display: flex; align-items: baseline; gap: 10px; margin: 0; font-family: var(--mono); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--paper); }
+.smash .fz-cap b { font-weight: 500; font-size: 1.6rem; letter-spacing: 0; }
+.smash .fz-cap em { font-style: normal; padding: 5px 10px; border-radius: 99px; background: var(--paper); color: var(--ink); }
+@media (max-width: 767px) {
+  .smash .fz { --item: 56svh; padding: 22svh 0; }
+  .smash .fz-frame { height: min(50svh, calc((100vw - 128px) / var(--arn))); }
+  .smash .fz-scale { right: 4px; width: 50px; height: 240px; }
+  .smash .fz-scale-track span { font-size: .75rem; padding-right: 18px; }
+}
+/* Phones: native snapping to each photo (no script fighting the momentum). */
+@media (pointer: coarse) {
+  html:has(.smash) { scroll-snap-type: y proximity; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .smash .fz-frame, .smash .fz-sharp, .smash .fz-scale-track { animation: none !important; }
+}
+
+/* ---------- 3 Contact ---------- */
+.smash .ft-h2 { margin: 0; font-weight: 500; font-size: clamp(2.2rem, 9vw, 3rem); line-height: 1.04; letter-spacing: -.035em; text-wrap: balance; }
+.smash .ft-h2 span { color: var(--ash); }
+@media (min-width: 900px) { .smash .ft-h2 { font-size: clamp(3rem, 5vw, 5.2rem); } }
+.smash .fc { padding: clamp(6rem, 14vw, 11rem) var(--pad); display: grid; gap: 18px; border-top: 1px solid var(--line); }
+.smash .fc-h { max-width: 16ch; }
+.smash .fc-act { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.smash .fc-btn { display: inline-flex; align-items: center; min-height: 56px; padding: 0 24px; border-radius: 99px; background: var(--paper); color: var(--ink); font-weight: 550; overflow-wrap: anywhere; transition: transform .3s cubic-bezier(.22, 1, .36, 1); }
+.smash .fc-btn:hover { transform: translateY(-2px); }
+.smash .fc-btn--ghost { background: transparent; color: var(--paper); box-shadow: inset 0 0 0 1px var(--line); }
+
+.smash .ff { padding: 3rem var(--pad) 2.4rem; display: grid; gap: 22px; border-top: 1px solid var(--line); }
+.smash .ff p { margin: 0; color: var(--ash); font-size: .85rem; }
+
+/* ---------- Lightbox ---------- */
+.smash .lb { position: fixed; inset: 0; width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: rgba(5, 5, 5, .97); color: var(--paper); }
+.smash .lb::backdrop { background: rgba(0, 0, 0, .9); }
+.smash .lb[open] { display: grid; place-items: center; animation: lbIn .35s ease; }
+@keyframes lbIn { from { opacity: 0; } }
+.smash .lb-img { max-width: calc(100vw - 32px); max-height: calc(100dvh - 120px); width: auto; height: auto; object-fit: contain; animation: lbImg .5s cubic-bezier(.22, 1, .36, 1); }
+@keyframes lbImg { from { opacity: 0; transform: scale(.97); } }
+.smash .lb-cap { position: absolute; left: 0; right: 0; bottom: 22px; text-align: center; margin: 0; font-family: var(--mono); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ash); }
+.smash .lb-cap b { color: var(--paper); font-weight: 500; }
+.smash .lb-btn { position: absolute; width: 52px; height: 52px; border-radius: 99px; border: 0; background: rgba(239, 238, 233, .1); color: var(--paper); font-size: 1.2rem; cursor: pointer; }
+.smash .lb-btn:hover { background: rgba(239, 238, 233, .22); }
+.smash .lb-prev { left: 14px; top: 50%; translate: 0 -50%; }
+.smash .lb-next { right: 14px; top: 50%; translate: 0 -50%; }
+.smash .lb-close { right: 14px; top: 14px; }
+@media (max-width: 767px) {
+  .smash .lb-prev, .smash .lb-next { top: auto; bottom: 10px; translate: none; }
+  .smash .lb-cap { bottom: 26px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smash *, .smash *::before { animation: none !important; transition-duration: .01ms !important; }
+}
+
+/* ================= SMASH arculat ================= */
+.smash {
+  --ink: #0a0a0a;
+  --line: #262626;
+  --paper: #f2f2ee;
+  --ash: #a4a49e;
+  --neon: #12fb21;
+  --mono: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+  font-family: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+}
+html:has(.smash) { background: #0a0a0a; }
+.smash .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.smash .ft-mono, .smash .fz-cap, .smash .fz-scale-track span, .smash .fz-unit, .smash .lb-cap { font-stretch: 125%; font-weight: 600; }
+.smash .ft-backdrop { background: #1a1a1a; }
+
+/* The lettering: white mask cut from the logo, painted green. */
+.smash .sm-logo {
+  display: block; aspect-ratio: 1146 / 576; background: var(--neon);
+  -webkit-mask: url(/smash/smash-logo.webp) center / contain no-repeat; mask: url(/smash/smash-logo.webp) center / contain no-repeat;
+}
+.smash .fh { grid-template-rows: 1fr auto 1fr; gap: 0; }
+.smash .fh-h1 { grid-row: 2; }
+.smash .fh-logo { width: min(84vw, 860px); filter: drop-shadow(0 10px 60px rgba(0, 0, 0, .6)); }
+.smash .fh-sub { grid-row: 3; align-self: start; margin: 18px 0 0; font-stretch: 125%; font-weight: 600; font-size: .72rem; letter-spacing: .16em; text-transform: uppercase; color: var(--paper); text-shadow: 0 2px 18px rgba(0, 0, 0, .7); text-align: center; padding: 0 var(--pad); }
+.smash .ft-top { mix-blend-mode: normal; background: linear-gradient(rgba(10, 10, 10, .7), transparent); }
+.smash .ft-top-logo { height: 30px; width: auto; }
+.smash .ft-top nav a { color: var(--paper); font-stretch: 112%; }
+.smash .ft-top-cta { box-shadow: inset 0 0 0 1px var(--neon); }
+
+.smash .fz-scale-track span.on, .smash .fz-cap b { color: var(--neon); }
+.smash .fz-index { border-right-color: var(--neon); }
+.smash .fz-cap em { background: var(--neon); color: var(--ink); }
+
+.smash .ft-h2 { font-stretch: 75%; font-weight: 800; text-transform: uppercase; letter-spacing: -.01em; line-height: 1; }
+.smash .fc-btn { background: var(--neon); color: var(--ink); font-stretch: 112%; }
+.smash .fc-btn--ghost { background: transparent; color: var(--paper); box-shadow: inset 0 0 0 1px #3a3a3a; }
+.smash .ff-logo { width: min(100%, 720px); }
+.smash .ff p a { color: var(--paper); text-decoration: underline; text-underline-offset: 3px; }
+.smash :focus-visible { outline-color: var(--neon); }
+.smash .lb-cap b { color: var(--neon); }
