@@ -4,21 +4,10 @@ import { CENTER, PHOTOS } from "@/lib/photos";
 import { EMAIL, PHONE, PHONE_TEL } from "@/lib/content";
 import { Wordmark } from "@/components/Logo";
 import { track } from "@/lib/track";
+import { Darkroom } from "./Darkroom";
 
 const N = PHOTOS.length;
 const num = (i: number) => String(i + 1).padStart(2, "0");
-
-/** 1 — Opening screen: only the HRVT wordmark over the blurred portrait. */
-function Hero() {
-  return (
-    <section id="top" className="fh" aria-label="HRVT">
-      <h1 className="fh-h1">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="fh-wm" src="/foto/hrvt-wordmark.svg" alt="HRVT — fotók" width={2541} height={907} fetchPriority="high" />
-      </h1>
-    </section>
-  );
-}
 
 /** Focus-distance marks on the lens scale, one per photo (near → far), shown beside the gallery. */
 const MARKS = ["0,5", "0,6", "0,7", "0,8", "1", "1,2", "1,5", "2", "2,5", "3", "4", "5", "7", "10", "20", "∞"];
@@ -177,9 +166,13 @@ export function Foto() {
   const close = useCallback(() => setOpen(-1), []);
 
   useEffect(() => {
-    const hero = document.getElementById("top");
+    // The last screen of the opening (the wordmark over the backdrop) behaves like the old one-screen hero.
+    const hero = document.querySelector(".fd-end");
     if (!hero) return;
-    const io = new IntersectionObserver(([e]) => document.documentElement.classList.toggle("ft-past", !e.isIntersecting), { threshold: 0.15 });
+    const io = new IntersectionObserver(
+      ([e]) => document.documentElement.classList.toggle("ft-past", !e.isIntersecting && e.boundingClientRect.top < 0),
+      { threshold: 0.15 },
+    );
     io.observe(hero);
     return () => {
       io.disconnect();
@@ -205,7 +198,7 @@ export function Foto() {
         </nav>
       </header>
       <main>
-        <Hero />
+        <Darkroom />
         <Focus onOpen={show} />
         <section id="kapcsolat" className="fc" aria-labelledby="fc-h">
           <p className="ft-mono">Kapcsolat</p>
