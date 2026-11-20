@@ -25,7 +25,7 @@ export type Api = {
 };
 export type Theme = { serif: string; sans: string; accent: string; titlePx?: number };
 type Opts = {
-  canvas: HTMLCanvasElement; works: Work[]; theme?: Theme;
+  canvas: HTMLCanvasElement; works: Work[]; theme?: Theme; endLogo?: { src: string; aspect: number };
   onFrame: (f: Frame) => void; onHover: (i: number | null) => void;
   onFocused: (i: number) => void; onReleased: () => void;
 };
@@ -167,7 +167,7 @@ void main(){
   gl_FragColor = vec4(c, 0.86 - edge * 0.08);
 }`;
 
-export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif", sans: '"Schibsted Grotesk Variable", sans-serif', accent: "#2b3cff" }, onFrame, onHover, onFocused, onReleased }: Opts): Api {
+export function mount({ canvas, works, endLogo, theme = { serif: "Gloock, Georgia, serif", sans: '"Schibsted Grotesk Variable", sans-serif', accent: "#2b3cff" }, onFrame, onHover, onFocused, onReleased }: Opts): Api {
   const mobile = matchMedia("(pointer: coarse)").matches || innerWidth < 760;
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const renderer = new WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
@@ -245,6 +245,17 @@ export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif"
     const m = g.clone(); mirror.add(m);
     return { g, m, canvas: cv, mat, base, normal, center: base.clone().addScaledVector(normal, 0.06), u, w: w.w, h: w.h, lo: null, hi: null, busy: false };
   });
+
+  // the far wall carries the logo, so the walk ends on something
+  if (endLogo) {
+    const uE = 0.9995, pE = curve.getPointAt(uE), tE = curve.getTangentAt(uE).setY(0).normalize();
+    const wL = mobile ? 1.5 : 2.5, hL = wL / endLogo.aspect;
+    const lm = new MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false, side: DoubleSide });
+    const lp = new Mesh(new PlaneGeometry(wL, hL), lm);
+    lp.position.copy(pE).addScaledVector(tE, -0.02).setY(1.75); lp.lookAt(lp.position.clone().sub(tE)); lp.renderOrder = 5;
+    scene.add(lp); const lr = lp.clone(); mirror.add(lr);
+    plain.load(endLogo.src, (t) => { t.colorSpace = SRGBColorSpace; t.anisotropy = maxAniso; lm.map = t; lm.opacity = 0.92; lm.needsUpdate = true; });
+  }
 
   /* camera state */
   let uTarget = railU(0), u = uTarget, uMid = uTarget; const qS = new Quaternion(); let qInit = false;

@@ -9,6 +9,7 @@ export type Work = {
 };
 export type GalleryConfig = {
   cls?: string; works: Work[];
+  /** logo shown large on the wall at the end of the corridor */ endLogo?: { src: string; aspect: number };
   /** titles are set in a script face: never split or clip them */ script?: boolean;
   logo: { src: string; w: number; h: number; label?: string; alt: string };
   note: string; noteLink?: { href: string; label: string };
