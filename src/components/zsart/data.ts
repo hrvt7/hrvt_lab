@@ -26,7 +26,7 @@ const WORKS: Work[] = [
 ];
 
 export const ZSART: GalleryConfig = {
-  cls: "zs", works: WORKS,
+  cls: "zs", script: true, works: WORKS,
   logo: { src: "/zsart/logo.png", w: 800, h: 178, alt: "ZsArt" },
   note: "Koncepcióterv, nem hivatalos oldal", noteLink: { href: "/", label: "HRVT" },
   title: ["Zsoze", "festményei"], sub: "Húsz festmény egy folyosón. Görgess, és sétálj végig. Ha egy kép megállít, kattints rá.",

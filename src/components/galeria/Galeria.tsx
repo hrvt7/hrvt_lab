@@ -33,7 +33,9 @@ function MiniMap({ works, dotRef, onJump, active }: { works: Work[]; dotRef: Rea
 }
 
 /** A short roll-in for the "you are walking past" title. */
-function Roll({ text }: { text: string }) {
+function Roll({ text, whole }: { text: string; whole?: boolean }) {
+  // script faces overhang their letter boxes and join up, so they move as one piece instead of letter by letter
+  if (whole) return <span className="roll roll-whole">{text}</span>;
   return <span key={text} className="roll">{[...text].map((c, i) => <span key={i} style={{ "--i": i } as CSSProperties}>{c === " " ? " " : c}</span>)}</span>;
 }
 
@@ -157,7 +159,7 @@ export function Galeria({ cfg }: { cfg: GalleryConfig }) {
       <div className={`passing ${label >= 0 && focus === null ? "show" : ""}`} data-ui>
         {label >= 0 && (
           <>
-            <p className="passing-t disp"><Roll key={works[label].id} text={works[label].title} /></p>
+            <p className="passing-t disp"><Roll key={works[label].id} text={works[label].title} whole={cfg.script} /></p>
             <button className="passing-btn" onClick={(e) => doFocus(label, e.currentTarget)} data-track="megnezem">Megnézem <span aria-hidden>→</span></button>
           </>
         )}

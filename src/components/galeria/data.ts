@@ -9,6 +9,7 @@ export type Work = {
 };
 export type GalleryConfig = {
   cls?: string; works: Work[];
+  /** titles are set in a script face: never split or clip them */ script?: boolean;
   logo: { src: string; w: number; h: number; label?: string; alt: string };
   note: string; noteLink?: { href: string; label: string };
   title: [string, string]; sub: string;
