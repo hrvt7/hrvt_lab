@@ -40,7 +40,7 @@ function bezier(x1: number, y1: number, x2: number, y2: number) {
   };
 }
 /** Speed ramp: a quick push-off, most of the distance covered early, then a long soft landing. */
-const ramp = bezier(0.5, 0, 0.08, 1), rampTurn = bezier(0.4, 0, 0.1, 1);
+const ramp = bezier(0.66, 0, 0.18, 1);
 const clamp = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 
 /* ---------- placeholder artworks, drawn in code ---------- */
@@ -252,7 +252,7 @@ export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif"
   let hover: number | null = null; const hov = new Array(N).fill(0);
   let mode: "rail" | "to" | "focus" | "back" = "rail", focusI = -1, t0 = 0, dur = 1.35;
   const fromPos = new Vector3(), fromQ = new Quaternion(), toPos = new Vector3(), toQ = new Quaternion(), ctrl = new Vector3();
-  let offK = 0, offFrom = 0, offTo = 0, early = false;
+  let offK = 0, offFrom = 0, offTo = 0, early = false, tLand = 0;
   const mtx = new Matrix4(), q = new Quaternion(), sway = new Quaternion(), eul = new Euler();
   const pos = new Vector3(), look = new Vector3(), tmp = new Vector3(), tmp2 = new Vector3();
   let near = -1, nearK = 0;
@@ -289,10 +289,10 @@ export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif"
   function start(next: typeof mode, i: number) {
     fromPos.copy(cam.position); fromQ.copy(cam.quaternion);
     if (next === "to") focusPose(i, toPos, toQ); else railPose(u, toPos, toQ);
-    ctrl.copy(fromPos).lerp(toPos, 0.5); ctrl.y += 0.12;
+    ctrl.copy(fromPos).lerp(toPos, 0.5);
     // keep the arc inside the corridor: pull the control point toward the centre line
     curve.getPointAt(clamp(next === "to" ? objs[i].u : u), tmp); ctrl.x = (ctrl.x + tmp.x) / 2; ctrl.z = (ctrl.z + tmp.z) / 2;
-    offFrom = offK; offTo = next === "to" ? 1 : 0; dur = reduced ? 0.01 : next === "to" ? 1.25 : 1.05; early = false;
+    offFrom = offK; offTo = next === "to" ? 1 : 0; dur = reduced ? 0.01 : next === "to" ? 1.2 : 1.05; early = false;
     t0 = performance.now(); mode = next; focusI = i;
   }
 
@@ -309,7 +309,7 @@ export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif"
   function stream() {
     for (let i = 0; i < N; i++) {
       const o = objs[i], w = works[i]; if (!w.imgT || !w.img) continue;
-      const d = Math.abs(o.u - u) / K, want = d < 0.12 || (focusI >= 0 && Math.abs(i - focusI) <= 1);
+      const d = Math.abs(o.u - u) / K, want = d < 0.12 || i === focusI;
       if (want && !o.hi && !o.busy) {
         if (loading >= 1) continue; loading++;
         o.busy = true;
@@ -327,7 +327,7 @@ export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif"
     // if most frames in a window miss ~50 fps, render at a lower resolution instead of stuttering
     if (raw < 250) { seen++; if (raw > 21) slow++; }
     if (seen >= 90) { if (slow > 45 && dpr > dprMin) { dpr = Math.max(dprMin, dpr - 0.25); renderer.setPixelRatio(dpr); renderer.setSize(innerWidth, innerHeight, false); } seen = slow = 0; }
-    if (now - lastStream > 250) { lastStream = now; stream(); }
+    if (now - lastStream > 250 && mode !== "to" && mode !== "back") { lastStream = now; stream(); } // no texture uploads mid-flight
     ptrS.lerp(ptr, 1 - Math.exp(-dt * 2.2));
     if (mode === "rail") {
       if (reduced) { uMid = u = uTarget; } else { uMid += (uTarget - uMid) * (1 - Math.exp(-dt * 3.4)); u += (uMid - u) * (1 - Math.exp(-dt * 3.4)); }
@@ -337,15 +337,16 @@ export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif"
       if (!reduced) { eul.set(ptrS.y * 0.035, -ptrS.x * 0.07, 0, "YXZ"); sway.setFromEuler(eul); q.multiply(sway); }
       cam.position.copy(pos); cam.quaternion.copy(q);
     } else if (mode === "to" || mode === "back") {
-      const t = clamp((now - t0) / (dur * 1000)), e = ramp(t), er = rampTurn(Math.min(1, t * 1.12)); // the head turns first, the body follows
+      const t = clamp((now - t0) / (dur * 1000)), e = ramp(t);
       if (mode === "back") { railPose(u, toPos, toQ); qS.copy(toQ); }
       const a = 1 - e; cam.position.set(0, 0, 0).addScaledVector(fromPos, a * a).addScaledVector(ctrl, 2 * a * e).addScaledVector(toPos, e * e);
-      cam.quaternion.slerpQuaternions(fromQ, toQ, er);
+      cam.quaternion.slerpQuaternions(fromQ, toQ, e);
       offK = offFrom + (offTo - offFrom) * e; applyOffset(offK);
       if (mode === "to" && !early && t > 0.42) { early = true; onFocused(focusI); } // the text starts in while the camera is still landing
-      if (t >= 1) { if (mode === "to") { mode = "focus"; if (!early) onFocused(focusI); } else { mode = "rail"; focusI = -1; onReleased(); } }
+      if (t >= 1) { if (mode === "to") { mode = "focus"; tLand = now; if (!early) onFocused(focusI); } else { mode = "rail"; focusI = -1; onReleased(); } }
     } else if (mode === "focus" && !reduced) {
-      focusPose(focusI, pos, q); eul.set(ptrS.y * 0.012, -ptrS.x * 0.02, 0, "YXZ"); sway.setFromEuler(eul); q.multiply(sway);
+      focusPose(focusI, pos, q); const sk = easeIO(clamp((now - tLand) / 1600)); // the pointer sway fades in after landing, so the landing itself is dead still
+      eul.set(ptrS.y * 0.012 * sk, -ptrS.x * 0.02 * sk, 0, "YXZ"); sway.setFromEuler(eul); q.multiply(sway);
       cam.position.lerp(pos, 1 - Math.exp(-dt * 3)); cam.quaternion.slerp(q, 1 - Math.exp(-dt * 3));
     }
     // hover lift + light pools
