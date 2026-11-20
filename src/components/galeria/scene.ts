@@ -302,7 +302,7 @@ export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif"
       if (want && !o.hi && !o.busy) {
         if (loading >= 1) continue; loading++;
         o.busy = true;
-        loader.load(mobile && w.imgM ? w.imgM : w.img, (t) => {
+        loader.load((mobile || renderer.capabilities.maxTextureSize < 4096) && w.imgM ? w.imgM : w.img, (t) => {
           o.busy = false; loading--; if (dead) { t.dispose(); return; }
           renderer.initTexture(t); o.hi = t; o.mat.map = t; o.mat.color.set(0xffffff); o.mat.needsUpdate = true;
         }, undefined, () => { o.busy = false; loading--; });
