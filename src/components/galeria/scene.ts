@@ -159,8 +159,8 @@ void main(){
 export function mount({ canvas, works, onFrame, onHover, onFocused, onReleased }: Opts): Api {
   const mobile = matchMedia("(pointer: coarse)").matches || innerWidth < 760;
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const renderer = new WebGLRenderer({ canvas, antialias: !mobile, powerPreference: "high-performance" });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.5 : 1.75));
+  const renderer = new WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 2 : 2.5));
   renderer.outputColorSpace = SRGBColorSpace;
   renderer.setClearColor(0xe4e0d8, 1);
   const scene = new Scene();
@@ -210,7 +210,7 @@ export function mount({ canvas, works, onFrame, onHover, onFocused, onReleased }
     const pl = new Mesh(new PlaneGeometry(0.36, 0.18), new MeshBasicMaterial({ map: plaqueTexture(w), side: DoubleSide }));
     pl.position.set(w.w / 2 + 0.34, -w.h / 2 + 0.09, 0.006); g.add(pl);
     if (w.img) new TextureLoader().load(w.img, (t) => {
-      t.colorSpace = SRGBColorSpace; t.anisotropy = 8; mat.map = t; mat.color.set(0xffffff); mat.needsUpdate = true;
+      t.colorSpace = SRGBColorSpace; t.anisotropy = renderer.capabilities.getMaxAnisotropy(); mat.map = t; mat.color.set(0xffffff); mat.needsUpdate = true;
       const img = t.image as { width: number; height: number }; const nw = (w.h * img.width) / img.height;
       cv.scale.x = nw / w.w; frame.scale.x = (nw + 0.09) / (w.w + 0.09); sh.scale.x = (nw + 0.7) / (w.w + 0.7); pl.position.x = nw / 2 + 0.34;
       const o = objs[i]; if (o) o.w = nw;
