@@ -149,7 +149,7 @@ export function Galeria({ cfg }: { cfg: GalleryConfig }) {
         </a>
         {cfg.shop
           ? <a className="bagpill" href={cfg.shop.href} target="_blank" rel="noopener" data-track="shop_fejlec">{cfg.shop.label} <span aria-hidden>↗</span></a>
-          : <span className="bagpill" aria-live="polite">Kosár · {bag}</span>}
+          : !cfg.noCart && <span className="bagpill" aria-live="polite">Kosár · {bag}</span>}
       </header>
 
 <h1 id="top" className="sr">{cfg.title[0]} {cfg.title[1]}</h1>
@@ -207,7 +207,7 @@ export function Galeria({ cfg }: { cfg: GalleryConfig }) {
               <p className="fine">Szállítás 3–5 munkanap, papírhengerben vagy keretezve, dobozban.</p>
               </>
             ) : (
-              <div className="links">
+              (w.shop || w.video) && <div className="links">
                 {w.shop && <a className="btn" href={w.shop} target="_blank" rel="noopener" data-track="shop_kep">Megnézem a shopban <span aria-hidden>↗</span></a>}
                 {w.video && <a className="btn btn-line" href={w.video} target="_blank" rel="noopener" data-track="video_kep">Videó a képről <span aria-hidden>↗</span></a>}
               </div>

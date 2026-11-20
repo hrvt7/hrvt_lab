@@ -25,7 +25,7 @@ export type Api = {
 };
 export type Theme = { serif: string; sans: string; accent: string; titlePx?: number };
 type Opts = {
-  canvas: HTMLCanvasElement; works: Work[]; theme?: Theme; endLogo?: { src: string; aspect: number };
+  canvas: HTMLCanvasElement; works: Work[]; theme?: Theme; endLogo?: { src: string; aspect: number; w?: number; wMobile?: number };
   onFrame: (f: Frame) => void; onHover: (i: number | null) => void;
   onFocused: (i: number) => void; onReleased: () => void;
 };
@@ -248,7 +248,7 @@ export function mount({ canvas, works, endLogo, theme = { serif: "Gloock, Georgi
   // the far wall carries the logo, so the walk ends on something
   if (endLogo) {
     const uE = 0.9995, pE = curve.getPointAt(uE), tE = curve.getTangentAt(uE).setY(0).normalize();
-    const wL = mobile ? 1.5 : 2.5, hL = wL / endLogo.aspect;
+    const wL = mobile ? endLogo.wMobile ?? 1.5 : endLogo.w ?? 2.5, hL = wL / endLogo.aspect;
     const lm = new MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false, side: DoubleSide });
     const lp = new Mesh(new PlaneGeometry(wL, hL), lm);
     lp.position.copy(pE).addScaledVector(tE, -0.02).setY(1.75); lp.lookAt(lp.position.clone().sub(tE)); lp.renderOrder = 5;
