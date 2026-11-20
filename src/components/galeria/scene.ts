@@ -251,11 +251,14 @@ export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif"
     curve.getPointAt(Math.min(1, uu + 0.03 * K), look); look.y = 1.55;
     near = -1; nearK = 0; tmp.set(0, 0, 0);
     // every work pulls the gaze with a smooth bell-shaped weight, so the pulls blend instead of switching
+    let sum = 0;
     for (let i = 0; i < N; i++) {
-      const t = (objs[i].u - uu - 0.045 * K) / (0.065 * K); if (Math.abs(t) >= 1) continue;
+      const t = (objs[i].u - uu - 0.04 * K) / (0.05 * K); if (Math.abs(t) >= 1) continue;
       const k = 0.5 + 0.5 * Math.cos(Math.PI * t); if (k > nearK) { nearK = k; near = i; }
-      tmp.addScaledVector(tmp2.copy(objs[i].center).sub(look), k * (mobile ? 0.5 : 0.3));
+      sum += k; tmp.addScaledVector(tmp2.copy(objs[i].center).sub(look), k);
     }
+    // each work gets its own moment: the gaze turns well toward it (more on narrow phone screens), never past it
+    if (sum > 0) tmp.multiplyScalar((mobile ? 0.88 : 0.55) / Math.max(1, sum));
     look.add(tmp);
     mtx.lookAt(outPos, look, UP); outQ.setFromRotationMatrix(mtx);
   }
