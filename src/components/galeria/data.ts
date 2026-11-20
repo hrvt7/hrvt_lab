@@ -16,6 +16,7 @@ export type GalleryConfig = {
   title: [string, string]; sub: string;
   /** header button: the cart counter, or a link to an outside shop */ shop?: { href: string; label: string };
   /** no shop and no cart: a pure portfolio */ noCart?: boolean;
+  /** lightmaps baked in Blender for this corridor */ baked?: { base: string; segs: number; lmax: number; expo?: number };
   theme?: { serif: string; sans: string; accent: string; titlePx?: number };
 };
 

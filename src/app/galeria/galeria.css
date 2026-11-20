@@ -79,6 +79,7 @@
 .gal .btn { flex:1; display:inline-flex; align-items:center; justify-content:center; gap:.6rem; min-height:3.1rem; padding:0 1.4rem; border-radius:99px; background:var(--ink); color:var(--paper); font-weight:700; letter-spacing:.06em; text-transform:uppercase; font-size:.85rem; transition:background .25s, transform .25s; }
 .gal .btn:hover { background:var(--ultra); transform:translateY(-1px); }
 .gal .toast { position:fixed; z-index:40; left:50%; top:1.1rem; transform:translate(-50%,-150%); background:var(--ink); color:var(--paper); padding:.6rem 1.1rem; border-radius:99px; font-size:.85rem; font-weight:600; transition:transform .45s cubic-bezier(.2,.85,.2,1); }
+.gal .toast:not(.show) { visibility:hidden; }
 .gal .toast.show { transform:translate(-50%,0); }
 
 /* phones: the work sits up top, the panel is a sheet from below */

@@ -32,5 +32,6 @@ export const ZSART: GalleryConfig = {
   title: ["Zsoze", "festményei"], sub: "Húsz festmény egy folyosón. Görgess, és sétálj végig. Ha egy kép megállít, kattints rá.",
   shop: { href: "https://shop.zsart.hu", label: "Shop" },
   endLogo: { src: "/zsart/logo-wall.png", aspect: 2048 / 456 },
+  baked: { base: "/zsart/lm", segs: 8, lmax: 2.089, expo: 1.38 },
   theme: { serif: 'Birthstone, cursive', titlePx: 78, sans: '"Onest Variable", sans-serif', accent: "#b3122a" },
 };

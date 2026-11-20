@@ -80,7 +80,7 @@ export function Galeria({ cfg }: { cfg: GalleryConfig }) {
       if (!alive) return;
       try {
         api.current = m.mount({
-          canvas: canvas.current!, works, theme: cfg.theme, endLogo: cfg.endLogo, onFrame,
+          canvas: canvas.current!, works, theme: cfg.theme, endLogo: cfg.endLogo, baked: cfg.baked, onFrame,
           onHover: (i) => setHover(i),
           onFocused: () => setOpen(true),
           onReleased: () => {
@@ -114,7 +114,7 @@ export function Galeria({ cfg }: { cfg: GalleryConfig }) {
       removeEventListener("scroll", scroll); removeEventListener("pointermove", move); removeEventListener("click", click); removeEventListener("deviceorientation", tilt);
       document.documentElement.style.overflow = "";
     };
-  }, [onFrame, doFocus, works, cfg.theme, cfg.endLogo]);
+  }, [onFrame, doFocus, works, cfg.theme, cfg.endLogo, cfg.baked]);
 
   useEffect(() => {
     if (!open) return;

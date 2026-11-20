@@ -6,8 +6,9 @@
 import {
   BoxGeometry, BufferAttribute, BufferGeometry, CanvasTexture, type CatmullRomCurve3, DoubleSide, Group, Matrix4, Mesh,
   MeshBasicMaterial, PerspectiveCamera, PlaneGeometry, Quaternion, Raycaster, Scene, ShaderMaterial, Shape,
-  ShapeGeometry, SRGBColorSpace, Texture, TextureLoader, ImageBitmapLoader, LinearMipmapLinearFilter, Euler, Vector2, Vector3, WebGLRenderer,
+  ShapeGeometry, SRGBColorSpace, Texture, TextureLoader, ImageBitmapLoader, LinearMipmapLinearFilter, NoColorSpace, Path, ExtrudeGeometry, MeshStandardMaterial, PMREMGenerator, Euler, Vector2, Vector3, WebGLRenderer,
 } from "three";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import type { Work } from "./data";
 
 import { ART_Y, EYE, HALF_W, HEIGHT, approachU, artU, makeCurve, railU, unit } from "./rail";
@@ -23,9 +24,11 @@ export type Api = {
   resize: () => void;
   destroy: () => void;
 };
+/** Lightmaps baked in Blender: `${base}_${k}.webp` per corridor segment, `${base}_cap0/1.webp` for the end walls. */
+export type Baked = { base: string; segs: number; lmax: number; expo?: number };
 export type Theme = { serif: string; sans: string; accent: string; titlePx?: number };
 type Opts = {
-  canvas: HTMLCanvasElement; works: Work[]; theme?: Theme; endLogo?: { src: string; aspect: number; w?: number; wMobile?: number };
+  canvas: HTMLCanvasElement; works: Work[]; theme?: Theme; baked?: Baked; endLogo?: { src: string; aspect: number; w?: number; wMobile?: number };
   onFrame: (f: Frame) => void; onHover: (i: number | null) => void;
   onFocused: (i: number) => void; onReleased: () => void;
 };
@@ -103,6 +106,15 @@ function plaqueTexture(w: Work, th: Theme) {
   document.fonts?.ready.then(again); document.fonts?.load(`400 ${th.titlePx ?? 50}px ${th.serif}`).then(again).catch(() => {});
   return t;
 }
+/** A moulded picture frame: 45 mm profile with rounded edges and the canvas sitting 6 mm inside it. */
+function frameGeometry(w: number, h: number) {
+  const b = 0.006, o = 0.045 - b, s = new Shape();
+  s.moveTo(-w / 2 - o, -h / 2 - o); s.lineTo(w / 2 + o, -h / 2 - o); s.lineTo(w / 2 + o, h / 2 + o); s.lineTo(-w / 2 - o, h / 2 + o); s.closePath();
+  const hole = new Path(); const i = b + 0.002;
+  hole.moveTo(-w / 2 + i, -h / 2 + i); hole.lineTo(-w / 2 + i, h / 2 - i); hole.lineTo(w / 2 - i, h / 2 - i); hole.lineTo(w / 2 - i, -h / 2 + i); hole.closePath(); s.holes.push(hole);
+  const g = new ExtrudeGeometry(s, { depth: 0.052, bevelEnabled: true, bevelThickness: b, bevelSize: b, bevelSegments: 4, curveSegments: 1 });
+  g.translate(0, 0, 0.004); return g;
+}
 function shadowTexture() {
   const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d")!;
   const gr = g.createRadialGradient(64, 64, 10, 64, 64, 64); gr.addColorStop(0, "rgba(0,0,0,.55)"); gr.addColorStop(1, "rgba(0,0,0,0)");
@@ -139,6 +151,50 @@ function sweep(curve: CatmullRomCurve3, prof: P[], segs: number) {
   geo.setIndex(idx); return geo;
 }
 
+/* ---------- baked lighting (Blender Cycles lightmaps) ---------- */
+/** Same UV layout as the Blender build script: walls v 0.01–0.73 by profile length, floor v 0.76–0.99, u along the segment. */
+function sweepBaked(curve: CatmullRomCurve3, prof: P[], u0: number, u1: number, rings: number, floor: boolean) {
+  const n = prof.length, cnt = (rings + 1) * n;
+  const pos = new Float32Array(cnt * 3), uv = new Float32Array(cnt * 2), sh = new Float32Array(cnt), across = new Float32Array(cnt);
+  const cum = [0]; for (let j = 1; j < n; j++) cum.push(cum[j - 1] + Math.hypot(prof[j][0] - prof[j - 1][0], prof[j][1] - prof[j - 1][1]));
+  const tot = cum[n - 1] || 1, FL = HALF_W - 0.35;
+  const T = new Vector3(), L = new Vector3(), Pt = new Vector3();
+  for (let i = 0; i <= rings; i++) {
+    const u = u0 + ((u1 - u0) * i) / rings; curve.getPointAt(u, Pt); curve.getTangentAt(u, T); T.y = 0; T.normalize(); L.crossVectors(UP, T).normalize();
+    for (let j = 0; j < n; j++) {
+      const [sv, y, shade] = prof[j], k = i * n + j;
+      pos[k * 3] = Pt.x + L.x * sv; pos[k * 3 + 1] = y; pos[k * 3 + 2] = Pt.z + L.z * sv; sh[k] = shade; across[k] = sv / HALF_W;
+      uv[k * 2] = 0.005 + (0.99 * i) / rings; uv[k * 2 + 1] = floor ? 0.76 + ((sv / FL + 1) / 2) * 0.23 : 0.01 + (0.72 * cum[j]) / tot;
+    }
+  }
+  const idx: number[] = [];
+  for (let i = 0; i < rings; i++) for (let j = 0; j < n - 1; j++) { const a = i * n + j, b = a + n; idx.push(a, b, a + 1, b, b + 1, a + 1); }
+  const geo = new BufferGeometry();
+  geo.setAttribute("position", new BufferAttribute(pos, 3)); geo.setAttribute("uv", new BufferAttribute(uv, 2));
+  geo.setAttribute("aShade", new BufferAttribute(sh, 1)); geo.setAttribute("aS", new BufferAttribute(across, 1));
+  geo.setIndex(idx); return geo;
+}
+const VERT_B = /* glsl */ `
+attribute float aShade; attribute float aS; varying float vShade; varying float vS; varying vec3 vW; varying vec2 vUv;
+void main(){ vShade = aShade; vS = aS; vUv = uv; vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`;
+const BAKED_FRAG = (floor: boolean) => /* glsl */ `
+uniform vec3 uCam; uniform vec3 uGlow; uniform vec3 uArts[6]; uniform float uHov[6]; uniform vec3 uBase; uniform float uTime;
+uniform sampler2D uLM; uniform float uLMax; uniform float uMix; uniform float uExpo;
+varying float vShade; varying float vS; varying vec3 vW; varying vec2 vUv;
+float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+void main(){
+  float L = pow(texture2D(uLM, vUv).r, 2.2) * uLMax;
+  float pool = 0.0;
+  for (int i = 0; i < 6; i++) { vec3 d = vW - uArts[i]; ${floor ? "d.y = 0.0;" : "d.y *= 0.7;"} pool += 0.35 * uHov[i] * exp(-dot(d, d) * 0.45); }
+  vec3 dg = vW - uGlow; float glow = exp(-dot(dg, dg) * 0.11) * 0.08;
+  vec3 lin = uBase * (L + pool + glow);
+  vec3 c = pow(1.0 - exp(-lin * uExpo), vec3(1.0 / 2.2));
+  c = mix(uBase * vShade * 0.95, c, uMix);
+  c *= mix(1.0, 0.9, smoothstep(8.0, 34.0, length(vW - uCam)));
+  c += (hash(gl_FragCoord.xy + fract(uTime)) - 0.5) * 0.012;
+  ${floor ? "float edge = smoothstep(0.55, 1.0, abs(vS)); gl_FragColor = vec4(c, 0.86 - edge * 0.08);" : "gl_FragColor = vec4(c, 1.0);"}
+}`;
+
 const GLSL_COMMON = /* glsl */ `
 uniform vec3 uCam; uniform vec3 uGlow; uniform vec3 uArts[6]; uniform float uHov[6]; uniform vec3 uBase; uniform float uTime;
 varying float vShade; varying float vS; varying vec3 vW;
@@ -167,7 +223,7 @@ void main(){
   gl_FragColor = vec4(c, 0.86 - edge * 0.08);
 }`;
 
-export function mount({ canvas, works, endLogo, theme = { serif: "Gloock, Georgia, serif", sans: '"Schibsted Grotesk Variable", sans-serif', accent: "#2b3cff" }, onFrame, onHover, onFocused, onReleased }: Opts): Api {
+export function mount({ canvas, works, endLogo, baked, theme = { serif: "Gloock, Georgia, serif", sans: '"Schibsted Grotesk Variable", sans-serif', accent: "#2b3cff" }, onFrame, onHover, onFocused, onReleased }: Opts): Api {
   const mobile = matchMedia("(pointer: coarse)").matches || innerWidth < 760;
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const renderer = new WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
@@ -190,22 +246,44 @@ export function mount({ canvas, works, endLogo, theme = { serif: "Gloock, Georgi
   const floorM = new ShaderMaterial({ uniforms: floorU, vertexShader: VERT, fragmentShader: FLOOR_FRAG, transparent: true, depthWrite: false, side: DoubleSide });
 
   const prof = profile();
-  scene.add(new Mesh(sweep(curve, prof, Math.round((mobile ? 220 : 340) / K)), wallM));
   const floorProf: P[] = Array.from({ length: 13 }, (_, k) => [-(HALF_W - 0.35) + ((HALF_W - 0.35) * 2 * k) / 12, 0, 1]);
-  const floor = new Mesh(sweep(curve, floorProf, Math.round((mobile ? 160 : 240) / K)), floorM); floor.renderOrder = 10; scene.add(floor);
+  const lmMix = { value: 0 }, lmLoader = new TextureLoader(), lmSuffix = mobile ? "-m.webp" : ".webp";
+  const bakedMat = (floor: boolean, url: string) => {
+    const m = new ShaderMaterial({
+      uniforms: { ...uniforms, uBase: floor ? floorU.uBase : uniforms.uBase, uLM: { value: null as Texture | null }, uLMax: { value: baked!.lmax }, uMix: lmMix, uExpo: { value: baked!.expo ?? 1.55 } },
+      vertexShader: VERT_B, fragmentShader: BAKED_FRAG(floor), side: DoubleSide, transparent: floor, depthWrite: !floor,
+    });
+    lmLoader.load(url + lmSuffix, (t) => { t.colorSpace = NoColorSpace; t.anisotropy = 4; m.uniforms.uLM.value = t; m.needsUpdate = true; lmLeft--; });
+    return m;
+  };
+  let lmLeft = 0;
+  if (baked) {
+    const S = baked.segs, rw = Math.round((mobile ? 220 : 340) / K / S), rf = Math.round((mobile ? 160 : 240) / K / S);
+    lmLeft = S + 2;
+    for (let k = 0; k < S; k++) {
+      scene.add(new Mesh(sweepBaked(curve, prof, k / S, (k + 1) / S, Math.max(8, rw), false), bakedMat(false, `${baked.base}_${k}`)));
+      const f = new Mesh(sweepBaked(curve, floorProf, k / S, (k + 1) / S, Math.max(8, rf), true), bakedMat(true, `${baked.base}_${k}`)); f.renderOrder = 10; scene.add(f);
+    }
+  } else {
+    scene.add(new Mesh(sweep(curve, prof, Math.round((mobile ? 220 : 340) / K)), wallM));
+    const floor = new Mesh(sweep(curve, floorProf, Math.round((mobile ? 160 : 240) / K)), floorM); floor.renderOrder = 10; scene.add(floor);
+  }
 
   // end caps: the entrance behind the camera and the far wall
   const shape = new Shape(); prof.forEach(([s, y], k) => (k ? shape.lineTo(s, y) : shape.moveTo(s, y))); shape.closePath();
   for (const u of [0.0005, 0.9995]) {
     const g = new ShapeGeometry(shape, 24); const cnt = g.attributes.position.count;
+    { const pa = g.attributes.position, uvA = new Float32Array(cnt * 2); for (let q = 0; q < cnt; q++) { uvA[q * 2] = (pa.getX(q) + HALF_W) / (2 * HALF_W); uvA[q * 2 + 1] = pa.getY(q) / HEIGHT; } g.setAttribute("uv", new BufferAttribute(uvA, 2)); }
     g.setAttribute("aShade", new BufferAttribute(new Float32Array(cnt).fill(u < 0.5 ? 0.9 : 0.97), 1));
     g.setAttribute("aS", new BufferAttribute(new Float32Array(cnt), 1));
-    const m = new Mesh(g, wallM); const p = curve.getPointAt(u), t = curve.getTangentAt(u).setY(0).normalize(), l = new Vector3().crossVectors(UP, t).normalize();
+    const m = new Mesh(g, baked ? bakedMat(false, `${baked.base}_cap${u < 0.5 ? 0 : 1}`) : wallM); const p = curve.getPointAt(u), t = curve.getTangentAt(u).setY(0).normalize(), l = new Vector3().crossVectors(UP, t).normalize();
     m.matrixAutoUpdate = false; m.matrix.makeBasis(l, UP, t).setPosition(p); scene.add(m);
   }
 
   /* artworks + their reflections */
   const artRoot = new Group(), mirror = new Group(); mirror.scale.y = -1; scene.add(artRoot, mirror);
+  const pmrem = new PMREMGenerator(renderer), envTex = baked ? pmrem.fromScene(new RoomEnvironment(), 0.04).texture : null;
+  const frameMat = baked ? new MeshStandardMaterial({ color: 0x1b1916, roughness: 0.36, metalness: 0.2, envMap: envTex, envMapIntensity: 0.85 }) : null;
   const shadowT = shadowTexture(), maxAniso = renderer.capabilities.getMaxAnisotropy();
   const bmp = typeof createImageBitmap === "function" ? new ImageBitmapLoader().setOptions({ imageOrientation: "flipY", premultiplyAlpha: "none" }) : null;
   const plain = new TextureLoader();
@@ -224,8 +302,10 @@ export function mount({ canvas, works, endLogo, theme = { serif: "Gloock, Georgi
     const normal = L.clone().multiplyScalar(-side);
     const g = new Group(); g.position.copy(base); g.lookAt(base.clone().add(normal));
     const sh = new Mesh(new PlaneGeometry(w.w + 0.7, w.h + 0.7), new MeshBasicMaterial({ map: shadowT, transparent: true, opacity: 0.28, depthWrite: false, color: 0x000000 }));
-    sh.position.set(0.04, -0.09, 0.004); g.add(sh);
-    const frame = new Mesh(new BoxGeometry(w.w + 0.09, w.h + 0.09, 0.05), new MeshBasicMaterial({ color: 0x1f1c18, side: DoubleSide })); frame.position.z = 0.03; g.add(frame);
+    sh.position.set(0.04, -0.09, 0.004); if (!baked) g.add(sh); // with baked light the real contact shadow is already on the wall
+    const frame = frameMat ? new Mesh(frameGeometry(w.w, w.h), frameMat)
+      : new Mesh(new BoxGeometry(w.w + 0.09, w.h + 0.09, 0.05), new MeshBasicMaterial({ color: 0x1f1c18, side: DoubleSide }));
+    if (!frameMat) frame.position.z = 0.03; g.add(frame);
     const mat = w.img ? new MeshBasicMaterial({ color: 0xd8d4cc, side: DoubleSide }) : new MeshBasicMaterial({ map: artTexture(w, i), side: DoubleSide });
     const cv = new Mesh(new PlaneGeometry(w.w, w.h), mat); cv.position.z = 0.058; cv.userData.idx = i; g.add(cv);
     const pl = new Mesh(new PlaneGeometry(0.36, 0.18), new MeshBasicMaterial({ map: plaqueTexture(w, theme), side: DoubleSide }));
@@ -386,6 +466,7 @@ export function mount({ canvas, works, endLogo, theme = { serif: "Gloock, Georgi
     tmp.set(0, 0, -1).applyQuaternion(cam.quaternion);
     uniforms.uGlow.value.copy(cam.position).addScaledVector(tmp, 3.2).add(tmp2.set(ptrS.x * 1.6, ptrS.y * 0.7, 0).applyQuaternion(cam.quaternion));
     uniforms.uTime.value = now / 1000;
+    if (baked && lmLeft <= 0 && lmMix.value < 1) lmMix.value = Math.min(1, lmMix.value + dt * 2.5);
     renderer.render(scene, cam);
     const yaw = Math.atan2(-tmp.x, -tmp.z);
     onFrame({ u, near: mode === "rail" ? near : focusI, k: mode === "rail" ? nearK : 1, x: cam.position.x, z: cam.position.z, yaw });
