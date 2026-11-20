@@ -52,7 +52,6 @@ export function Galeria({ cfg }: { cfg: GalleryConfig }) {
 
   const onFrame = useCallback((f: Frame) => {
     uRef.current = f.u;
-    const r = root.current; if (r) { r.style.setProperty("--p", railP(f.u).toFixed(4)); }
     if (dot.current) dot.current.setAttribute("transform", `translate(${f.x.toFixed(2)} ${f.z.toFixed(2)}) rotate(${((-f.yaw * 180) / Math.PI).toFixed(1)})`);
     const n = f.k > 0.25 ? f.near : -1;
     if (n !== lastNear.current) { lastNear.current = n; setNear(n); }
@@ -93,10 +92,11 @@ export function Galeria({ cfg }: { cfg: GalleryConfig }) {
         api.current.setProgress(progress(), true);
       } catch { setNoGL(true); }
     });
+    let px = 0, py = 0, pickRaf = 0;
     const scroll = () => api.current?.setProgress(progress());
     const move = (e: PointerEvent) => {
       api.current?.setPointer((e.clientX / innerWidth) * 2 - 1, -((e.clientY / innerHeight) * 2 - 1));
-      if (e.pointerType === "mouse" && !(e.target as HTMLElement).closest("[data-ui]")) api.current?.pick(e.clientX, e.clientY);
+      if (e.pointerType === "mouse" && !(e.target as HTMLElement).closest("[data-ui]")) { px = e.clientX; py = e.clientY; if (!pickRaf) pickRaf = requestAnimationFrame(() => { pickRaf = 0; api.current?.pick(px, py); }); }
       else if ((e.target as HTMLElement).closest("[data-ui]")) setHover(null);
     };
     const click = (e: MouseEvent) => {
@@ -150,12 +150,8 @@ export function Galeria({ cfg }: { cfg: GalleryConfig }) {
           : <span className="bagpill" aria-live="polite">Kosár · {bag}</span>}
       </header>
 
-      <section id="top" className="intro" aria-labelledby="gal-h1">
-        <p className="lbl">{cfg.note}{cfg.noteLink && <> · <a href={cfg.noteLink.href}>{cfg.noteLink.label}</a></>}</p>
-        <h1 id="gal-h1" className="disp">{cfg.title[0]} <em>{cfg.title[1]}</em></h1>
-        <p className="intro-sub">{cfg.sub}</p>
-        <p className="cue lbl" aria-hidden>Görgess <span>↓</span></p>
-      </section>
+<h1 id="top" className="sr">{cfg.title[0]} {cfg.title[1]}</h1>
+      <p className="tag" data-ui>{cfg.note}{cfg.noteLink && <> · <a href={cfg.noteLink.href}>{cfg.noteLink.label}</a></>}</p>
 
 
       <div className={`passing ${label >= 0 && focus === null ? "show" : ""}`} data-ui>

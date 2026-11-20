@@ -13,18 +13,13 @@
 .gal-head > * { pointer-events:auto; }
 .gal .brand { display:flex; align-items:baseline; gap:.6rem; font-weight:600; letter-spacing:.02em; }
 .gal .brand img { height:1.05rem; width:auto; transform:translateY(.12rem); }
-.gal .bagpill { font-size:.82rem; font-weight:600; padding:.45rem .9rem; border:1px solid rgba(26,24,20,.25); border-radius:99px; background:rgba(246,243,238,.7); backdrop-filter:blur(8px); font-variant-numeric:tabular-nums; }
+.gal .bagpill { font-size:.82rem; font-weight:600; padding:.45rem .9rem; border:1px solid rgba(26,24,20,.25); border-radius:99px; background:rgba(246,243,238,.92); font-variant-numeric:tabular-nums; }
 
-/* hero intro: fades and sinks as the walk begins */
-.gal .intro { position:fixed; z-index:5; left:0; right:0; top:50%; transform:translateY(calc(-50% - var(--p,0) * 900%)); text-align:center; padding:0 1.25rem; opacity:calc(1 - var(--p,0) * 28); pointer-events:none; }
-.gal .intro .lbl { pointer-events:auto; }
-.gal .intro h1 { font-size:clamp(3.4rem,11vw,9.5rem); margin:.9rem 0 1.1rem; }
-.gal .intro-sub { max-width:34ch; margin:0 auto; color:var(--mute); font-size:clamp(1rem,1.5vw,1.15rem); }
-.gal .cue { margin-top:2.2rem; }
-.gal .cue span { display:inline-block; animation:galCue 1.8s ease-in-out infinite; }
-@keyframes galCue { 50% { transform:translateY(6px); } }
-.gal .intro h1 { animation:galIn 1.4s cubic-bezier(.2,.8,.2,1) both; }
-@keyframes galIn { from { opacity:0; letter-spacing:.12em; filter:blur(8px); } }
+.gal .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+.gal .tag { position:fixed; z-index:10; right:clamp(1rem,3vw,2.2rem); bottom:clamp(.8rem,2.5vh,1.4rem); font-size:.62rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--mute); opacity:.75; transition:opacity .4s; }
+.gal .tag a { color:var(--ink); text-decoration:underline; text-underline-offset:3px; }
+.gal.is-focus .tag { opacity:0; pointer-events:none; }
+.gal-canvas, .gal .panel { will-change:transform; }
 
 /* "you are walking past" */
 .gal .passing { position:fixed; z-index:10; left:50%; bottom:clamp(1.4rem,5vh,3rem); transform:translate(-50%,14px); text-align:center; opacity:0; transition:opacity .4s, transform .5s cubic-bezier(.2,.8,.2,1); pointer-events:none; }
@@ -102,3 +97,4 @@
 .gal .btn-line { background:transparent; color:var(--ink); border:1px solid rgba(26,24,20,.3); }
 .gal .btn-line:hover { background:var(--ink); color:var(--paper); }
 .gal .panel-story + .panel-story { margin-top:-.8rem; }
+@media (max-width: 899px) { .gal .tag { left:1rem; right:auto; bottom:.6rem; font-size:.56rem; } .gal .passing { bottom:2.2rem; } }

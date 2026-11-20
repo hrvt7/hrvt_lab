@@ -6,7 +6,7 @@
 import {
   BoxGeometry, BufferAttribute, BufferGeometry, CanvasTexture, type CatmullRomCurve3, DoubleSide, Group, Matrix4, Mesh,
   MeshBasicMaterial, PerspectiveCamera, PlaneGeometry, Quaternion, Raycaster, Scene, ShaderMaterial, Shape,
-  ShapeGeometry, SRGBColorSpace, type Texture, TextureLoader, Euler, Vector2, Vector3, WebGLRenderer,
+  ShapeGeometry, SRGBColorSpace, Texture, TextureLoader, ImageBitmapLoader, LinearMipmapLinearFilter, Euler, Vector2, Vector3, WebGLRenderer,
 } from "three";
 import type { Work } from "./data";
 
@@ -129,7 +129,7 @@ function sweep(curve: CatmullRomCurve3, prof: P[], segs: number) {
 }
 
 const GLSL_COMMON = /* glsl */ `
-uniform vec3 uCam; uniform vec3 uGlow; uniform vec3 uArts[24]; uniform float uHov[24]; uniform vec3 uBase; uniform float uTime;
+uniform vec3 uCam; uniform vec3 uGlow; uniform vec3 uArts[6]; uniform float uHov[6]; uniform vec3 uBase; uniform float uTime;
 varying float vShade; varying float vS; varying vec3 vW;
 float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }`;
 const VERT = /* glsl */ `
@@ -138,7 +138,7 @@ void main(){ vShade = aShade; vS = aS; vec4 w = modelMatrix * vec4(position, 1.0
 const WALL_FRAG = /* glsl */ `${GLSL_COMMON}
 void main(){
   float pool = 0.0;
-  for (int i = 0; i < 24; i++) { vec3 d = vW - uArts[i]; d.y *= 0.7; pool += (0.075 + 0.09 * uHov[i]) * exp(-dot(d, d) * 0.42); }
+  for (int i = 0; i < 6; i++) { vec3 d = vW - uArts[i]; d.y *= 0.7; pool += (0.075 + 0.09 * uHov[i]) * exp(-dot(d, d) * 0.42); }
   vec3 dg = vW - uGlow; float glow = exp(-dot(dg, dg) * 0.11) * 0.06;
   float fade = mix(1.0, 0.84, smoothstep(5.0, 30.0, length(vW - uCam)));
   vec3 c = uBase * vShade * (0.92 + pool + glow) * fade;
@@ -148,7 +148,7 @@ void main(){
 const FLOOR_FRAG = /* glsl */ `${GLSL_COMMON}
 void main(){
   float pool = 0.0;
-  for (int i = 0; i < 24; i++) { vec2 d = vW.xz - uArts[i].xz; pool += (0.05 + 0.06 * uHov[i]) * exp(-dot(d, d) * 0.5); }
+  for (int i = 0; i < 6; i++) { vec2 d = vW.xz - uArts[i].xz; pool += (0.05 + 0.06 * uHov[i]) * exp(-dot(d, d) * 0.5); }
   float edge = smoothstep(0.55, 1.0, abs(vS));
   float fade = mix(1.0, 0.82, smoothstep(4.0, 30.0, length(vW - uCam)));
   vec3 c = uBase * (0.95 + pool - edge * 0.06) * fade;
@@ -160,7 +160,8 @@ export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif"
   const mobile = matchMedia("(pointer: coarse)").matches || innerWidth < 760;
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const renderer = new WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 2 : 2.5));
+  const dprMax = Math.min(devicePixelRatio || 1, 2), dprMin = Math.min(dprMax, mobile ? 1 : 1.25); let dpr = dprMax, slow = 0, seen = 0;
+  renderer.setPixelRatio(dpr);
   renderer.outputColorSpace = SRGBColorSpace;
   renderer.setClearColor(0xe4e0d8, 1);
   const scene = new Scene();
@@ -168,10 +169,10 @@ export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif"
   const N = Math.min(24, works.length), K = unit(N);
   const curve = makeCurve(N);
 
-  const arts = Array.from({ length: 24 }, () => new Vector3(0, -99, 0));
+  const arts = Array.from({ length: 6 }, () => new Vector3(0, -99, 0)); const order = Array.from({ length: N }, (_, i) => i), dist = new Float32Array(N);
   const uniforms = {
     uCam: { value: new Vector3() }, uGlow: { value: new Vector3() }, uArts: { value: arts },
-    uHov: { value: new Array(24).fill(0) as number[] }, uBase: { value: new Vector3(0.957, 0.948, 0.928) }, uTime: { value: 0 },
+    uHov: { value: new Array(6).fill(0) as number[] }, uBase: { value: new Vector3(0.957, 0.948, 0.928) }, uTime: { value: 0 },
   };
   const wallM = new ShaderMaterial({ uniforms, vertexShader: VERT, fragmentShader: WALL_FRAG, side: DoubleSide });
   const floorU = { ...uniforms, uBase: { value: new Vector3(0.93, 0.922, 0.9) } };
@@ -194,7 +195,16 @@ export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif"
 
   /* artworks + their reflections */
   const artRoot = new Group(), mirror = new Group(); mirror.scale.y = -1; scene.add(artRoot, mirror);
-  const shadowT = shadowTexture(), loader = new TextureLoader(), maxAniso = renderer.capabilities.getMaxAnisotropy();
+  const shadowT = shadowTexture(), maxAniso = renderer.capabilities.getMaxAnisotropy();
+  const bmp = typeof createImageBitmap === "function" ? new ImageBitmapLoader().setOptions({ imageOrientation: "flipY", premultiplyAlpha: "none" }) : null;
+  const plain = new TextureLoader();
+  const prep = (t: Texture) => { t.colorSpace = SRGBColorSpace; t.anisotropy = maxAniso; t.generateMipmaps = true; t.minFilter = LinearMipmapLinearFilter; return t; };
+  /** Images are decoded off the main thread (ImageBitmap) so a big painting never freezes the walk. */
+  const loader = { load(url: string, ok: (t: Texture) => void, _p?: unknown, fail?: () => void) {
+    const old = () => plain.load(url, (t) => ok(prep(t)), undefined, fail);
+    if (!bmp) return old();
+    bmp.load(url, (b) => { const t = new Texture(b as unknown as HTMLImageElement); t.flipY = false; t.needsUpdate = true; ok(prep(t)); }, undefined, old);
+  } };
   type ArtObj = { g: Group; m: Group; canvas: Mesh; mat: MeshBasicMaterial; lo: Texture | null; hi: Texture | null; busy: boolean; base: Vector3; normal: Vector3; center: Vector3; u: number; w: number; h: number };
   const objs: ArtObj[] = works.slice(0, N).map((w, i) => {
     const u = artU(i, N), P = curve.getPointAt(u), T = curve.getTangentAt(u).setY(0).normalize(), L = new Vector3().crossVectors(UP, T).normalize();
@@ -216,13 +226,12 @@ export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif"
     };
     const first = w.imgT ?? w.img;
     if (first) loader.load(first, (t) => {
-      t.colorSpace = SRGBColorSpace; t.anisotropy = maxAniso; fit(t);
+      fit(t);
       const o = objs[i]; if (o) { o.lo = t; if (!w.imgT) o.hi = t; if (!o.hi) { mat.map = t; mat.color.set(0xffffff); mat.needsUpdate = true; } }
       if (!w.imgT) { mat.map = t; mat.color.set(0xffffff); mat.needsUpdate = true; }
     });
     artRoot.add(g);
     const m = g.clone(); mirror.add(m);
-    arts[i].copy(base);
     return { g, m, canvas: cv, mat, base, normal, center: base.clone().addScaledVector(normal, 0.06), u, w: w.w, h: w.h, lo: null, hi: null, busy: false };
   });
 
@@ -281,26 +290,30 @@ export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif"
 
   railPose(u, cam.position, cam.quaternion);
   const ray = new Raycaster(), ndc = new Vector2();
-  let raf = 0, last = performance.now(), dead = false, lastStream = 0;
+  let raf = 0, last = performance.now(), dead = false, lastStream = 0, loading = 0;
   /** Full-resolution textures only live near the camera; far ones fall back to their small version. */
   function stream() {
     for (let i = 0; i < N; i++) {
       const o = objs[i], w = works[i]; if (!w.imgT || !w.img) continue;
-      const d = Math.abs(o.u - u) / K, want = d < 0.17 || (focusI >= 0 && Math.abs(i - focusI) <= 1);
+      const d = Math.abs(o.u - u) / K, want = d < 0.12 || (focusI >= 0 && Math.abs(i - focusI) <= 1);
       if (want && !o.hi && !o.busy) {
+        if (loading >= 1) continue; loading++;
         o.busy = true;
         loader.load(mobile && w.imgM ? w.imgM : w.img, (t) => {
-          o.busy = false; if (dead) { t.dispose(); return; }
-          t.colorSpace = SRGBColorSpace; t.anisotropy = maxAniso; o.hi = t; o.mat.map = t; o.mat.color.set(0xffffff); o.mat.needsUpdate = true;
-        }, undefined, () => { o.busy = false; });
-      } else if (!want && o.hi && d > 0.3 && o.lo) { o.mat.map = o.lo; o.mat.needsUpdate = true; o.hi.dispose(); o.hi = null; }
+          o.busy = false; loading--; if (dead) { t.dispose(); return; }
+          renderer.initTexture(t); o.hi = t; o.mat.map = t; o.mat.color.set(0xffffff); o.mat.needsUpdate = true;
+        }, undefined, () => { o.busy = false; loading--; });
+      } else if (!want && o.hi && d > 0.24 && o.lo) { o.mat.map = o.lo; o.mat.needsUpdate = true; o.hi.dispose(); o.hi = null; }
     }
   }
   const loop = (now: number) => {
     raf = requestAnimationFrame(loop);
     if (document.hidden) return;
-    const dt = Math.min(0.05, (now - last) / 1000); last = now;
-    if (now - lastStream > 400) { lastStream = now; stream(); }
+    const raw = now - last; const dt = Math.min(0.05, raw / 1000); last = now;
+    // if most frames in a window miss ~50 fps, render at a lower resolution instead of stuttering
+    if (raw < 250) { seen++; if (raw > 21) slow++; }
+    if (seen >= 90) { if (slow > 45 && dpr > dprMin) { dpr = Math.max(dprMin, dpr - 0.25); renderer.setPixelRatio(dpr); renderer.setSize(innerWidth, innerHeight, false); } seen = slow = 0; }
+    if (now - lastStream > 250) { lastStream = now; stream(); }
     ptrS.lerp(ptr, 1 - Math.exp(-dt * 2.2));
     if (mode === "rail") {
       if (reduced) { uMid = u = uTarget; } else { uMid += (uTarget - uMid) * (1 - Math.exp(-dt * 3.4)); u += (uMid - u) * (1 - Math.exp(-dt * 3.4)); }
@@ -323,10 +336,14 @@ export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif"
     // hover lift + light pools
     for (let i = 0; i < N; i++) {
       const target = (hover === i && mode === "rail") || focusI === i ? 1 : 0;
-      hov[i] += (target - hov[i]) * (1 - Math.exp(-dt * 4)); uniforms.uHov.value[i] = hov[i];
+      hov[i] += (target - hov[i]) * (1 - Math.exp(-dt * 4));
       const o = objs[i]; tmp2.copy(o.base).addScaledVector(o.normal, hov[i] * 0.07); o.g.position.copy(tmp2); o.m.position.copy(tmp2);
       const s = 1 + hov[i] * 0.025; o.g.scale.setScalar(s); o.m.scale.setScalar(s);
     }
+    // only the six works nearest to the camera light the walls: far pools are invisible anyway
+    for (let i = 0; i < N; i++) dist[i] = objs[i].base.distanceToSquared(cam.position);
+    order.sort((a, b) => dist[a] - dist[b]);
+    for (let k = 0; k < 6; k++) { const i = order[k]; if (i === undefined) { arts[k].set(0, -99, 0); uniforms.uHov.value[k] = 0; } else { arts[k].copy(objs[i].base); uniforms.uHov.value[k] = hov[i]; } }
     uniforms.uCam.value.copy(cam.position);
     tmp.set(0, 0, -1).applyQuaternion(cam.quaternion);
     uniforms.uGlow.value.copy(cam.position).addScaledVector(tmp, 3.2).add(tmp2.set(ptrS.x * 1.6, ptrS.y * 0.7, 0).applyQuaternion(cam.quaternion));
