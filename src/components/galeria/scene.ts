@@ -31,6 +31,16 @@ type Opts = {
 };
 
 const easeIO = (t: number) => t * t * t * (t * (t * 6 - 15) + 10); // zero speed and zero acceleration at both ends
+/** cubic-bezier(x1,y1,x2,y2) as a function, like CSS/GSAP CustomEase. */
+function bezier(x1: number, y1: number, x2: number, y2: number) {
+  const f = (a: number, b: number, t: number) => 3 * a * (1 - t) * (1 - t) * t + 3 * b * (1 - t) * t * t + t * t * t;
+  return (x: number) => {
+    let t = x; for (let k = 0; k < 6; k++) { const dx = f(x1, x2, t) - x, d = 3 * x1 * (1 - t) * (1 - 3 * t) + 3 * x2 * t * (2 - 3 * t) + 3 * t * t; if (Math.abs(dx) < 1e-5 || Math.abs(d) < 1e-6) break; t = Math.min(1, Math.max(0, t - dx / d)); }
+    return f(y1, y2, t);
+  };
+}
+/** Speed ramp: a quick push-off, most of the distance covered early, then a long soft landing. */
+const ramp = bezier(0.5, 0, 0.08, 1), rampTurn = bezier(0.4, 0, 0.1, 1);
 const clamp = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 
 /* ---------- placeholder artworks, drawn in code ---------- */
@@ -241,7 +251,7 @@ export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif"
   let hover: number | null = null; const hov = new Array(N).fill(0);
   let mode: "rail" | "to" | "focus" | "back" = "rail", focusI = -1, t0 = 0, dur = 1.35;
   const fromPos = new Vector3(), fromQ = new Quaternion(), toPos = new Vector3(), toQ = new Quaternion(), ctrl = new Vector3();
-  let offK = 0, offFrom = 0, offTo = 0;
+  let offK = 0, offFrom = 0, offTo = 0, early = false;
   const mtx = new Matrix4(), q = new Quaternion(), sway = new Quaternion(), eul = new Euler();
   const pos = new Vector3(), look = new Vector3(), tmp = new Vector3(), tmp2 = new Vector3();
   let near = -1, nearK = 0;
@@ -281,7 +291,7 @@ export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif"
     ctrl.copy(fromPos).lerp(toPos, 0.5); ctrl.y += 0.12;
     // keep the arc inside the corridor: pull the control point toward the centre line
     curve.getPointAt(clamp(next === "to" ? objs[i].u : u), tmp); ctrl.x = (ctrl.x + tmp.x) / 2; ctrl.z = (ctrl.z + tmp.z) / 2;
-    offFrom = offK; offTo = next === "to" ? 1 : 0; dur = reduced ? 0.01 : next === "to" ? 2.1 : 1.7;
+    offFrom = offK; offTo = next === "to" ? 1 : 0; dur = reduced ? 0.01 : next === "to" ? 1.25 : 1.05; early = false;
     t0 = performance.now(); mode = next; focusI = i;
   }
 
@@ -326,12 +336,13 @@ export function mount({ canvas, works, theme = { serif: "Gloock, Georgia, serif"
       if (!reduced) { eul.set(ptrS.y * 0.035, -ptrS.x * 0.07, 0, "YXZ"); sway.setFromEuler(eul); q.multiply(sway); }
       cam.position.copy(pos); cam.quaternion.copy(q);
     } else if (mode === "to" || mode === "back") {
-      const t = clamp((now - t0) / (dur * 1000)), e = easeIO(t);
+      const t = clamp((now - t0) / (dur * 1000)), e = ramp(t), er = rampTurn(Math.min(1, t * 1.12)); // the head turns first, the body follows
       if (mode === "back") { railPose(u, toPos, toQ); qS.copy(toQ); }
       const a = 1 - e; cam.position.set(0, 0, 0).addScaledVector(fromPos, a * a).addScaledVector(ctrl, 2 * a * e).addScaledVector(toPos, e * e);
-      cam.quaternion.slerpQuaternions(fromQ, toQ, e);
+      cam.quaternion.slerpQuaternions(fromQ, toQ, er);
       offK = offFrom + (offTo - offFrom) * e; applyOffset(offK);
-      if (t >= 1) { if (mode === "to") { mode = "focus"; onFocused(focusI); } else { mode = "rail"; focusI = -1; onReleased(); } }
+      if (mode === "to" && !early && t > 0.42) { early = true; onFocused(focusI); } // the text starts in while the camera is still landing
+      if (t >= 1) { if (mode === "to") { mode = "focus"; if (!early) onFocused(focusI); } else { mode = "rail"; focusI = -1; onReleased(); } }
     } else if (mode === "focus" && !reduced) {
       focusPose(focusI, pos, q); eul.set(ptrS.y * 0.012, -ptrS.x * 0.02, 0, "YXZ"); sway.setFromEuler(eul); q.multiply(sway);
       cam.position.lerp(pos, 1 - Math.exp(-dt * 3)); cam.quaternion.slerp(q, 1 - Math.exp(-dt * 3));
