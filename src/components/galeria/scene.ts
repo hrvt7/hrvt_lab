@@ -30,7 +30,7 @@ type Opts = {
   onFocused: (i: number) => void; onReleased: () => void;
 };
 
-const easeIO = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const easeIO = (t: number) => t * t * t * (t * (t * 6 - 15) + 10); // zero speed and zero acceleration at both ends
 const clamp = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 
 /* ---------- placeholder artworks, drawn in code ---------- */
@@ -222,7 +222,7 @@ export function mount({ canvas, works, onFrame, onHover, onFocused, onReleased }
   });
 
   /* camera state */
-  let uTarget = railU(0), u = uTarget;
+  let uTarget = railU(0), u = uTarget, uMid = uTarget; const qS = new Quaternion(); let qInit = false;
   const ptr = new Vector2(), ptrS = new Vector2();
   let hover: number | null = null; const hov = new Array(N).fill(0);
   let mode: "rail" | "to" | "focus" | "back" = "rail", focusI = -1, t0 = 0, dur = 1.35;
@@ -235,12 +235,14 @@ export function mount({ canvas, works, onFrame, onHover, onFocused, onReleased }
   function railPose(uu: number, outPos: Vector3, outQ: Quaternion) {
     curve.getPointAt(uu, outPos); outPos.y = EYE;
     curve.getPointAt(Math.min(1, uu + 0.03), look); look.y = 1.55;
-    near = -1; nearK = 0;
+    near = -1; nearK = 0; tmp.set(0, 0, 0);
+    // every work pulls the gaze with a smooth bell-shaped weight, so the pulls blend instead of switching
     for (let i = 0; i < N; i++) {
-      const du = objs[i].u - uu; if (du < 0.002 || du > 0.1) continue;
-      const k = clamp(1 - Math.abs(du - 0.042) / 0.05); if (k > nearK) { nearK = k; near = i; }
+      const t = (objs[i].u - uu - 0.045) / 0.065; if (Math.abs(t) >= 1) continue;
+      const k = 0.5 + 0.5 * Math.cos(Math.PI * t); if (k > nearK) { nearK = k; near = i; }
+      tmp.addScaledVector(tmp2.copy(objs[i].center).sub(look), k * (mobile ? 0.5 : 0.3));
     }
-    if (near >= 0) look.lerp(objs[near].center, easeIO(nearK) * (mobile ? 0.55 : 0.3));
+    look.add(tmp);
     mtx.lookAt(outPos, look, UP); outQ.setFromRotationMatrix(mtx);
   }
   function focusPose(i: number, outPos: Vector3, outQ: Quaternion) {
@@ -262,7 +264,7 @@ export function mount({ canvas, works, onFrame, onHover, onFocused, onReleased }
     ctrl.copy(fromPos).lerp(toPos, 0.5); ctrl.y += 0.12;
     // keep the arc inside the corridor: pull the control point toward the centre line
     curve.getPointAt(clamp(next === "to" ? objs[i].u : u), tmp); ctrl.x = (ctrl.x + tmp.x) / 2; ctrl.z = (ctrl.z + tmp.z) / 2;
-    offFrom = offK; offTo = next === "to" ? 1 : 0; dur = reduced ? 0.01 : next === "to" ? 1.35 : 1.1;
+    offFrom = offK; offTo = next === "to" ? 1 : 0; dur = reduced ? 0.01 : next === "to" ? 2.1 : 1.7;
     t0 = performance.now(); mode = next; focusI = i;
   }
 
@@ -279,27 +281,29 @@ export function mount({ canvas, works, onFrame, onHover, onFocused, onReleased }
     raf = requestAnimationFrame(loop);
     if (document.hidden) return;
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
-    ptrS.lerp(ptr, 1 - Math.exp(-dt * 4));
+    ptrS.lerp(ptr, 1 - Math.exp(-dt * 2.2));
     if (mode === "rail") {
-      u += (uTarget - u) * (1 - Math.exp(-dt * (reduced ? 30 : 4.2)));
+      if (reduced) { uMid = u = uTarget; } else { uMid += (uTarget - uMid) * (1 - Math.exp(-dt * 3.4)); u += (uMid - u) * (1 - Math.exp(-dt * 3.4)); }
       railPose(u, pos, q);
+      if (!qInit || reduced) { qS.copy(q); qInit = true; } else qS.slerp(q, 1 - Math.exp(-dt * 3.2));
+      q.copy(qS);
       if (!reduced) { eul.set(ptrS.y * 0.035, -ptrS.x * 0.07, 0, "YXZ"); sway.setFromEuler(eul); q.multiply(sway); }
       cam.position.copy(pos); cam.quaternion.copy(q);
     } else if (mode === "to" || mode === "back") {
       const t = clamp((now - t0) / (dur * 1000)), e = easeIO(t);
-      if (mode === "back") railPose(u, toPos, toQ);
+      if (mode === "back") { railPose(u, toPos, toQ); qS.copy(toQ); }
       const a = 1 - e; cam.position.set(0, 0, 0).addScaledVector(fromPos, a * a).addScaledVector(ctrl, 2 * a * e).addScaledVector(toPos, e * e);
       cam.quaternion.slerpQuaternions(fromQ, toQ, e);
       offK = offFrom + (offTo - offFrom) * e; applyOffset(offK);
       if (t >= 1) { if (mode === "to") { mode = "focus"; onFocused(focusI); } else { mode = "rail"; focusI = -1; onReleased(); } }
     } else if (mode === "focus" && !reduced) {
       focusPose(focusI, pos, q); eul.set(ptrS.y * 0.012, -ptrS.x * 0.02, 0, "YXZ"); sway.setFromEuler(eul); q.multiply(sway);
-      cam.position.lerp(pos, 1 - Math.exp(-dt * 6)); cam.quaternion.slerp(q, 1 - Math.exp(-dt * 6));
+      cam.position.lerp(pos, 1 - Math.exp(-dt * 3)); cam.quaternion.slerp(q, 1 - Math.exp(-dt * 3));
     }
     // hover lift + light pools
     for (let i = 0; i < N; i++) {
       const target = (hover === i && mode === "rail") || focusI === i ? 1 : 0;
-      hov[i] += (target - hov[i]) * (1 - Math.exp(-dt * 7)); uniforms.uHov.value[i] = hov[i];
+      hov[i] += (target - hov[i]) * (1 - Math.exp(-dt * 4)); uniforms.uHov.value[i] = hov[i];
       const o = objs[i]; tmp2.copy(o.base).addScaledVector(o.normal, hov[i] * 0.07); o.g.position.copy(tmp2); o.m.position.copy(tmp2);
       const s = 1 + hov[i] * 0.025; o.g.scale.setScalar(s); o.m.scale.setScalar(s);
     }
@@ -314,7 +318,7 @@ export function mount({ canvas, works, onFrame, onHover, onFocused, onReleased }
   raf = requestAnimationFrame(loop);
 
   return {
-    setProgress(p, immediate) { uTarget = railU(clamp(p)); if (immediate) u = uTarget; },
+    setProgress(p, immediate) { uTarget = railU(clamp(p)); if (immediate) { u = uMid = uTarget; qInit = false; } },
     setPointer(x, y) { ptr.set(x, y); },
     pick(cx, cy) {
       if (mode !== "rail") return null;
@@ -324,8 +328,8 @@ export function mount({ canvas, works, onFrame, onHover, onFocused, onReleased }
       if (i !== hover) { hover = i; onHover(i); }
       return i;
     },
-    focus(i) { if (i < 0 || i >= N) return; if (mode === "focus" || mode === "to") { u = Math.max(0.012, objs[i].u - 0.045); uTarget = u; } start("to", i); },
-    unfocus(uu) { if (uu !== undefined) { u = uu; uTarget = uu; } start("back", focusI); },
+    focus(i) { if (i < 0 || i >= N) return; if (mode === "focus" || mode === "to") { u = uMid = Math.max(0.012, objs[i].u - 0.045); uTarget = u; } start("to", i); },
+    unfocus(uu) { if (uu !== undefined) { u = uMid = uu; uTarget = uu; } start("back", focusI); },
     resize,
     destroy() {
       dead = true; cancelAnimationFrame(raf); removeEventListener("resize", resize);
