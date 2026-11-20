@@ -13,7 +13,7 @@ export type GalleryConfig = {
   note: string; noteLink?: { href: string; label: string };
   title: [string, string]; sub: string;
   /** header button: the cart counter, or a link to an outside shop */ shop?: { href: string; label: string };
-  theme?: { serif: string; sans: string; accent: string };
+  theme?: { serif: string; sans: string; accent: string; titlePx?: number };
 };
 
 

@@ -23,7 +23,7 @@ export type Api = {
   resize: () => void;
   destroy: () => void;
 };
-export type Theme = { serif: string; sans: string; accent: string };
+export type Theme = { serif: string; sans: string; accent: string; titlePx?: number };
 type Opts = {
   canvas: HTMLCanvasElement; works: Work[]; theme?: Theme;
   onFrame: (f: Frame) => void; onHover: (i: number | null) => void;
@@ -93,13 +93,14 @@ function plaqueTexture(w: Work, th: Theme) {
   const g = c.getContext("2d")!;
   const draw = () => {
     g.fillStyle = "#f6f3ee"; g.fillRect(0, 0, 512, 256);
-    g.fillStyle = "#1a1814"; g.font = `400 50px ${th.serif}`; g.fillText(w.title, 30, 90);
+    g.fillStyle = "#1a1814"; g.font = `400 ${th.titlePx ?? 50}px ${th.serif}`; g.fillText(w.title, 30, 92);
     g.font = `500 30px ${th.sans}`; g.fillStyle = "#4a463f"; g.fillText(w.year ? `${w.artist}, ${w.year}` : w.artist, 30, 150);
     g.fillStyle = th.accent; g.fillRect(30, 190, 40, 6);
   };
   draw();
   const t = new CanvasTexture(c); t.colorSpace = SRGBColorSpace;
-  document.fonts?.ready.then(() => { draw(); t.needsUpdate = true; });
+  const again = () => { draw(); t.needsUpdate = true; };
+  document.fonts?.ready.then(again); document.fonts?.load(`400 ${th.titlePx ?? 50}px ${th.serif}`).then(again).catch(() => {});
   return t;
 }
 function shadowTexture() {

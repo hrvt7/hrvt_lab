@@ -1,4 +1,7 @@
 .gal.zs { --ultra:#b3122a; font-family:"Onest Variable",system-ui,sans-serif; }
-.gal.zs .disp { font-family:"Newsreader Variable",Georgia,serif; font-weight:500; letter-spacing:-.02em; }
-.gal.zs .disp em { font-style:italic; font-weight:400; }
+/* titles follow the hand of the ZsArt signature logo: a thin, slanted script that still reads easily */
+.gal.zs .disp { font-family:Birthstone,"Onest Variable",cursive; font-weight:400; letter-spacing:0; line-height:1.05; }
 .gal.zs .brand img { height:1.9rem; transform:none; }
+.gal.zs .passing-t { font-size:clamp(2.6rem,5.2vw,4rem); margin:0 0 .2rem; padding:.1em .3em; overflow:visible; }
+.gal.zs .panel-title { font-size:clamp(3.4rem,5.4vw,5rem); margin:1.2rem 0 .3rem; }
+.gal.zs .worklist .disp { font-size:1.5rem; }

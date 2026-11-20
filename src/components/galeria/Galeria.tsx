@@ -151,13 +151,12 @@ export function Galeria({ cfg }: { cfg: GalleryConfig }) {
       </header>
 
 <h1 id="top" className="sr">{cfg.title[0]} {cfg.title[1]}</h1>
-      <p className="tag" data-ui>{cfg.note}{cfg.noteLink && <> · <a href={cfg.noteLink.href}>{cfg.noteLink.label}</a></>}</p>
+
 
 
       <div className={`passing ${label >= 0 && focus === null ? "show" : ""}`} data-ui>
         {label >= 0 && (
           <>
-            <p className="lbl">Most mellette sétálsz el</p>
             <p className="passing-t disp"><Roll key={works[label].id} text={works[label].title} /></p>
             <button className="passing-btn" onClick={(e) => doFocus(label, e.currentTarget)} data-track="megnezem">Megnézem <span aria-hidden>→</span></button>
           </>
