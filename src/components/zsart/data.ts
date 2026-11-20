@@ -31,7 +31,7 @@ export const ZSART: GalleryConfig = {
   logo: { src: "/zsart/logo.png", w: 800, h: 178, alt: "ZsArt" },
   note: "Koncepcióterv, nem hivatalos oldal", noteLink: { href: "/", label: "HRVT" },
   title: ["Zsoze", "festményei"], sub: "Huszonegy festmény egy folyosón. Görgess, és sétálj végig. Ha egy kép megállít, kattints rá.",
-  shop: { href: "https://shop.zsart.hu", label: "Shop" },
+  noCart: true,
   endLogo: { src: "/zsart/end-photo.webp", aspect: 1280 / 1921, w: 1.45, wMobile: 1.2, framed: true },
   baked: { base: "/zsart/lm", segs: 8, lmax: 2.09, expo: 1.38, ver: 2 },
   theme: { serif: 'Birthstone, cursive', titlePx: 78, sans: '"Onest Variable", sans-serif', accent: "#b3122a" },
