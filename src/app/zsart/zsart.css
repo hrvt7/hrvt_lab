@@ -1,0 +1,5 @@
+.gal.zs { --ultra:#b3122a; font-family:"Onest Variable",system-ui,sans-serif; }
+.gal.zs .disp { font-family:"Newsreader Variable",Georgia,serif; font-weight:500; letter-spacing:-.02em; }
+.gal.zs .disp em { font-style:italic; font-weight:400; }
+.gal.zs .brand img { height:1.9rem; transform:none; }
+.gal.zs .intro h1 { font-size:clamp(3rem,9.5vw,8.4rem); }

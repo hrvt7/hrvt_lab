@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Galeria } from "@/components/galeria/Galeria";
+import { HRVT_GALLERY } from "@/components/galeria/data";
 
 export const metadata: Metadata = {
   title: "HRVT Galéria: végigsétálható online kiállítás (koncepcióterv)",
@@ -9,5 +10,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: "#e4e0d8", colorScheme: "light" };
 
 export default function Page() {
-  return <Galeria />;
+  return <Galeria cfg={HRVT_GALLERY} />;
 }

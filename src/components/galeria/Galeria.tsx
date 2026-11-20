@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { FRAMES, PAPERS, SIZES, WORKS, priceOf } from "./data";
-import { artU, makeCurve, railP } from "./rail";
+import { FRAMES, PAPERS, SIZES, priceOf, type GalleryConfig, type Work } from "./data";
+import { approachU, artU, makeCurve, railP, unit } from "./rail";
 import type { Api, Frame } from "./scene";
 
 const ft = (n: number) => `${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} Ft`;
@@ -9,23 +9,23 @@ function track(name: string, props?: Record<string, unknown>) {
   const w = window as unknown as { va?: (e: string, p: unknown) => void; plausible?: (n: string, o?: unknown) => void; gtag?: (...a: unknown[]) => void };
   try { w.va?.("event", { name, ...props }); w.plausible?.(name, { props }); w.gtag?.("event", name, props); } catch {}
 }
-const N = WORKS.length;
 
 /** Top-view map of the corridor: the dot is you, the ticks are the works. */
-function MiniMap({ dotRef, onJump, active }: { dotRef: React.RefObject<SVGGElement | null>; onJump: (i: number) => void; active: number }) {
+function MiniMap({ works, dotRef, onJump, active }: { works: Work[]; dotRef: React.RefObject<SVGGElement | null>; onJump: (i: number) => void; active: number }) {
+  const N = works.length;
   const { d, ticks, box } = useMemo(() => {
-    const c = makeCurve(); const pts = c.getSpacedPoints(80);
+    const c = makeCurve(N); const pts = c.getSpacedPoints(Math.round(80 / unit(N)));
     const xs = pts.map((p) => p.x), zs = pts.map((p) => p.z);
     const box = { x0: Math.min(...xs) - 3, x1: Math.max(...xs) + 3, z0: Math.min(...zs), z1: Math.max(...zs) };
     const d = pts.map((p, k) => `${k ? "L" : "M"}${p.x.toFixed(2)} ${p.z.toFixed(2)}`).join(" ");
-    const ticks = WORKS.map((_, i) => { const u = artU(i, N), p = c.getPointAt(u), t = c.getTangentAt(u); const s = i % 2 === 0 ? 1 : -1; return { x: p.x + t.z * s * 1.6, z: p.z - t.x * s * 1.6 }; });
+    const ticks = works.map((_, i) => { const u = artU(i, N), p = c.getPointAt(u), t = c.getTangentAt(u); const s = i % 2 === 0 ? 1 : -1; return { x: p.x + t.z * s * 1.6, z: p.z - t.x * s * 1.6 }; });
     return { d, ticks, box };
-  }, []);
+  }, [works, N]);
   return (
     <svg className="map" viewBox={`${box.x0} ${box.z0} ${box.x1 - box.x0} ${box.z1 - box.z0}`} role="group" aria-label="A folyosó térképe">
       <path d={d} className="map-path" />
       {ticks.map((t, i) => (
-        <circle key={i} cx={t.x} cy={t.z} r={i === active ? 1.15 : 0.8} className={`map-tick ${i === active ? "on" : ""}`} data-ui role="button" tabIndex={-1} aria-label={WORKS[i].title} onClick={() => onJump(i)} />
+        <circle key={i} cx={t.x} cy={t.z} r={i === active ? 1.15 : 0.8} className={`map-tick ${i === active ? "on" : ""}`} data-ui role="button" tabIndex={-1} aria-label={works[i].title} onClick={() => onJump(i)} />
       ))}
       <g ref={dotRef}><path d="M0 -2.4 L1.5 1.4 L0 0.6 L-1.5 1.4Z" className="map-dot" /></g>
     </svg>
@@ -37,7 +37,8 @@ function Roll({ text }: { text: string }) {
   return <span key={text} className="roll">{[...text].map((c, i) => <span key={i} style={{ "--i": i } as CSSProperties}>{c === " " ? " " : c}</span>)}</span>;
 }
 
-export function Galeria() {
+export function Galeria({ cfg }: { cfg: GalleryConfig }) {
+  const works = cfg.works, N = works.length;
   const canvas = useRef<HTMLCanvasElement>(null), api = useRef<Api | null>(null);
   const dot = useRef<SVGGElement>(null), root = useRef<HTMLDivElement>(null);
   const uRef = useRef(0), lastNear = useRef(-1), opener = useRef<HTMLElement | null>(null);
@@ -61,14 +62,14 @@ export function Galeria() {
     if (from !== undefined) opener.current = from;
     setPaper(0); setSize(0); setFrame(0); setQty(1);
     document.documentElement.style.overflow = "hidden";
-    track("kep_megnyitas", { kep: WORKS[i].id });
+    track("kep_megnyitas", { kep: works[i].id });
     if (api.current) { setOpen(false); setFocus(i); api.current.focus(i); } else { setFocus(i); setOpen(true); }
   }, []);
   const close = useCallback(() => {
     setOpen(false);
-    if (api.current && focus !== null) api.current.unfocus(Math.max(0.012, artU(focus, N) - 0.045));
+    if (api.current && focus !== null) api.current.unfocus(approachU(focus, N));
     else { document.documentElement.style.overflow = ""; setFocus(null); }
-  }, [focus]);
+  }, [focus, N]);
 
   useEffect(() => {
     const w = window as unknown as { __hrvtReady?: boolean };
@@ -78,7 +79,7 @@ export function Galeria() {
       if (!alive) return;
       try {
         api.current = m.mount({
-          canvas: canvas.current!, works: WORKS, onFrame,
+          canvas: canvas.current!, works, theme: cfg.theme, onFrame,
           onHover: (i) => setHover(i),
           onFocused: () => setOpen(true),
           onReleased: () => {
@@ -111,7 +112,7 @@ export function Galeria() {
       removeEventListener("scroll", scroll); removeEventListener("pointermove", move); removeEventListener("click", click); removeEventListener("deviceorientation", tilt);
       document.documentElement.style.overflow = "";
     };
-  }, [onFrame, doFocus]);
+  }, [onFrame, doFocus, works, cfg.theme]);
 
   useEffect(() => {
     if (!open) return;
@@ -121,36 +122,38 @@ export function Galeria() {
       if (focus !== null && (e.key === "ArrowRight" || e.key === "ArrowLeft")) { const n = focus + (e.key === "ArrowRight" ? 1 : -1); if (n >= 0 && n < N) doFocus(n); }
     };
     addEventListener("keydown", key); return () => removeEventListener("keydown", key);
-  }, [open, focus, close, doFocus]);
+  }, [open, focus, close, doFocus, N]);
 
   const jump = (i: number) => {
     const max = document.documentElement.scrollHeight - innerHeight;
-    scrollTo({ top: railP(Math.max(0.012, artU(i, N) - 0.05)) * max, behavior: "smooth" }); track("terkep_ugras", { kep: WORKS[i].id });
+    scrollTo({ top: railP(approachU(i, N)) * max, behavior: "smooth" }); track("terkep_ugras", { kep: works[i].id });
   };
   const add = () => {
-    if (focus === null) return; setBag((b) => b + qty); setToast(`${WORKS[focus].title} a kosárban`); track("kosarba", { kep: WORKS[focus].id, ar: priceOf(WORKS[focus], paper, size, frame) * qty });
+    if (focus === null) return; setBag((b) => b + qty); setToast(`${works[focus].title} a kosárban`); track("kosarba", { kep: works[focus].id, ar: priceOf(works[focus], paper, size, frame) * qty });
     setTimeout(() => setToast(""), 2600);
   };
 
-  const w = focus !== null ? WORKS[focus] : null;
+  const w = focus !== null ? works[focus] : null;
   const label = hover !== null ? hover : near;
   return (
-    <div ref={root} className={`gal ${hover !== null ? "is-hover" : ""} ${focus !== null ? "is-focus" : ""}`}>
+    <div ref={root} className={`gal ${cfg.cls ?? ""} ${hover !== null ? "is-hover" : ""} ${focus !== null ? "is-focus" : ""}`}>
       <canvas ref={canvas} aria-hidden className="gal-canvas" />
 
       <header className="gal-head" data-ui>
-        <a href="#top" className="brand" aria-label="HRVT Galéria, vissza az elejére" onClick={(e) => { e.preventDefault(); if (focus === null) scrollTo({ top: 0, behavior: "smooth" }); }}>
+        <a href="#top" className="brand" aria-label={`${cfg.logo.alt}, vissza az elejére`} onClick={(e) => { e.preventDefault(); if (focus === null) scrollTo({ top: 0, behavior: "smooth" }); }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/galeria/hrvt.svg" alt="" width={2541} height={907} />
-          <span>Galéria</span>
+          <img src={cfg.logo.src} alt="" width={cfg.logo.w} height={cfg.logo.h} />
+          {cfg.logo.label && <span>{cfg.logo.label}</span>}
         </a>
-        <span className="bagpill" aria-live="polite">Kosár · {bag}</span>
+        {cfg.shop
+          ? <a className="bagpill" href={cfg.shop.href} target="_blank" rel="noopener" data-track="shop_fejlec">{cfg.shop.label} <span aria-hidden>↗</span></a>
+          : <span className="bagpill" aria-live="polite">Kosár · {bag}</span>}
       </header>
 
       <section id="top" className="intro" aria-labelledby="gal-h1">
-        <p className="lbl">Koncepcióterv, nem hivatalos oldal · az árak mintaárak · <a href="/">HRVT</a></p>
-        <h1 id="gal-h1" className="disp">HRVT <em>Galéria</em></h1>
-        <p className="intro-sub">Nyolc fotó egy folyosón. Görgess, és sétálj végig. Ha egy kép megállít, kattints rá.</p>
+        <p className="lbl">{cfg.note}{cfg.noteLink && <> · <a href={cfg.noteLink.href}>{cfg.noteLink.label}</a></>}</p>
+        <h1 id="gal-h1" className="disp">{cfg.title[0]} <em>{cfg.title[1]}</em></h1>
+        <p className="intro-sub">{cfg.sub}</p>
         <p className="cue lbl" aria-hidden>Görgess <span>↓</span></p>
       </section>
 
@@ -159,21 +162,21 @@ export function Galeria() {
         {label >= 0 && (
           <>
             <p className="lbl">Most mellette sétálsz el</p>
-            <p className="passing-t disp"><Roll text={WORKS[label].title} /></p>
+            <p className="passing-t disp"><Roll key={works[label].id} text={works[label].title} /></p>
             <button className="passing-btn" onClick={(e) => doFocus(label, e.currentTarget)} data-track="megnezem">Megnézem <span aria-hidden>→</span></button>
           </>
         )}
       </div>
 
-      {!noGL && <div className="mapwrap" data-ui><MiniMap dotRef={dot} onJump={jump} active={label} /></div>}
+      {!noGL && <div className="mapwrap" data-ui><MiniMap works={works} dotRef={dot} onJump={jump} active={label} /></div>}
 
       <nav className="worklist" aria-label="A kiállított képek" data-ui>
         <p className="lbl">A kiállított képek</p>
-        <ol>{WORKS.map((x, i) => <li key={x.id}><button onClick={(e) => doFocus(i, e.currentTarget)}><span className="disp">{x.title}</span> <span>{x.artist}</span></button></li>)}</ol>
+        <ol>{works.map((x, i) => <li key={x.id}><button onClick={(e) => doFocus(i, e.currentTarget)}><span className="disp">{x.title}</span> <span>{x.artist}</span></button></li>)}</ol>
       </nav>
 
 
-      <div className="rail" aria-hidden />
+      <div className="rail" aria-hidden style={{ height: `${Math.round(1000 / unit(N))}svh` }} />
 
       <aside className={`panel ${open && w ? "open" : ""}`} aria-hidden={!open} aria-labelledby="pnl-h" data-ui role="dialog" aria-modal="false">
         {w && focus !== null && (
@@ -188,21 +191,30 @@ export function Galeria() {
             </div>
             <h2 id="pnl-h" ref={panelHead} tabIndex={-1} className="disp panel-title">{w.title}</h2>
             <p className="panel-by">{[w.artist, w.year, w.medium].filter(Boolean).join(" · ")}</p>
-            <p className="panel-story">{w.story}</p>
-            <p className="price disp" aria-live="polite">{ft(priceOf(w, paper, size, frame) * qty)}</p>
-            <p className="fine">Mintaár, koncepcióterv.</p>
-            <fieldset><legend className="lbl">Papír</legend><div className="chips">{PAPERS.map((p, k) => <button key={p.id} aria-pressed={paper === k} onClick={() => setPaper(k)}>{p.label}</button>)}</div></fieldset>
-            <fieldset><legend className="lbl">Méret</legend><div className="chips">{SIZES.map((p, k) => <button key={p.id} aria-pressed={size === k} onClick={() => setSize(k)}>{p.label}</button>)}</div></fieldset>
-            <fieldset><legend className="lbl">Keret</legend><div className="frames">{FRAMES.map((p, k) => (
-              <button key={p.id} aria-pressed={frame === k} onClick={() => setFrame(k)}>
-                <span className="fr" style={{ "--fc": p.color ?? "transparent" } as CSSProperties}><span style={{ background: w.img ? `center/cover url(${w.img})` : `linear-gradient(135deg, ${w.palette[1]}, ${w.palette[2]})` }} /></span>{p.label}
-              </button>
-            ))}</div></fieldset>
-            <div className="buy">
-              <span className="step"><button onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Kevesebb">−</button><span>{qty}</span><button onClick={() => setQty((q) => Math.min(9, q + 1))} aria-label="Több">+</button></span>
-              <button className="btn" onClick={add}>Kosárba <span aria-hidden>→</span></button>
-            </div>
-            <p className="fine">Szállítás 3–5 munkanap, papírhengerben vagy keretezve, dobozban.</p>
+            {w.story.split("\n").filter(Boolean).map((para, k) => <p key={k} className="panel-story">{para}</p>)}
+            {w.base != null ? (
+              <>
+              <p className="price disp" aria-live="polite">{ft(priceOf(w, paper, size, frame) * qty)}</p>
+              <p className="fine">Mintaár, koncepcióterv.</p>
+              <fieldset><legend className="lbl">Papír</legend><div className="chips">{PAPERS.map((p, k) => <button key={p.id} aria-pressed={paper === k} onClick={() => setPaper(k)}>{p.label}</button>)}</div></fieldset>
+              <fieldset><legend className="lbl">Méret</legend><div className="chips">{SIZES.map((p, k) => <button key={p.id} aria-pressed={size === k} onClick={() => setSize(k)}>{p.label}</button>)}</div></fieldset>
+              <fieldset><legend className="lbl">Keret</legend><div className="frames">{FRAMES.map((p, k) => (
+                <button key={p.id} aria-pressed={frame === k} onClick={() => setFrame(k)}>
+                  <span className="fr" style={{ "--fc": p.color ?? "transparent" } as CSSProperties}><span style={{ background: w.img ? `center/cover url(${w.img})` : `linear-gradient(135deg, ${w.palette[1]}, ${w.palette[2]})` }} /></span>{p.label}
+                </button>
+              ))}</div></fieldset>
+              <div className="buy">
+                <span className="step"><button onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Kevesebb">−</button><span>{qty}</span><button onClick={() => setQty((q) => Math.min(9, q + 1))} aria-label="Több">+</button></span>
+                <button className="btn" onClick={add}>Kosárba <span aria-hidden>→</span></button>
+              </div>
+              <p className="fine">Szállítás 3–5 munkanap, papírhengerben vagy keretezve, dobozban.</p>
+              </>
+            ) : (
+              <div className="links">
+                {w.shop && <a className="btn" href={w.shop} target="_blank" rel="noopener" data-track="shop_kep">Megnézem a shopban <span aria-hidden>↗</span></a>}
+                {w.video && <a className="btn btn-line" href={w.video} target="_blank" rel="noopener" data-track="video_kep">Videó a képről <span aria-hidden>↗</span></a>}
+              </div>
+            )}
           </div>
         )}
       </aside>

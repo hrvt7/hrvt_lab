@@ -97,3 +97,8 @@
 @media (prefers-reduced-motion: reduce) { .gal *, .gal *::before { animation:none !important; transition:none !important; } }
 .gal .passing { width:min(92vw,40rem); }
 .gal .passing-t { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.gal a.bagpill { transition:background .2s,color .2s; } .gal a.bagpill:hover { background:var(--ink); color:var(--paper); }
+.gal .links { display:grid; gap:.6rem; margin-top:1.8rem; }
+.gal .btn-line { background:transparent; color:var(--ink); border:1px solid rgba(26,24,20,.3); }
+.gal .btn-line:hover { background:var(--ink); color:var(--paper); }
+.gal .panel-story + .panel-story { margin-top:-.8rem; }

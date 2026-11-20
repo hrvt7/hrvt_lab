@@ -1,9 +1,19 @@
 // HRVT GALÉRIA: concept demo with Ádám's own motorsport photos. Titles and stories describe only what is visible; prices are samples.
 export type Work = {
-  id: string; room?: number; title: string; artist: string; year?: number; medium: string; story: string;
+  id: string; title: string; artist: string; year?: number; medium: string; story: string;
   /** canvas size on the wall in metres */ w: number; h: number;
-  /** sample base price, Ft (A3, budget paper, unframed) */ base: number;
-  palette: string[]; style: 0 | 1 | 2 | 3; img?: string;
+  /** sample base price, Ft (A3, budget paper, unframed); without it the panel shows links instead of a shop */ base?: number;
+  palette: string[]; style: 0 | 1 | 2 | 3;
+  /** full-size image; imgM = lighter version for phones, imgT = small version shown from afar */ img?: string; imgM?: string; imgT?: string;
+  shop?: string; video?: string;
+};
+export type GalleryConfig = {
+  cls?: string; works: Work[];
+  logo: { src: string; w: number; h: number; label?: string; alt: string };
+  note: string; noteLink?: { href: string; label: string };
+  title: [string, string]; sub: string;
+  /** header button: the cart counter, or a link to an outside shop */ shop?: { href: string; label: string };
+  theme?: { serif: string; sans: string; accent: string };
 };
 
 
@@ -34,4 +44,11 @@ export const FRAMES = [
   { id: "tolgy", label: "Tölgy keret", add: 22000, color: "#b88a57" },
 ];
 export const priceOf = (w: Work, paper: number, size: number, frame: number) =>
-  Math.round(((w.base + PAPERS[paper].add) * SIZES[size].mult + FRAMES[frame].add * (0.7 + SIZES[size].mult * 0.3)) / 500) * 500;
+  Math.round((((w.base ?? 0) + PAPERS[paper].add) * SIZES[size].mult + FRAMES[frame].add * (0.7 + SIZES[size].mult * 0.3)) / 500) * 500;
+
+export const HRVT_GALLERY: GalleryConfig = {
+  works: WORKS,
+  logo: { src: "/galeria/hrvt.svg", w: 2541, h: 907, label: "Galéria", alt: "HRVT Galéria" },
+  note: "Koncepcióterv, nem hivatalos oldal · az árak mintaárak", noteLink: { href: "/", label: "HRVT" },
+  title: ["HRVT", "Galéria"], sub: "Nyolc fotó egy folyosón. Görgess, és sétálj végig. Ha egy kép megállít, kattints rá.",
+};
