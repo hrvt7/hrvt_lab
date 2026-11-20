@@ -25,10 +25,10 @@ export type Api = {
   destroy: () => void;
 };
 /** Lightmaps baked in Blender: `${base}_${k}.webp` per corridor segment, `${base}_cap0/1.webp` for the end walls. */
-export type Baked = { base: string; segs: number; lmax: number; expo?: number };
+export type Baked = { base: string; segs: number; lmax: number; expo?: number; ver?: number };
 export type Theme = { serif: string; sans: string; accent: string; titlePx?: number };
 type Opts = {
-  canvas: HTMLCanvasElement; works: Work[]; theme?: Theme; baked?: Baked; endLogo?: { src: string; aspect: number; w?: number; wMobile?: number };
+  canvas: HTMLCanvasElement; works: Work[]; theme?: Theme; baked?: Baked; endLogo?: { src: string; aspect: number; w?: number; wMobile?: number; framed?: boolean };
   onFrame: (f: Frame) => void; onHover: (i: number | null) => void;
   onFocused: (i: number) => void; onReleased: () => void;
 };
@@ -247,7 +247,7 @@ export function mount({ canvas, works, endLogo, baked, theme = { serif: "Gloock,
 
   const prof = profile();
   const floorProf: P[] = Array.from({ length: 13 }, (_, k) => [-(HALF_W - 0.35) + ((HALF_W - 0.35) * 2 * k) / 12, 0, 1]);
-  const lmMix = { value: 0 }, lmLoader = new TextureLoader(), lmSuffix = mobile ? "-m.webp" : ".webp";
+  const lmMix = { value: 0 }, lmLoader = new TextureLoader(), lmSuffix = (mobile ? "-m.webp" : ".webp") + (baked?.ver ? `?v=${baked.ver}` : "");
   const bakedMat = (floor: boolean, url: string) => {
     const m = new ShaderMaterial({
       uniforms: { ...uniforms, uBase: floor ? floorU.uBase : uniforms.uBase, uLM: { value: null as Texture | null }, uLMax: { value: baked!.lmax }, uMix: lmMix, uExpo: { value: baked!.expo ?? 1.55 } },
@@ -283,7 +283,7 @@ export function mount({ canvas, works, endLogo, baked, theme = { serif: "Gloock,
   /* artworks + their reflections */
   const artRoot = new Group(), mirror = new Group(); mirror.scale.y = -1; scene.add(artRoot, mirror);
   const pmrem = new PMREMGenerator(renderer), envTex = baked ? pmrem.fromScene(new RoomEnvironment(), 0.04).texture : null;
-  const frameMat = baked ? new MeshStandardMaterial({ color: 0x1b1916, roughness: 0.36, metalness: 0.2, envMap: envTex, envMapIntensity: 0.85 }) : null;
+  const frameMat = baked ? new MeshStandardMaterial({ color: 0x1b1916, roughness: 0.36, metalness: 0.2, envMap: envTex, envMapIntensity: 0.6 }) : null;
   const shadowT = shadowTexture(), maxAniso = renderer.capabilities.getMaxAnisotropy();
   const bmp = typeof createImageBitmap === "function" ? new ImageBitmapLoader().setOptions({ imageOrientation: "flipY", premultiplyAlpha: "none" }) : null;
   const plain = new TextureLoader();
@@ -329,11 +329,12 @@ export function mount({ canvas, works, endLogo, baked, theme = { serif: "Gloock,
   if (endLogo) {
     const uE = 0.9995, pE = curve.getPointAt(uE), tE = curve.getTangentAt(uE).setY(0).normalize();
     const wL = mobile ? endLogo.wMobile ?? 1.5 : endLogo.w ?? 2.5, hL = wL / endLogo.aspect;
-    const lm = new MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false, side: DoubleSide });
+    const lm = new MeshBasicMaterial({ transparent: !endLogo.framed, opacity: 0, depthWrite: !!endLogo.framed, side: DoubleSide });
     const lp = new Mesh(new PlaneGeometry(wL, hL), lm);
-    lp.position.copy(pE).addScaledVector(tE, -0.02).setY(1.75); lp.lookAt(lp.position.clone().sub(tE)); lp.renderOrder = 5;
+    lp.position.copy(pE).addScaledVector(tE, endLogo.framed ? -0.058 : -0.02).setY(1.75); lp.lookAt(lp.position.clone().sub(tE)); lp.renderOrder = 5;
+    if (endLogo.framed && frameMat) { const fr = new Mesh(frameGeometry(wL, hL), frameMat); fr.position.z = -0.058; lp.add(fr); }
     scene.add(lp); const lr = lp.clone(); mirror.add(lr);
-    plain.load(endLogo.src, (t) => { t.colorSpace = SRGBColorSpace; t.anisotropy = maxAniso; lm.map = t; lm.opacity = 0.92; lm.needsUpdate = true; });
+    plain.load(endLogo.src, (t) => { t.colorSpace = SRGBColorSpace; t.anisotropy = maxAniso; lm.map = t; lm.opacity = endLogo.framed ? 1 : 0.92; lm.needsUpdate = true; });
   }
 
   /* camera state */

@@ -9,14 +9,14 @@ export type Work = {
 };
 export type GalleryConfig = {
   cls?: string; works: Work[];
-  /** logo shown large on the wall at the end of the corridor */ endLogo?: { src: string; aspect: number; w?: number; wMobile?: number };
+  /** logo shown large on the wall at the end of the corridor */ endLogo?: { src: string; aspect: number; w?: number; wMobile?: number; framed?: boolean };
   /** titles are set in a script face: never split or clip them */ script?: boolean;
   logo: { src: string; w: number; h: number; label?: string; alt: string };
   note: string; noteLink?: { href: string; label: string };
   title: [string, string]; sub: string;
   /** header button: the cart counter, or a link to an outside shop */ shop?: { href: string; label: string };
   /** no shop and no cart: a pure portfolio */ noCart?: boolean;
-  /** lightmaps baked in Blender for this corridor */ baked?: { base: string; segs: number; lmax: number; expo?: number };
+  /** lightmaps baked in Blender for this corridor */ baked?: { base: string; segs: number; lmax: number; expo?: number; ver?: number };
   theme?: { serif: string; sans: string; accent: string; titlePx?: number };
 };
 

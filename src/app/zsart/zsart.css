@@ -8,3 +8,6 @@
 @keyframes zsIn { from { opacity:0; transform:translateY(.35em); } }
 .gal.zs .panel-title { font-size:clamp(3.2rem,5.2vw,4.8rem); margin:1rem 0 0 -.3em; }
 .gal.zs .worklist .disp { font-size:1.5rem; padding:0 .3em; }
+/* the cursor is a paintbrush; over a painting it carries a drop of paint (= clickable) */
+.gal.zs, .gal.zs * { cursor: url("/zsart/brush.svg") 4 36, auto; }
+.gal.zs.is-hover .gal-canvas, .gal.zs a, .gal.zs button, .gal.zs .map-tick { cursor: url("/zsart/brush-paint.svg") 4 36, pointer; }
