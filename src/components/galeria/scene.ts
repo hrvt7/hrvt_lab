@@ -216,7 +216,7 @@ export function mount({ canvas, works, endLogo, theme = { serif: "Gloock, Georgi
     if (!bmp) return old();
     bmp.load(url, (b) => { const t = new Texture(b as unknown as HTMLImageElement); t.flipY = false; t.needsUpdate = true; ok(prep(t)); }, undefined, old);
   } };
-  type ArtObj = { g: Group; m: Group; canvas: Mesh; mat: MeshBasicMaterial; lo: Texture | null; hi: Texture | null; busy: boolean; base: Vector3; normal: Vector3; center: Vector3; u: number; w: number; h: number };
+  type ArtObj = { g: Group; m: Group; canvas: Mesh; mat: MeshBasicMaterial; lo: Texture | null; mid: Texture | null; hi: Texture | null; busy: boolean; base: Vector3; normal: Vector3; center: Vector3; u: number; w: number; h: number };
   const objs: ArtObj[] = works.slice(0, N).map((w, i) => {
     const u = artU(i, N), P = curve.getPointAt(u), T = curve.getTangentAt(u).setY(0).normalize(), L = new Vector3().crossVectors(UP, T).normalize();
     const side = i % 2 === 0 ? 1 : -1;
@@ -238,12 +238,11 @@ export function mount({ canvas, works, endLogo, theme = { serif: "Gloock, Georgi
     const first = w.imgT ?? w.img;
     if (first) loader.load(first, (t) => {
       fit(t);
-      const o = objs[i]; if (o) { o.lo = t; if (!w.imgT) o.hi = t; if (!o.hi) { mat.map = t; mat.color.set(0xffffff); mat.needsUpdate = true; } }
-      if (!w.imgT) { mat.map = t; mat.color.set(0xffffff); mat.needsUpdate = true; }
+      renderer.initTexture(t); const o = objs[i]; if (o) { o.lo = t; show(o); } else { mat.map = t; mat.color.set(0xffffff); mat.needsUpdate = true; }
     });
     artRoot.add(g);
     const m = g.clone(); mirror.add(m);
-    return { g, m, canvas: cv, mat, base, normal, center: base.clone().addScaledVector(normal, 0.06), u, w: w.w, h: w.h, lo: null, hi: null, busy: false };
+    return { g, m, canvas: cv, mat, base, normal, center: base.clone().addScaledVector(normal, 0.06), u, w: w.w, h: w.h, lo: null, mid: null, hi: null, busy: false };
   });
 
   // the far wall carries the logo, so the walk ends on something
@@ -263,7 +262,7 @@ export function mount({ canvas, works, endLogo, theme = { serif: "Gloock, Georgi
   let hover: number | null = null; const hov = new Array(N).fill(0);
   let mode: "rail" | "to" | "focus" | "back" = "rail", focusI = -1, t0 = 0, dur = 1.35;
   const fromPos = new Vector3(), fromQ = new Quaternion(), toPos = new Vector3(), toQ = new Quaternion(), ctrl = new Vector3();
-  let offK = 0, offFrom = 0, offTo = 0, early = false, tLand = 0;
+  let offK = 0, offFrom = 0, offTo = 0, early = false, tLand = 0, tRail = -1e6;
   const mtx = new Matrix4(), q = new Quaternion(), sway = new Quaternion(), eul = new Euler();
   const pos = new Vector3(), look = new Vector3(), tmp = new Vector3(), tmp2 = new Vector3();
   let near = -1, nearK = 0;
@@ -317,26 +316,37 @@ export function mount({ canvas, works, endLogo, theme = { serif: "Gloock, Georgi
   const ray = new Raycaster(), ndc = new Vector2();
   let raf = 0, last = performance.now(), dead = false, lastStream = 0, loading = 0;
   /** Full-resolution textures only live near the camera; far ones fall back to their small version. */
+  const big = !mobile && renderer.capabilities.maxTextureSize >= 4096;
+  const show = (o: ArtObj) => { const t = o.hi ?? o.mid ?? o.lo; if (t && o.mat.map !== t) { o.mat.map = t; o.mat.color.set(0xffffff); o.mat.needsUpdate = true; } };
+  /**
+   * Three sizes per work: a small one from afar, a mid one while walking past (a light upload, so the walk never hitches)
+   * and the full 4096 px one only for the work the camera has stopped in front of.
+   */
   function stream() {
     for (let i = 0; i < N; i++) {
       const o = objs[i], w = works[i]; if (!w.imgT || !w.img) continue;
-      const d = Math.abs(o.u - u) / K, want = d < 0.12 || i === focusI;
-      if (want && !o.hi && !o.busy) {
-        if (loading >= 1) continue; loading++;
-        o.busy = true;
-        loader.load((mobile || renderer.capabilities.maxTextureSize < 4096) && w.imgM ? w.imgM : w.img, (t) => {
-          o.busy = false; loading--; if (dead) { t.dispose(); return; }
-          renderer.initTexture(t); o.hi = t; o.mat.map = t; o.mat.color.set(0xffffff); o.mat.needsUpdate = true;
-        }, undefined, () => { o.busy = false; loading--; });
-      } else if (!want && o.hi && d > 0.24 && o.lo) { o.mat.map = o.lo; o.mat.needsUpdate = true; o.hi.dispose(); o.hi = null; }
+      const d = Math.abs(o.u - u) / K, near = d < 0.12 || i === focusI, full = big && !!w.imgM && i === focusI && mode === "focus";
+      const midUrl = w.imgM ?? w.img;
+      if (near && !o.mid && !o.busy && loading < 1) {
+        loading++; o.busy = true;
+        loader.load(midUrl, (t) => { o.busy = false; loading--; if (dead) { t.dispose(); return; } renderer.initTexture(t); o.mid = t; show(o); }, undefined, () => { o.busy = false; loading--; });
+      } else if (full && o.mid && !o.hi && !o.busy && loading < 1) {
+        loading++; o.busy = true;
+        loader.load(w.img, (t) => { o.busy = false; loading--; if (dead || i !== focusI) { t.dispose(); return; } renderer.initTexture(t); o.hi = t; show(o); }, undefined, () => { o.busy = false; loading--; });
+      }
+      if (o.hi && i !== focusI) { const t = o.hi; o.hi = null; show(o); t.dispose(); }
+      if (!near && o.mid && d > 0.24 && o.lo) { const t = o.mid; o.mid = null; show(o); t.dispose(); }
     }
   }
   const loop = (now: number) => {
-    raf = requestAnimationFrame(loop);
+    const t00 = performance.now();
+  try { renderer.compile(scene, cam); } catch { /* shaders then compile on first use */ }
+  raf = requestAnimationFrame(loop);
     if (document.hidden) return;
     const raw = now - last; const dt = Math.min(0.05, raw / 1000); last = now;
     // if most frames in a window miss ~50 fps, render at a lower resolution instead of stuttering
     if (raw < 250) { seen++; if (raw > 21) slow++; }
+    if (now - t00 < 4000) seen = slow = 0; // loading time does not count
     if (seen >= 90) { if (slow > 45 && dpr > dprMin) { dpr = Math.max(dprMin, dpr - 0.25); renderer.setPixelRatio(dpr); renderer.setSize(innerWidth, innerHeight, false); } seen = slow = 0; }
     if (now - lastStream > 250 && mode !== "to" && mode !== "back") { lastStream = now; stream(); } // no texture uploads mid-flight
     ptrS.lerp(ptr, 1 - Math.exp(-dt * 2.2));
@@ -345,7 +355,8 @@ export function mount({ canvas, works, endLogo, theme = { serif: "Gloock, Georgi
       railPose(u, pos, q);
       if (!qInit || reduced) { qS.copy(q); qInit = true; } else qS.slerp(q, 1 - Math.exp(-dt * 3.2));
       q.copy(qS);
-      if (!reduced) { eul.set(ptrS.y * 0.035, -ptrS.x * 0.07, 0, "YXZ"); sway.setFromEuler(eul); q.multiply(sway); }
+      if (!reduced) { const sk = easeIO(clamp((now - tRail) / 1800)); // after stepping back from a work the sway returns gradually, not in one jump
+        eul.set(ptrS.y * 0.035 * sk, -ptrS.x * 0.07 * sk, 0, "YXZ"); sway.setFromEuler(eul); q.multiply(sway); }
       cam.position.copy(pos); cam.quaternion.copy(q);
     } else if (mode === "to" || mode === "back") {
       const t = clamp((now - t0) / (dur * 1000)), e = ramp(t);
@@ -354,7 +365,7 @@ export function mount({ canvas, works, endLogo, theme = { serif: "Gloock, Georgi
       cam.quaternion.slerpQuaternions(fromQ, toQ, e);
       offK = offFrom + (offTo - offFrom) * e; applyOffset(offK);
       if (mode === "to" && !early && t > 0.42) { early = true; onFocused(focusI); } // the text starts in while the camera is still landing
-      if (t >= 1) { if (mode === "to") { mode = "focus"; tLand = now; if (!early) onFocused(focusI); } else { mode = "rail"; focusI = -1; onReleased(); } }
+      if (t >= 1) { if (mode === "to") { mode = "focus"; tLand = now; if (!early) onFocused(focusI); } else { mode = "rail"; focusI = -1; tRail = now; onReleased(); } }
     } else if (mode === "focus" && !reduced) {
       focusPose(focusI, pos, q); const sk = easeIO(clamp((now - tLand) / 1600)); // the pointer sway fades in after landing, so the landing itself is dead still
       eul.set(ptrS.y * 0.012 * sk, -ptrS.x * 0.02 * sk, 0, "YXZ"); sway.setFromEuler(eul); q.multiply(sway);
@@ -379,6 +390,8 @@ export function mount({ canvas, works, endLogo, theme = { serif: "Gloock, Georgi
     const yaw = Math.atan2(-tmp.x, -tmp.z);
     onFrame({ u, near: mode === "rail" ? near : focusI, k: mode === "rail" ? nearK : 1, x: cam.position.x, z: cam.position.z, yaw });
   };
+  const t00 = performance.now();
+  try { renderer.compile(scene, cam); } catch { /* shaders then compile on first use */ }
   raf = requestAnimationFrame(loop);
 
   return {
