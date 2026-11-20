@@ -33,6 +33,6 @@ export const ZSART: GalleryConfig = {
   title: ["Zsoze", "festményei"], sub: "Huszonegy festmény egy folyosón. Görgess, és sétálj végig. Ha egy kép megállít, kattints rá.",
   noCart: true,
   endLogo: { src: "/zsart/end-photo.webp", aspect: 1280 / 1921, w: 1.45, wMobile: 1.2, framed: true },
-  baked: { base: "/zsart/lm", segs: 8, lmax: 2.09, expo: 1.38, ver: 2 },
+  baked: { base: "/zsart/lm", segs: 8, lmax: 2.5351, expo: 0.62, ver: 3 },
   theme: { serif: 'Birthstone, cursive', titlePx: 78, sans: '"Onest Variable", sans-serif', accent: "#b3122a" },
 };

@@ -115,6 +115,24 @@ function frameGeometry(w: number, h: number) {
   const g = new ExtrudeGeometry(s, { depth: 0.052, bevelEnabled: true, bevelThickness: b, bevelSize: b, bevelSegments: 4, curveSegments: 1 });
   g.translate(0, 0, 0.004); return g;
 }
+/**
+ * Soft cast shadow of a hanging frame, drawn at 140 px per metre so it stays crisp at any screen size:
+ * a wide penumbra that falls slightly downwards (the spot is above) plus a tight, darker contact line.
+ */
+const SH_PAD = 0.55, SH_PX = 200;
+function frameShadow(w: number, h: number) {
+  const fw = w + 0.09, fh = h + 0.09, W = Math.round((fw + SH_PAD * 2) * SH_PX), H = Math.round((fh + SH_PAD * 2) * SH_PX);
+  const c = document.createElement("canvas"); c.width = W; c.height = H; const g = c.getContext("2d")!;
+  const rect = (dx: number, dy: number, grow: number, blur: number, a: number) => {
+    g.filter = `blur(${blur}px)`; g.fillStyle = `rgba(20,16,12,${a})`;
+    const x = (SH_PAD - grow + dx) * SH_PX, y = (SH_PAD - grow + dy) * SH_PX;
+    g.beginPath(); g.roundRect(x, y, (fw + grow * 2) * SH_PX, (fh + grow * 2) * SH_PX, grow * SH_PX); g.fill();
+  };
+  rect(0, 0.07, 0.03, 0.14 * SH_PX, 0.26);   // penumbra, falls below the frame
+  rect(0, 0.018, 0.004, 0.043 * SH_PX, 0.32);  // contact shadow right under the moulding
+  g.filter = "none";
+  const t = new CanvasTexture(c); t.colorSpace = SRGBColorSpace; return t;
+}
 function shadowTexture() {
   const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d")!;
   const gr = g.createRadialGradient(64, 64, 10, 64, 64, 64); gr.addColorStop(0, "rgba(0,0,0,.55)"); gr.addColorStop(1, "rgba(0,0,0,0)");
@@ -187,11 +205,13 @@ void main(){
   float pool = 0.0;
   for (int i = 0; i < 6; i++) { vec3 d = vW - uArts[i]; ${floor ? "d.y = 0.0;" : "d.y *= 0.7;"} pool += 0.35 * uHov[i] * exp(-dot(d, d) * 0.45); }
   vec3 dg = vW - uGlow; float glow = exp(-dot(dg, dg) * 0.11) * 0.08;
-  vec3 lin = uBase * (L + pool + glow);
-  vec3 c = pow(1.0 - exp(-lin * uExpo), vec3(1.0 / 2.2));
-  c = mix(uBase * vShade * 0.95, c, uMix);
-  c *= mix(1.0, 0.9, smoothstep(8.0, 34.0, length(vW - uCam)));
-  c += (hash(gl_FragCoord.xy + fract(uTime)) - 0.5) * 0.012;
+  // gallery white: the bake only shades the coves and corners a touch; everything at or above the white point is paper white
+  float t = (L + pool + glow) / uExpo;
+  float d = clamp(1.0 - t, 0.0, 1.0);
+  vec3 c = uBase * (1.0 - ${floor ? "0.2" : "0.16"} * d * (2.0 - d));
+  c = mix(uBase * vShade, c, uMix);
+  c *= mix(1.0, 0.975, smoothstep(10.0, 38.0, length(vW - uCam)));
+  c += (hash(gl_FragCoord.xy + fract(uTime)) - 0.5) * 0.004;
   ${floor ? "float edge = smoothstep(0.55, 1.0, abs(vS)); gl_FragColor = vec4(c, 0.86 - edge * 0.08);" : "gl_FragColor = vec4(c, 1.0);"}
 }`;
 
@@ -250,7 +270,7 @@ export function mount({ canvas, works, endLogo, baked, theme = { serif: "Gloock,
   const lmMix = { value: 0 }, lmLoader = new TextureLoader(), lmSuffix = (mobile ? "-m.webp" : ".webp") + (baked?.ver ? `?v=${baked.ver}` : "");
   const bakedMat = (floor: boolean, url: string) => {
     const m = new ShaderMaterial({
-      uniforms: { ...uniforms, uBase: floor ? floorU.uBase : uniforms.uBase, uLM: { value: null as Texture | null }, uLMax: { value: baked!.lmax }, uMix: lmMix, uExpo: { value: baked!.expo ?? 1.55 } },
+      uniforms: { ...uniforms, uBase: { value: floor ? new Vector3(0.975, 0.972, 0.965) : new Vector3(1.0, 0.998, 0.992) }, uLM: { value: null as Texture | null }, uLMax: { value: baked!.lmax }, uMix: lmMix, uExpo: { value: baked!.expo ?? 1.55 } },
       vertexShader: VERT_B, fragmentShader: BAKED_FRAG(floor), side: DoubleSide, transparent: floor, depthWrite: !floor,
     });
     lmLoader.load(url + lmSuffix, (t) => { t.colorSpace = NoColorSpace; t.anisotropy = 4; m.uniforms.uLM.value = t; m.needsUpdate = true; lmLeft--; });
@@ -284,6 +304,7 @@ export function mount({ canvas, works, endLogo, baked, theme = { serif: "Gloock,
   const artRoot = new Group(), mirror = new Group(); mirror.scale.y = -1; scene.add(artRoot, mirror);
   const pmrem = new PMREMGenerator(renderer), envTex = baked ? pmrem.fromScene(new RoomEnvironment(), 0.04).texture : null;
   const frameMat = baked ? new MeshStandardMaterial({ color: 0x1b1916, roughness: 0.36, metalness: 0.2, envMap: envTex, envMapIntensity: 0.6 }) : null;
+  const plaqueShadow = baked ? frameShadow(0.27, 0.09) : null;
   const shadowT = shadowTexture(), maxAniso = renderer.capabilities.getMaxAnisotropy();
   const bmp = typeof createImageBitmap === "function" ? new ImageBitmapLoader().setOptions({ imageOrientation: "flipY", premultiplyAlpha: "none" }) : null;
   const plain = new TextureLoader();
@@ -302,7 +323,14 @@ export function mount({ canvas, works, endLogo, baked, theme = { serif: "Gloock,
     const normal = L.clone().multiplyScalar(-side);
     const g = new Group(); g.position.copy(base); g.lookAt(base.clone().add(normal));
     const sh = new Mesh(new PlaneGeometry(w.w + 0.7, w.h + 0.7), new MeshBasicMaterial({ map: shadowT, transparent: true, opacity: 0.28, depthWrite: false, color: 0x000000 }));
-    sh.position.set(0.04, -0.09, 0.004); if (!baked) g.add(sh); // with baked light the real contact shadow is already on the wall
+    sh.position.set(0.04, -0.09, 0.004);
+    if (!baked) g.add(sh);
+    else {
+      const cs = new Mesh(new PlaneGeometry(w.w + 0.09 + SH_PAD * 2, w.h + 0.09 + SH_PAD * 2), new MeshBasicMaterial({ map: frameShadow(w.w, w.h), transparent: true, depthWrite: false }));
+      cs.position.z = 0.003; cs.renderOrder = 2; g.add(cs);
+      const ps = new Mesh(new PlaneGeometry(0.36 + SH_PAD * 2, 0.18 + SH_PAD * 2), new MeshBasicMaterial({ map: plaqueShadow, transparent: true, depthWrite: false }));
+      ps.position.set(w.w / 2 + 0.34, -w.h / 2 + 0.09, 0.002); ps.renderOrder = 2; g.add(ps);
+    }
     const frame = frameMat ? new Mesh(frameGeometry(w.w, w.h), frameMat)
       : new Mesh(new BoxGeometry(w.w + 0.09, w.h + 0.09, 0.05), new MeshBasicMaterial({ color: 0x1f1c18, side: DoubleSide }));
     if (!frameMat) frame.position.z = 0.03; g.add(frame);
@@ -332,7 +360,11 @@ export function mount({ canvas, works, endLogo, baked, theme = { serif: "Gloock,
     const lm = new MeshBasicMaterial({ transparent: !endLogo.framed, opacity: 0, depthWrite: !!endLogo.framed, side: DoubleSide });
     const lp = new Mesh(new PlaneGeometry(wL, hL), lm);
     lp.position.copy(pE).addScaledVector(tE, endLogo.framed ? -0.058 : -0.02).setY(1.75); lp.lookAt(lp.position.clone().sub(tE)); lp.renderOrder = 5;
-    if (endLogo.framed && frameMat) { const fr = new Mesh(frameGeometry(wL, hL), frameMat); fr.position.z = -0.058; lp.add(fr); }
+    if (endLogo.framed && frameMat) {
+      const fr = new Mesh(frameGeometry(wL, hL), frameMat); fr.position.z = -0.058; lp.add(fr);
+      const cs = new Mesh(new PlaneGeometry(wL + 0.09 + SH_PAD * 2, hL + 0.09 + SH_PAD * 2), new MeshBasicMaterial({ map: frameShadow(wL, hL), transparent: true, depthWrite: false }));
+      cs.position.z = -0.055; cs.renderOrder = 2; lp.add(cs);
+    }
     scene.add(lp); const lr = lp.clone(); mirror.add(lr);
     plain.load(endLogo.src, (t) => { t.colorSpace = SRGBColorSpace; t.anisotropy = maxAniso; lm.map = t; lm.opacity = endLogo.framed ? 1 : 0.92; lm.needsUpdate = true; });
   }
