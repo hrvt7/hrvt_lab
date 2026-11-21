@@ -1,10 +1,46 @@
-# HRVT — fotók
+# HRVT — SaaS Motion Design
 
-> A HRVT saját fotóportfóliója: autók és pályanapok, épületek, természet és részletek. A főoldalon egy görgethető 3D fotóalagút és egy kontaktlap mutatja a képeket.
+> HRVT is a one-person motion design studio (Ádám, based in Hungary, working remotely worldwide) that makes high-end product videos for SaaS companies: 30–60 second product explainers, feature and UI animation videos, launch and announcement videos, and social/ad cutdowns.
 
-## Kapcsolat
-- E-mail: hrvtadam.7@icloud.com
-- Telefon: +36 30 525 2336
+## Services
+- 30–60s Product Explainer Videos
+- Feature & UI Animation Videos
+- Launch & Announcement Videos
+- Social & Ad Cutdowns (from the main video)
 
-## Oldalak
-- [Fotók](https://hrvt.vercel.app/)
+## Who it is for
+Early-stage and growth-stage SaaS companies, founders and marketing teams whose product is powerful but hard to explain in plain screenshots: complex workflows, AI features, dashboards, multi-step processes.
+
+## Pricing (USD)
+- 30-second Feature / Explainer Video: starting from $2,800
+- 60-second Product Story Video: starting from $5,500
+- Social Cutdown Pack (3–5 shorter versions): from $900
+Final price depends on complexity, number of scenes and revision rounds. Every project starts with a clear fixed quote.
+
+## Process
+1. Discovery call — product, goals, key messages
+2. Concept & script direction — structure and visual approach
+3. Design & animation — full motion design with regular check-ins
+4. Delivery — final video, social cutdowns, source files if needed
+Typical turnaround: 10–18 days depending on complexity.
+
+## Selected work
+- Orlo — 30s scheduling product video: https://hrvt.vercel.app/motion/orlo.mp4
+- Mirra — 30s AI support inbox explainer: https://hrvt.vercel.app/motion/mirra.mp4
+- Halden — 30s runway forecasting product video: https://hrvt.vercel.app/motion/halden.mp4
+
+## FAQ
+- Do you write the script? I can help refine the message and structure. Most clients come with core points, and we shape it together.
+- Can you match our existing brand? Yes. I adapt to your visual identity, colors, and tone.
+- What do I need to provide? Product access or recordings, key benefits, brand guidelines (if you have them), and any existing assets.
+- Do you offer revisions? Yes. Every package includes structured revision rounds.
+- Can you also do shorter social versions? Yes, most clients order a main video + cutdowns for LinkedIn, X, and ads.
+
+## Contact
+- Email: hrvtadam.7@icloud.com
+- Phone / WhatsApp: +36 30 525 2336 (https://wa.me/36305252336)
+- Instagram: https://www.instagram.com/hrvt.7/
+
+## Pages
+- [SaaS Motion Design](https://hrvt.vercel.app/)
+- [Photography](https://hrvt.vercel.app/foto)

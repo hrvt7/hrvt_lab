@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@fontsource-variable/anybody": "^5.3.0",
     "@fontsource-variable/archivo": "^5.3.0",
     "@fontsource-variable/bodoni-moda": "^5.3.0",
     "@fontsource-variable/bricolage-grotesque": "^5.3.0",
@@ -24,6 +25,7 @@
     "@fontsource-variable/league-gothic": "^5.3.0",
     "@fontsource-variable/lexend-giga": "^5.3.0",
     "@fontsource-variable/manrope": "^5.3.0",
+    "@fontsource-variable/martian-mono": "^5.3.0",
     "@fontsource-variable/newsreader": "^5.3.0",
     "@fontsource-variable/onest": "^5.3.1",
     "@fontsource-variable/outfit": "^5.3.0",
