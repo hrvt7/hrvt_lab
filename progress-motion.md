@@ -1,11 +1,11 @@
 # Design loop — motion oldal
 | Piece | Brief | System | Craft | Round |
 |---|---|---|---|---|
-| Desktop hero | FAIL | FAIL | FAIL | 1 (javítva, 2. kör nem futott) |
-| Desktop szekciók + CTA | FAIL | FAIL | FAIL | 1 (javítva, 2. kör nem futott) |
-| Mobil | FAIL | FAIL | FAIL | 1 (javítva, 2. kör nem futott) |
+| Desktop hero | PASS | FAIL | FAIL | 3 |
+| Desktop szekciók + CTA | PASS | FAIL | FAIL | 3 |
+| Mobil | PASS | FAIL | FAIL | 3 |
 
 ## Gap history
-- Hero r1: "drag the playhead" felirat (az oldal magyarázza magát); a monitor kilóg a jobb margón; piros REC + színes klipszegély = több akcentus; két eltérő időkód.
-- Szekciók r1: árazás címe ellentmond az áraknak, üres fehér sáv; átlátszó nav alatt szellemszöveg; munkák felirata a sáv alatt; üres képernyők; %-ok a renderlistán.
-- Mobil r1: hero ghost keretek ütköznek a gombbal/felirattal; GYIK kérdései M1–M5 mögé rejtve; 38px-es nav gomb; folyamatjelző vonal áthúzza a szöveget.
+- r1: "drag the playhead" felirat; monitor kilóg; több akcentus; átlátszó nav; árazás címe ellentmond; mobil GYIK rejtve.
+- r2: mobil GYIK csak 1 kérdés (Tailwind hidden !important); árazás rácsvonalai a szövegen; színes csempék a mockban; halvány folyamat-lépések.
+- r3 (utána javítva: időkód mm:ss, fogantyú a klipcímke alól, záró cím kisebb, munka-számláló kontraszt): munkavideók súlya mobilon; renderlista "Rendering" állapota; fit és why ugyanaz a lista-minta; GYIK mint kártyasor; több CTA egy képernyőn.

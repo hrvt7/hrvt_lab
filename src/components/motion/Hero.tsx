@@ -92,7 +92,7 @@ export function Hero() {
         uniforms: { uTex: tex, uSize: { value: size }, uR: { value: 0.42 }, uMode: { value: mode }, uA: { value: a }, uCol: { value: new Color(col) } } }));
       m.position.z = z; m.scale.setScalar(s); m.renderOrder = mode === 0 ? 5 : 1; rig.add(m); return m;
     };
-    const glow = card(2, 0x000000, 0.55, -0.12, 1.5), g2 = card(1, 0xf8dd4a, 0.5, -1.1, 1), g1 = card(1, 0xf1efe9, 0.55, -0.55, 1), screen = card(0, 0, 1, 0, 1);
+    const glow = card(2, 0x000000, 0.55, -0.12, 1.5), g2 = card(1, 0xf8dd4a, mobile ? 0 : 0.5, -1.1, 1), g1 = card(1, 0xf1efe9, mobile ? 0 : 0.55, -0.55, 1), screen = card(0, 0, 1, 0, 1);
 
     // Layout: the monitor sits exactly where the DOM slot is, whatever the breakpoint.
     let W = 1, H = 1, base = 1, bx = 0, by = 0;
@@ -179,14 +179,14 @@ export function Hero() {
           </div>
         </div>
         <div className="hero-view">
-          <div className="hud"><b className="rec" aria-hidden /><span ref={hud}>Orlo</span><span ref={hudT} className="mono">00:00:00</span></div>
+          <div className="hud"><b className="rec" aria-hidden /><span ref={hud}>Orlo</span><span ref={hudT} className="mono">00:00</span></div>
           <div className="slot" ref={slot}><img src="/motion/reel.webp" alt="Frame from the Orlo product video" width={960} height={540} /></div>
         </div>
       </div>
       <div className="dock">
         <div className="dock-side" aria-hidden><span>TC</span><span>V1</span><span>A1</span></div>
         <div className="dock-tl" ref={dock}>
-          <div className="ruler" aria-hidden>{Array.from({ length: 10 }, (_, i) => <span key={i} style={{ left: `${(i / 9) * 100}%` }}>{tc(i * 10).slice(0, 5)}</span>)}</div>
+          <div className="ruler" aria-hidden>{Array.from({ length: 10 }, (_, i) => <span key={i} style={{ left: `${(i / 9) * 100}%` }}>{tc(i * 10)}</span>)}</div>
           <div className="trk trk-v">
             {WORK.map((w) => (
               <div key={w.id} className="clip" style={{ ["--c" as string]: w.acc, backgroundImage: `url(/motion/${w.id}-strip.webp)` }}><span>{w.name}</span><i>{w.len}</i></div>
@@ -196,7 +196,7 @@ export function Hero() {
             {Array.from({ length: 150 }, (_, i) => { const a = 0.18 + 0.82 * Math.abs(Math.sin(i * 0.37) * Math.sin(i * 0.11 + 1) * Math.cos(i * 0.05)); return <i key={i} style={{ transform: `scaleY(${a.toFixed(2)})` }} />; })}
           </div>
           <div className="ph" ref={ph} role="slider" tabIndex={0} aria-label="Scrub the reel" aria-valuemin={0} aria-valuemax={TOTAL} aria-valuenow={0}>
-            <span className="ph-flag mono" ref={flag}>00:00:00</span>
+            <span className="ph-flag mono" ref={flag}>00:00</span>
           </div>
         </div>
       </div>

@@ -124,7 +124,7 @@ export function Site() {
 
     // pricing: a playhead follows the cursor across the three clips
     const pt = el.querySelector<HTMLElement>(".price-tl")!, ptc = pt.querySelector<HTMLElement>(".price-ph span")!;
-    const pm = (e: PointerEvent) => { const r = pt.getBoundingClientRect(), x = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)); pt.style.setProperty("--mx", x.toFixed(4)); ptc.textContent = tc(x * 60).slice(0, 5); };
+    const pm = (e: PointerEvent) => { const r = pt.getBoundingClientRect(), x = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)); pt.style.setProperty("--mx", x.toFixed(4)); ptc.textContent = tc(x * 60); };
     pt.addEventListener("pointermove", pm);
 
     return () => { off(); ctx?.revert(); vio.disconnect(); removeEventListener("resize", onResize); pt.removeEventListener("pointermove", pm); };
@@ -143,7 +143,7 @@ export function Site() {
         <div className="nav-links">
           <a href="#work">Work</a><a href="#services">Services</a><a href="#process">Process</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a>
         </div>
-        <span className="nav-tc mono" aria-hidden>00:00:00</span>
+        <span className="nav-tc mono" aria-hidden>00:00</span>
         <a href={CALL} className="nav-cta" data-track="call_nav">Book a call</a>
       </nav>
 
@@ -161,7 +161,7 @@ export function Site() {
               <li className="layer" key={s.k} data-in style={{ ["--i" as string]: i }}>
                 <span className="layer-n mono">L{i + 1}</span>
                 <h3 className="layer-name">{s.name}{"note" in s && <small> ({s.note})</small>}</h3>
-                <div className="layer-bar" aria-hidden><div className={`loop loop-${s.k}`}><i /><i /><i /><i /></div></div>
+                <div className="layer-bar" aria-hidden data-l={["problem → solution → result", "one interaction, in focus", "the launch moment", "16:9 → 1:1 → 9:16"][i]}><div className={`loop loop-${s.k}`}><i /><i /><i /><i /></div></div>
               </li>
             ))}
           </ol>
@@ -262,6 +262,7 @@ export function Site() {
               </article>
             ))}
           </div>
+          <p className="price-turn" data-fade><b>Typical turnaround: 10–18 days</b> depending on complexity.</p>
           <p className="price-note" data-fade>Final price depends on complexity, number of scenes, and revision rounds. <b>Every project starts with a clear fixed quote.</b></p>
         </section>
 
@@ -277,7 +278,7 @@ export function Site() {
             ))}
           </div>
           {FAQ.map(([q, a], i) => (
-            <div key={q} role="tabpanel" id={`fa${i}`} aria-labelledby={`fq${i}`} hidden={faq !== i} className="note">
+            <div key={q} role="tabpanel" id={`fa${i}`} aria-labelledby={`fq${i}`} className={`note${faq === i ? " on" : ""}`}>
               <span className="mono">Marker {i + 1} of {FAQ.length}</span><h3>{q}</h3><p>{a}</p>
             </div>
           ))}
@@ -290,7 +291,7 @@ export function Site() {
           <p className="lede">Let’s create a video that clearly shows what your product does — and why it matters.</p>
           <a className="btn btn-main btn-big" href={DISCOVERY} data-track="call_end"><span>Book a free discovery call</span><b aria-hidden>→</b></a>
           <a className="btn btn-ghost btn-big" href={WHATSAPP} target="_blank" rel="noopener" data-track="whatsapp"><span>Message me on WhatsApp</span></a>
-          <p className="end-mail">Or email me at <a href={`mailto:${EMAIL}`} data-track="email">{EMAIL}</a> · <a href={`tel:${PHONE_TEL}`} data-track="call_phone">{PHONE}</a></p>
+          <p className="end-mail">Or email me at <a href={`mailto:${EMAIL}`} data-track="email">{EMAIL}</a><span className="end-sep"> · </span><a href={`tel:${PHONE_TEL}`} data-track="call_phone">{PHONE}</a></p>
         </section>
       </main>
 

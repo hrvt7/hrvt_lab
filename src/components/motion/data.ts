@@ -68,6 +68,6 @@ export const SECTIONS = [
 ] as const;
 
 export const tc = (s: number) => {
-  const f = Math.floor((s % 1) * 30), ss = Math.floor(s) % 60, m = Math.floor(s / 60);
-  return `${String(m).padStart(2, "0")}:${String(ss).padStart(2, "0")}:${String(f).padStart(2, "0")}`;
+  const ss = Math.floor(s) % 60, m = Math.floor(s / 60);
+  return `${String(m).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
 };
