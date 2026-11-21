@@ -4,6 +4,7 @@ import {
   Color, Group, LinearFilter, LinearSRGBColorSpace, Mesh, NoColorSpace, OrthographicCamera, PerspectiveCamera, PlaneGeometry, Scene, ShaderMaterial,
   TextureLoader, Vector2, Vector4, VideoTexture, WebGLRenderer, type Texture,
 } from "three";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { CALL, WORK, tc } from "./data";
 
 const TOTAL = 90, CLIP = 30, FOV = 32, CAM_Z = 6;
@@ -51,7 +52,7 @@ void main(){
     vec3 c = texture2D(uTex, vUv).rgb;
     c += 0.05 * smoothstep(0.75, -0.3, vUv.x + (1.0 - vUv.y) * 0.7);
     c = mix(c, vec3(1.0), 0.16 * smoothstep(aa * 2.5, 0.0, abs(d + aa)));
-    gl_FragColor = vec4(c, inside);
+    gl_FragColor = vec4(c, inside * uA);
   } else if (uMode < 1.5) {
     float line = smoothstep(aa * 1.6, 0.0, abs(d + aa * 1.5));
     gl_FragColor = vec4(uCol, (line * 0.9 + inside * 0.05) * uA);
@@ -70,8 +71,9 @@ export function Hero() {
     const el = root.current!, cv = canvas.current!, v = video.current!, dk = dock.current!;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches, mobile = matchMedia("(max-width: 820px)").matches;
     let renderer: WebGLRenderer;
+    const mo = el.closest<HTMLElement>(".mo")!;
     try { renderer = new WebGLRenderer({ canvas: cv, antialias: true, alpha: false, powerPreference: "high-performance" }); }
-    catch { el.classList.add("no-gl"); return; }
+    catch { el.classList.add("no-gl"); mo.classList.add("intro-go", "intro-done"); return; }
     renderer.outputColorSpace = LinearSRGBColorSpace;
     renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.5 : 2));
 
@@ -137,6 +139,46 @@ export function Hero() {
     const onMouse = (e: PointerEvent) => { if (e.pointerType === "touch") return; const r = el.getBoundingClientRect(); mt.set(((e.clientX - r.left) / r.width) * 2 - 1, -(((e.clientY - r.top) / r.height) * 2 - 1)); };
     el.addEventListener("pointermove", onMouse);
 
+    // ---- intro: the page assembles itself in space, then the scroll unlocks ----
+    const ip = { z: 0, x: 0, y: 0, ry: 0, rx: 0, rz: 0, spread: 1, a: 1, bg: 1 };
+    const html = document.documentElement, lw = window as unknown as { __lenis?: { stop(): void; start(): void } };
+    let tl: gsap.core.Timeline | null = null, introRaf = 0, locked = false;
+    const unlock = () => { if (!locked) return; locked = false; html.classList.remove("mo-lock"); lw.__lenis?.start(); mo.classList.add("intro-done"); ScrollTrigger.refresh(); };
+    const skipBtn = mo.querySelector<HTMLElement>(".intro-skip")!, onSkip = () => tl?.progress(1);
+    skipBtn.addEventListener("click", onSkip);
+    if (reduced || location.hash.length > 1) mo.classList.add("intro-go", "intro-done");
+    else {
+      Object.assign(ip, { z: -7, x: 1.1, y: 0.7, ry: -2.6, rx: 0.9, rz: 0.5, spread: 7, a: 0, bg: 0 });
+      locked = true; html.classList.add("mo-lock"); scrollTo(0, 0);
+      introRaf = requestAnimationFrame(() => { introRaf = requestAnimationFrame(() => {
+        lw.__lenis?.stop();
+        const q = (sel: string) => mo.querySelectorAll(sel), R = gsap.utils.random;
+        const logo = mo.querySelector<HTMLElement>(".intro-logo")!, lr = logo.getBoundingClientRect(), nr = mo.querySelector(".nav-logo i")!.getBoundingClientRect();
+        tl = gsap.timeline({ onComplete: unlock })
+          .fromTo(logo, { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.6, ease: "power3.out" }, 0)
+          .to(logo, { x: nr.left + nr.width / 2 - (lr.left + lr.width / 2), y: nr.top + nr.height / 2 - (lr.top + lr.height / 2), scale: nr.width / lr.width, duration: 0.9, ease: "expo.inOut" }, 0.7)
+          .fromTo(q(".nav"), { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "none" }, 1.4)
+          .set(logo, { opacity: 0 }, 1.75)
+          .to(ip, { z: 0, x: 0, y: 0, ry: 0, rx: 0, rz: 0, duration: 2.1, ease: "expo.out" }, 0.9)
+          .to(ip, { a: 1, duration: 0.5, ease: "none" }, 0.9)
+          .to(ip, { spread: 1, duration: 2.7, ease: "expo.out" }, 0.9)
+          .to(ip, { bg: 1, duration: 4, ease: "power2.inOut" }, 1.2)
+          .fromTo(q(".hero-copy .tag"), { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.7 }, 1.7)
+          .fromTo(q(".hero .kwi"), { opacity: 0, "--wd": 0, x: () => R(-140, 140), y: () => R(-90, 170), z: () => R(-1300, -500), rotationX: () => R(-80, 80), rotationY: () => R(-60, 60), transformPerspective: 800 },
+            { opacity: 1, "--wd": 1, x: 0, y: 0, z: 0, rotationX: 0, rotationY: 0, duration: 1.15, ease: "expo.out", stagger: 0.07, clearProps: "transform" }, 1.8)
+          .fromTo(q(".hud"), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "none" }, 3)
+          .fromTo(q(".hero-copy .lede"), { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.9, clearProps: "filter" }, 3.3)
+          .fromTo(q(".hero-copy .btn"), { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)", stagger: 0.12, clearProps: "transform" }, 3.6)
+          .fromTo(q(".dock"), { opacity: 0, yPercent: 100, rotationX: -55, transformPerspective: 1100, transformOrigin: "50% 100%" }, { opacity: 1, yPercent: 0, rotationX: 0, duration: 1.1, clearProps: "transform" }, 3.9)
+          .fromTo(q(".ruler"), { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.9, ease: "power2.inOut", clearProps: "clipPath" }, 4.5)
+          .fromTo(q(".clip"), { scaleX: 0, opacity: 0, transformOrigin: "0% 50%" }, { scaleX: 1, opacity: 1, duration: 0.7, stagger: 0.18, clearProps: "transform" }, 4.6)
+          .fromTo(q(".trk-a"), { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1, ease: "power2.inOut", clearProps: "clipPath" }, 5)
+          .fromTo(ph.current, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "none" }, 5.8)
+          .to(skipBtn, { opacity: 0, duration: 0.3, ease: "none" }, 6.2);
+        mo.classList.add("intro-go");
+      }); });
+    }
+
     let raf = 0, vis = true, t0 = performance.now(), seekBusy = 0;
     const io = new IntersectionObserver(([e]) => { vis = e.isIntersecting; if (!started) { if (vis) start(); return; } if (!vis) v.pause(); else if (!dragging && !reduced) v.play().catch(() => {}); if (vis && !raf) raf = requestAnimationFrame(frame); }, { threshold: 0.05 });
     const frame = (now: number) => {
@@ -147,26 +189,28 @@ export function Hero() {
       mouse.lerp(mt, 1 - Math.exp(-dt * 4)); vel *= Math.exp(-dt * 5);
       const k = Math.max(-1, Math.min(1, vel * 0.25)), tm = now / 1000, idle = reduced ? 0 : 1;
       const turn = mobile ? 0 : -0.2;
-      rig.rotation.y = turn + mouse.x * 0.13 + Math.sin(tm * 0.5) * 0.035 * idle - k * 0.18;
-      rig.rotation.x = -mouse.y * 0.09 + Math.cos(tm * 0.4) * 0.025 * idle;
-      rig.rotation.z = k * 0.02;
-      rig.position.y = by + Math.sin(tm * 0.7) * 0.02 * idle;
-      const sp = (mobile ? 0.45 : 1) * (1 + Math.abs(k) * 1.4);
+      rig.rotation.y = turn + mouse.x * 0.13 + Math.sin(tm * 0.5) * 0.035 * idle - k * 0.18 + ip.ry;
+      rig.rotation.x = -mouse.y * 0.09 + Math.cos(tm * 0.4) * 0.025 * idle + ip.rx;
+      rig.rotation.z = k * 0.02 + ip.rz;
+      rig.position.set(bx + ip.x * base, by + Math.sin(tm * 0.7) * 0.02 * idle + ip.y * base, ip.z * base);
+      const sp = (mobile ? 0.45 : 1) * (1 + Math.abs(k) * 1.4) * ip.spread;
+      screen.material.uniforms.uA.value = ip.a; glow.material.uniforms.uA.value = 0.55 * ip.a; g1.material.uniforms.uA.value = (mobile ? 0 : 0.55) * ip.a; g2.material.uniforms.uA.value = (mobile ? 0 : 0.5) * ip.a;
       const gy = mobile ? -1 : 1; g1.position.set(-0.035 * sp - mouse.x * 0.02, 0.05 * sp * gy, -0.55 * sp); g2.position.set(-0.07 * sp - mouse.x * 0.04, 0.1 * sp * gy, -1.1 * sp);
-      bgU.uTime.value = tm; bgU.uOn.value += ((tex.value === vt ? 1 : 0.6) - bgU.uOn.value) * 0.05;
+      bgU.uTime.value = tm; bgU.uOn.value += ((tex.value === vt ? 1 : 0.6) * ip.bg - bgU.uOn.value) * 0.05;
       bgU.uMouse.value.set(mouse.x * 0.5 + 0.5, mouse.y * 0.5 + 0.5);
       renderer.autoClear = false; renderer.clear(); renderer.render(bgScene, bgCam); renderer.render(scene, cam);
       raf = requestAnimationFrame(frame);
     };
     io.observe(el); raf = requestAnimationFrame(frame); paint(0);
-    void glow; void screen;
-    return () => { cancelAnimationFrame(raf); io.disconnect(); ro.disconnect(); v.pause(); v.removeAttribute("src"); v.load(); renderer.dispose(); geo.dispose(); vt.dispose(); poster.dispose();
+    return () => { cancelAnimationFrame(introRaf); tl?.kill(); html.classList.remove("mo-lock"); skipBtn.removeEventListener("click", onSkip); cancelAnimationFrame(raf); io.disconnect(); ro.disconnect(); v.pause(); v.removeAttribute("src"); v.load(); renderer.dispose(); geo.dispose(); vt.dispose(); poster.dispose();
       dk.removeEventListener("pointerdown", down); dk.removeEventListener("pointermove", move); dk.removeEventListener("pointerup", up); dk.removeEventListener("pointercancel", up); el.removeEventListener("pointermove", onMouse); };
   }, []);
 
   return (
     <header className="hero" id="top" ref={root} data-clip="orlo">
       <canvas ref={canvas} className="hero-gl" aria-hidden />
+      <i className="intro-logo" aria-hidden />
+      <button type="button" className="intro-skip mono">Skip intro</button>
       <video ref={video} muted playsInline loop preload="none" className="hero-src" aria-hidden tabIndex={-1} />
       <div className="hero-in">
         <div className="hero-copy">

@@ -46,6 +46,15 @@
 .mo .nav-cta { display:inline-flex; align-items:center; height:44px; padding:0 1.1rem; border-radius:999px; background:var(--paper); color:var(--ink); font-weight:600; font-size:.88rem; transition:background-color .25s, transform .4s var(--ease); }
 .mo .nav-cta:hover { background:var(--y); } .mo .nav-cta:active { transform:scale(.96); }
 
+/* ---------- intro: the page assembles itself ---------- */
+html.mo-lock, html.mo-lock body { overflow:hidden !important; height:100%; overscroll-behavior:none; }
+.js .mo:not(.intro-go) :is(.nav, .hero-copy, .hud, .dock) { opacity:0; }
+.mo .intro-logo { position:fixed; z-index:70; left:50%; top:50%; width:min(46vw,420px); aspect-ratio:2541/907; margin:calc(min(46vw,420px) * -.1785) 0 0 calc(min(46vw,420px) * -.5); background:var(--y); -webkit-mask:url(/galeria/hrvt.svg) center/contain no-repeat; mask:url(/galeria/hrvt.svg) center/contain no-repeat; opacity:0; pointer-events:none; will-change:transform; }
+.mo .intro-skip { display:none; position:fixed; z-index:70; right:var(--m); top:78px; align-items:center; min-height:44px; padding:0 1rem; border-radius:999px; border:1px solid var(--ln2); background:rgba(14,14,18,.7); color:var(--paper); text-transform:uppercase; letter-spacing:.1em; cursor:pointer; transition:background-color .3s, border-color .3s, transform .4s var(--ease); }
+.js .mo:not(.intro-done) .intro-skip { display:inline-flex; }
+.mo .intro-skip:hover { border-color:var(--paper); background:rgba(241,239,233,.1); } .mo .intro-skip:active { transform:scale(.96); }
+.mo.intro-done .intro-logo { display:none; }
+
 /* ---------- hero ---------- */
 .mo .hero { position:relative; min-height:100svh; display:grid; grid-template-rows:1fr auto; isolation:isolate; }
 .mo .hero-gl { position:absolute; inset:0; width:100%; height:100%; z-index:-1; }

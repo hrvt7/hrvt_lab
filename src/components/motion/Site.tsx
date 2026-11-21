@@ -80,7 +80,7 @@ export function Site() {
         kins.forEach((k) => {
           const ws = k.querySelectorAll(".kwi");
           if (reduced) return void gsap.set(ws, { "--wd": 1, opacity: 1 });
-          const hero = !!k.closest(".hero");
+          const hero = !!k.closest(".hero"); if (hero) return; // the hero heading is assembled by the intro
           gsap.fromTo(ws, { "--wd": 0, opacity: 0 }, { "--wd": 1, opacity: 1, duration: 1.15, ease: "expo.out", stagger: hero ? 0.045 : 0.05, delay: hero ? 0.15 : 0,
             scrollTrigger: hero ? undefined : { trigger: k, start: "top 86%" } });
         });
