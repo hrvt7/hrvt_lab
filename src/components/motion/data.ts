@@ -13,6 +13,13 @@ export const WORK = [
   { id: "halden", name: "Halden", len: "30s", what: "runway forecasting product video", line: "Know your runway.", bg: "#f1ede4", ink: "#161613", acc: "#ff4a1c" },
 ] as const;
 
+/** Vertical 9:16 cuts, 15 s each. */
+export const VERT = [
+  { id: "pace", name: "Pace", what: "AI running coach", line: "Your coach, in your pocket.", acc: "#ff5a3c" },
+  { id: "shelf", name: "Shelf", what: "inventory forecasting", line: "Never sell out by surprise.", acc: "#ff2d1a" },
+  { id: "stamp", name: "Stamp", what: "invoicing app", line: "Get paid, not ghosted.", acc: "#2b45ff" },
+] as const;
+
 export const SERVICES = [
   { k: "story", name: "30–60s Product Explainer Videos" },
   { k: "ui", name: "Feature & UI Animation Videos" },

@@ -29,6 +29,9 @@ Typical turnaround: 10–18 days depending on complexity.
 - Orlo — 30s scheduling product video: https://hrvt.vercel.app/motion/orlo.mp4
 - Mirra — 30s AI support inbox explainer: https://hrvt.vercel.app/motion/mirra.mp4
 - Halden — 30s runway forecasting product video: https://hrvt.vercel.app/motion/halden.mp4
+- Pace — 15s vertical (9:16) video for an AI running coach: https://hrvt.vercel.app/motion/pace.mp4
+- Shelf — 15s vertical video for an inventory forecasting tool: https://hrvt.vercel.app/motion/shelf.mp4
+- Stamp — 15s vertical video for an invoicing app: https://hrvt.vercel.app/motion/stamp.mp4
 
 ## FAQ
 - Do you write the script? I can help refine the message and structure. Most clients come with core points, and we shape it together.

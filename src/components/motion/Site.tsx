@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap, ScrollTrigger, onReady, prefersReduced } from "@/lib/gsap";
 import { Hero } from "./Hero";
-import { CALL, DISCOVERY, EMAIL, INSTAGRAM, PHONE, PHONE_TEL, WHATSAPP, FAQ, GET, PRICES, SECTIONS, SERVICES, STEPS, WHO, WHY, WORK, tc } from "./data";
+import { CALL, DISCOVERY, EMAIL, INSTAGRAM, PHONE, PHONE_TEL, WHATSAPP, VERT, FAQ, GET, PRICES, SECTIONS, SERVICES, STEPS, WHO, WHY, WORK, tc } from "./data";
 
 const KF = [150, 450, 750, 1050], KY = [300, 220, 128, 60];
 const CURVE = "M0 318C60 318 90 300 150 300C260 300 330 232 450 220C570 208 640 140 750 128C870 115 930 60 1050 60C1110 60 1150 48 1200 40";
@@ -46,10 +46,10 @@ export function Site() {
     addEventListener("resize", onResize);
 
     // work videos: play only while on screen
-    const vids = [...el.querySelectorAll<HTMLVideoElement>(".work video")];
+    const vids = [...el.querySelectorAll<HTMLVideoElement>(".work video, .vert video")];
     const vio = new IntersectionObserver((es) => es.forEach((e) => {
       const v = e.target as HTMLVideoElement;
-      if (e.isIntersecting) { if (!v.src) v.src = `/motion/${v.dataset.id}${mobile ? "-m" : ""}.mp4`; if (!reduced || !v.muted) v.play().catch(() => {}); }
+      if (e.isIntersecting) { if (!v.src) v.src = `/motion/${v.dataset.id}${mobile && !v.dataset.full ? "-m" : ""}.mp4`; if (!reduced || !v.muted) v.play().catch(() => {}); }
       else { v.pause(); if (!v.muted) { v.muted = true; setSound(null); } }
     }), { threshold: 0.35 });
     vids.forEach((v) => vio.observe(v));
@@ -97,6 +97,14 @@ export function Site() {
           gsap.fromTo(w.querySelector(".work-name"), { xPercent: -6 }, { xPercent: 4, ease: "none", scrollTrigger: { trigger: w, start: "top bottom", end: "bottom top", scrub: 0.6 } });
         });
 
+        // vertical cuts: the three phones rise into a fanned row; the 15 s strip under them fills as they arrive
+        const vert = el.querySelector<HTMLElement>(".vert");
+        if (vert && !reduced) {
+          const ph = vert.querySelectorAll(".phone");
+          gsap.fromTo(ph, { yPercent: 28, rotate: (i: number) => [-9, 0, 9][i], opacity: 0 }, { yPercent: 0, rotate: (i: number) => (mobile ? 0 : [-4, 0, 4][i]), opacity: 1, ease: "none", stagger: 0.08,
+            scrollTrigger: { trigger: vert, start: "top 85%", end: "top 25%", scrub: 0.6 } });
+        }
+
         // process: the scroll draws the curve and carries the value across its keyframes
         const pr = el.querySelector<HTMLElement>(".process")!, path = pr.querySelector<SVGPathElement>(".curve")!, dot = pr.querySelector<HTMLElement>(".pdot")!, graph = pr.querySelector<SVGSVGElement>(".graph")!;
         const len = path.getTotalLength(), stepEls = [...pr.querySelectorAll<HTMLElement>(".step")], kfs = [...pr.querySelectorAll<HTMLElement>(".kfs i")];
@@ -131,7 +139,7 @@ export function Site() {
   }, []);
 
   const toggleSound = (id: string) => {
-    const vids = [...root.current!.querySelectorAll<HTMLVideoElement>(".work video")];
+    const vids = [...root.current!.querySelectorAll<HTMLVideoElement>(".work video, .vert video")];
     vids.forEach((v) => { const me = v.dataset.id === id, on = me && sound !== id; v.muted = !on; if (on) { v.currentTime = 0; v.play().catch(() => {}); } });
     setSound(sound === id ? null : id);
   };
@@ -215,6 +223,30 @@ export function Site() {
               </div>
             </section>
           ))}
+          <section className="vert" aria-labelledby="vert-h">
+            <div className="vert-head">
+              <p className="tag"><i />Vertical cuts · 9:16</p>
+              <h2 className="h2 kin" id="vert-h">Fifteen seconds, made for the <em>feed.</em></h2>
+            </div>
+            <div className="phones">
+              {VERT.map((v, i) => (
+                <figure className="phone" key={v.id} style={{ ["--acc" as string]: v.acc }}>
+                  <div className="phone-body">
+                    <video data-id={v.id} data-full="1" muted loop playsInline preload="none" poster={`/motion/${v.id}.webp`} aria-label={`${v.name} — 15s vertical video for an ${v.what}`} />
+                    <span className="phone-tc mono" aria-hidden>00:15</span>
+                  </div>
+                  <figcaption>
+                    <span className="mono">V{i + 1} / 03</span>
+                    <b>{v.name}</b>
+                    <span className="phone-what">15s {v.what}</span>
+                    <button type="button" className="snd snd-s" onClick={() => toggleSound(v.id)} aria-pressed={sound === v.id} aria-label={`${sound === v.id ? "Mute" : "Play with sound"}: ${v.name}`}>
+                      <i aria-hidden />{sound === v.id ? "Mute" : "Sound"}
+                    </button>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </section>
         </div>
 
         {/* 05 — How it works: four keyframes on one easing curve */}

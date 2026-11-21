@@ -1,5 +1,5 @@
 import { Site } from "@/components/motion/Site";
-import { FAQ, PRICES, EMAIL, PHONE_TEL, INSTAGRAM, WORK, STEPS } from "@/components/motion/data";
+import { FAQ, PRICES, EMAIL, PHONE_TEL, INSTAGRAM, WORK, VERT, STEPS } from "@/components/motion/data";
 
 const SITE = "https://hrvt.vercel.app";
 const LD = [
@@ -12,6 +12,8 @@ const LD = [
   { "@context": "https://schema.org", "@type": "WebSite", name: "HRVT", url: `${SITE}/`, inLanguage: "en" },
   ...WORK.map((w) => ({ "@context": "https://schema.org", "@type": "VideoObject", name: `${w.name} — ${w.len} ${w.what}`, description: `${w.name}: ${w.line} A ${w.len} ${w.what}, motion design by HRVT.`,
     thumbnailUrl: `${SITE}/motion/${w.id}.webp`, contentUrl: `${SITE}/motion/${w.id}.mp4`, uploadDate: "2026-11-21", duration: "PT30S", creator: { "@type": "Organization", name: "HRVT" } })),
+  ...VERT.map((v) => ({ "@context": "https://schema.org", "@type": "VideoObject", name: `${v.name} — 15s vertical video for an ${v.what}`, description: `${v.name}: ${v.line} A 15-second 9:16 product video, motion design by HRVT.`,
+    thumbnailUrl: `${SITE}/motion/${v.id}.webp`, contentUrl: `${SITE}/motion/${v.id}.mp4`, uploadDate: "2026-11-21", duration: "PT15S", creator: { "@type": "Organization", name: "HRVT" } })),
   { "@context": "https://schema.org", "@type": "HowTo", name: "How a SaaS product video is made with HRVT", totalTime: "P18D", step: STEPS.map(([n, t]) => ({ "@type": "HowToStep", name: n, text: t })) },
   { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: FAQ.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) },
 ];
