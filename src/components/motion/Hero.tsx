@@ -114,7 +114,7 @@ export function Hero() {
     v.addEventListener("playing", onPlaying); v.addEventListener("seeked", () => { if (!playing && v.readyState >= 2) { tex.value = vt; } });
     const paint = (t: number) => {
       const p = (t / TOTAL) * 100;
-      ph.current!.style.transform = `translateX(${(p / 100) * dk.clientWidth}px)`;
+      const px = (p / 100) * dk.clientWidth; ph.current!.style.transform = `translateX(${px}px)`; ph.current!.style.setProperty("--px", `${px}px`); ph.current!.style.setProperty("--dw", `${dk.clientWidth}px`);
       const i = Math.min(2, Math.floor(t / CLIP));
       flag.current!.textContent = tc(t); hudT.current!.textContent = tc(t % CLIP);
       if (hud.current!.textContent !== WORK[i].name) { hud.current!.textContent = WORK[i].name; el.dataset.clip = WORK[i].id; }
@@ -151,8 +151,8 @@ export function Hero() {
       rig.rotation.x = -mouse.y * 0.09 + Math.cos(tm * 0.4) * 0.025 * idle;
       rig.rotation.z = k * 0.02;
       rig.position.y = by + Math.sin(tm * 0.7) * 0.02 * idle;
-      const sp = 1 + Math.abs(k) * 1.4;
-      g1.position.set(-0.035 * sp - mouse.x * 0.02, 0.05 * sp, -0.55 * sp); g2.position.set(-0.07 * sp - mouse.x * 0.04, 0.1 * sp, -1.1 * sp);
+      const sp = (mobile ? 0.45 : 1) * (1 + Math.abs(k) * 1.4);
+      const gy = mobile ? -1 : 1; g1.position.set(-0.035 * sp - mouse.x * 0.02, 0.05 * sp * gy, -0.55 * sp); g2.position.set(-0.07 * sp - mouse.x * 0.04, 0.1 * sp * gy, -1.1 * sp);
       bgU.uTime.value = tm; bgU.uOn.value += ((tex.value === vt ? 1 : 0.6) - bgU.uOn.value) * 0.05;
       bgU.uMouse.value.set(mouse.x * 0.5 + 0.5, mouse.y * 0.5 + 0.5);
       renderer.autoClear = false; renderer.clear(); renderer.render(bgScene, bgCam); renderer.render(scene, cam);
@@ -198,7 +198,6 @@ export function Hero() {
           <div className="ph" ref={ph} role="slider" tabIndex={0} aria-label="Scrub the reel" aria-valuemin={0} aria-valuemax={TOTAL} aria-valuenow={0}>
             <span className="ph-flag mono" ref={flag}>00:00:00</span>
           </div>
-          <p className="hint" aria-hidden><b>←</b> drag the playhead <b>→</b></p>
         </div>
       </div>
     </header>

@@ -115,7 +115,7 @@ export function Site() {
           if (reduced) { j.style.setProperty("--jp", "1"); return done(); }
           ScrollTrigger.create({ trigger: j, start: "top 86%", once: true, onEnter: () => {
             j.classList.add("run");
-            gsap.to(o, { v: 100, duration: 1.1 + i * 0.12, delay: i * 0.08, ease: "power2.inOut", onUpdate: () => { pct.textContent = `${Math.round(o.v)}%`; j.style.setProperty("--jp", (o.v / 100).toFixed(3)); }, onComplete: done });
+            gsap.to(o, { v: 100, duration: 1.1 + i * 0.12, delay: i * 0.08, ease: "power2.inOut", onUpdate: () => { pct.textContent = "Rendering"; j.style.setProperty("--jp", (o.v / 100).toFixed(3)); }, onComplete: done });
           } });
         });
       }, el);
@@ -248,13 +248,13 @@ export function Site() {
 
         {/* 07 — Pricing: clips on a 60-second timeline, drawn to scale */}
         <section className="sec pricing" id="pricing">
-          <div className="sec-head"><p className="tag"><i />Pricing</p><h2 className="h2 kin">Priced by the <em>second.</em> Quoted up front.</h2></div>
+          <div className="sec-head"><p className="tag"><i />Pricing</p><h2 className="h2 kin">Clear starting prices. Fixed quote up <em>front.</em></h2></div>
           <div className="price-tl">
             <div className="price-ruler mono" aria-hidden>{[0, 15, 30, 45, 60].map((s) => <span key={s} style={{ left: `${(s / 60) * 100}%` }}>{s}s</span>)}</div>
             <div className="price-ph" aria-hidden><span className="mono">00:00</span></div>
             {PRICES.map((p, i) => (
               <article className="price" key={p.name} data-in style={{ ["--w" as string]: `${(p.span / 60) * 100}%`, ["--i" as string]: i }}>
-                <div className="price-clip" aria-hidden>{Array.from({ length: p.cuts }, (_, k) => <i key={k} />)}</div>
+                <div className="price-clip" aria-hidden>{Array.from({ length: p.cuts }, (_, k) => <i key={k}>{p.cuts > 1 ? `cut ${k + 1}` : `${p.span}s`}</i>)}</div>
                 <div className="price-txt">
                   <h3>{p.name}{"sub" in p && <small> ({p.sub})</small>}</h3>
                   <p><span>{p.from}</span> <b>{p.price}</b></p>
@@ -297,7 +297,7 @@ export function Site() {
       <footer className="foot">
         <p className="foot-name"><b>HRVT</b> — SaaS Motion Design</p>
         <p>High-quality product videos for modern software companies.</p>
-        <p className="foot-links"><a href={INSTAGRAM} target="_blank" rel="noopener" data-track="instagram">Instagram</a><a href={WHATSAPP} target="_blank" rel="noopener" data-track="whatsapp">WhatsApp</a><a href={`mailto:${EMAIL}`} data-track="email">Email</a><a href={`tel:${PHONE_TEL}`}>{PHONE}</a><a href="/foto">Photography</a></p>
+        <p className="foot-links"><a href={INSTAGRAM} target="_blank" rel="noopener" data-track="instagram">Instagram</a><a href={WHATSAPP} target="_blank" rel="noopener" data-track="whatsapp">WhatsApp</a><a href={`mailto:${EMAIL}`} data-track="email">Email</a><a href={`tel:${PHONE_TEL}`}>{PHONE}</a></p>
       </footer>
 
       <div className="scrub">
