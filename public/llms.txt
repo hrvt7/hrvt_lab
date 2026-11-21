@@ -1,6 +1,6 @@
 # HRVT — SaaS Motion Design
 
-> HRVT is a one-person motion design studio (Ádám, based in Hungary, working remotely worldwide) that makes high-end product videos for SaaS companies: 30–60 second product explainers, feature and UI animation videos, launch and announcement videos, and social/ad cutdowns.
+> HRVT is a one-person motion design studio (Ádám, based in Hungary, working remotely worldwide) that makes high-end product videos for SaaS companies: 15–60 second product explainers, feature and UI animation videos, launch and announcement videos, and social/ad cutdowns.
 
 ## Services
 - 30–60s Product Explainer Videos
@@ -26,12 +26,12 @@ Final price depends on complexity, number of scenes and revision rounds. Every p
 Typical turnaround: 10–18 days depending on complexity.
 
 ## Selected work
-- Orlo — 30s scheduling product video: https://hrvt.vercel.app/motion/orlo.mp4
-- Mirra — 30s AI support inbox explainer: https://hrvt.vercel.app/motion/mirra.mp4
-- Halden — 30s runway forecasting product video: https://hrvt.vercel.app/motion/halden.mp4
-- Pace — 15s vertical (9:16) video for an AI running coach: https://hrvt.vercel.app/motion/pace.mp4
-- Shelf — 15s vertical video for an inventory forecasting tool: https://hrvt.vercel.app/motion/shelf.mp4
-- Stamp — 15s vertical video for an invoicing app: https://hrvt.vercel.app/motion/stamp.mp4
+- Orlo — 30s scheduling product video: https://hrvtmotion.com/motion/orlo.mp4
+- Mirra — 30s AI support inbox explainer: https://hrvtmotion.com/motion/mirra.mp4
+- Halden — 30s runway forecasting product video: https://hrvtmotion.com/motion/halden.mp4
+- Pace — 15s vertical (9:16) video for an AI running coach: https://hrvtmotion.com/motion/pace.mp4
+- Shelf — 15s vertical video for an inventory forecasting tool: https://hrvtmotion.com/motion/shelf.mp4
+- Stamp — 15s vertical video for an invoicing app: https://hrvtmotion.com/motion/stamp.mp4
 
 ## FAQ
 - Do you write the script? I can help refine the message and structure. Most clients come with core points, and we shape it together.
@@ -46,5 +46,5 @@ Typical turnaround: 10–18 days depending on complexity.
 - Instagram: https://www.instagram.com/hrvt.7/
 
 ## Pages
-- [SaaS Motion Design](https://hrvt.vercel.app/)
-- [Photography](https://hrvt.vercel.app/foto)
+- [SaaS Motion Design](https://hrvtmotion.com/)
+- [Photography](https://hrvtmotion.com/foto)

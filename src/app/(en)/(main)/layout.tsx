@@ -19,7 +19,6 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   return (
     <>
       <style>{`html{background:#0c0c0f}`}</style>
-      <script dangerouslySetInnerHTML={{ __html: `document.documentElement.lang="en"` }} />
       <Ready />
       <Track />
       {children}

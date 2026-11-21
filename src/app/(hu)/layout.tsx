@@ -2,12 +2,12 @@ import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/lexend-giga";
 import "@fontsource-variable/geist/index.css";
 import "@fontsource-variable/geist-mono/index.css";
-import "./globals.css";
+import "../globals.css";
 import { Motion } from "@/components/Motion";
 import { Cursor } from "@/components/Cursor";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://hrvt.vercel.app"),
+  metadataBase: new URL("https://hrvtmotion.com"),
   title: "Weboldal készítés Szombathely — egyedi weboldal | HRVT",
   description:
     "Egyedi weboldal készítés és honlapkészítés Szombathelyen: design, szöveg, fejlesztés, keresőoptimalizálás és élesítés egy kézben, sablon nélkül.",

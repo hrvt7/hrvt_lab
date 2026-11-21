@@ -2,7 +2,7 @@ import { Foto } from "@/components/foto/Foto";
 import { CENTER, PHOTOS } from "@/lib/photos";
 import { EMAIL, PHONE_TEL } from "@/lib/content";
 
-const SITE = "https://hrvt.vercel.app";
+const SITE = "https://hrvtmotion.com";
 const LD = {
   "@context": "https://schema.org",
   "@type": "ImageGallery",
