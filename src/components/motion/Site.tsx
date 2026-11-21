@@ -257,7 +257,7 @@ export function Site() {
                 <div className="price-clip" aria-hidden>{Array.from({ length: p.cuts }, (_, k) => <i key={k}>{p.cuts > 1 ? `cut ${k + 1}` : `${p.span}s`}</i>)}</div>
                 <div className="price-txt">
                   <h3>{p.name}{"sub" in p && <small> ({p.sub})</small>}</h3>
-                  <p><span>{p.from}</span> <b>{p.price}</b></p>
+                  <p><span>{p.from}</span> <b>{p.price}</b>{"range" in p && <em className="price-range">{p.range}</em>}</p>
                 </div>
               </article>
             ))}

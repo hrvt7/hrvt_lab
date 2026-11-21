@@ -50,9 +50,10 @@ export const WHY = [
 ];
 
 export const PRICES = [
-  { name: "30-second Feature / Explainer Video", from: "Starting from", price: "$2,800", span: 30, cuts: 1 },
-  { name: "60-second Product Story Video", from: "Starting from", price: "$5,500", span: 60, cuts: 1 },
-  { name: "Social Cutdown Pack", sub: "3–5 shorter versions", from: "From", price: "$900", span: 60, cuts: 5 },
+  { name: "15-second Vertical Video", sub: "9:16, for social and ads", from: "Starting from", price: "$400", range: "Typically $400–800", min: 400, max: 800, span: 15, cuts: 1 },
+  { name: "30-second Feature / Teaser Video", from: "Starting from", price: "$700", range: "Typically $700–1,200", min: 700, max: 1200, span: 30, cuts: 1 },
+  { name: "60-second Product Story Video", from: "Starting from", price: "$1,400", min: 1400, span: 60, cuts: 1 },
+  { name: "Social Cutdown Pack", sub: "3–5 shorter versions", from: "From", price: "$300", min: 300, span: 60, cuts: 5 },
 ] as const;
 
 export const FAQ = [

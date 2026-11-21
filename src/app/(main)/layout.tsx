@@ -6,7 +6,7 @@ import { Ready } from "@/components/Ready";
 import { Track } from "@/components/motion/Track";
 
 const T = "SaaS Motion Design — Product Videos & UI Animation | HRVT";
-const D = "High-end motion design for SaaS: 30–60 second product videos, feature explainers and UI animations that explain complex products clearly. From $2,800.";
+const D = "High-end motion design for SaaS: 30–60 second product videos, feature explainers and UI animations that explain complex products clearly. From $400.";
 
 export const metadata: Metadata = {
   title: T, description: D, keywords: ["SaaS motion design", "SaaS product video", "SaaS explainer video", "UI animation video", "product launch video", "motion designer for SaaS"], alternates: { canonical: "/" },

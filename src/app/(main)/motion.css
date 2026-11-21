@@ -216,9 +216,8 @@
 .mo .price-clip { width:var(--w); height:clamp(56px,6vw,84px); display:flex; gap:5px; transform:scaleX(0); transform-origin:left; transition:transform 1.2s var(--ease) calc(var(--i) * .12s); }
 .mo .price.in .price-clip { transform:none; }
 .mo .price-clip i { flex:1; border-radius:12px; background:var(--paper); transition:transform .5s var(--ease); display:flex; align-items:center; padding:0 .9rem; font:600 .72rem var(--mono); font-style:normal; letter-spacing:.06em; text-transform:uppercase; color:var(--ink); overflow:hidden; white-space:nowrap; }
-.mo .price:nth-of-type(3) .price-clip i { color:var(--y); }
-.mo .price:nth-of-type(2) .price-clip i { background:var(--y); }
-.mo .price:nth-of-type(3) .price-clip i { background:none; border:1.5px solid var(--y); background-image:repeating-linear-gradient(135deg,rgba(248,221,74,.16) 0 6px,transparent 6px 12px); }
+.mo .price:nth-of-type(4) .price-clip i { color:var(--y); }
+.mo .price:nth-of-type(4) .price-clip i { background:none; border:1.5px solid var(--y); background-image:repeating-linear-gradient(135deg,rgba(248,221,74,.16) 0 6px,transparent 6px 12px); }
 .mo .price:hover .price-clip i { transform:translateY(-4px); }
 .mo .price-txt { background:var(--bg); padding:.3rem 0; display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:.4rem 2rem; margin-top:.8rem; position:relative; }
 .mo .price-txt h3 { margin:0; font-size:clamp(1.1rem,1.6vw,1.4rem); font-weight:600; }
@@ -226,6 +225,9 @@
 .mo .price-txt p { margin:0; color:var(--mute); font-size:1rem; white-space:nowrap; }
 .mo .price-txt b { font-family:var(--disp); font-variation-settings:"wdth" 118,"wght" 850; font-size:clamp(2rem,3.6vw,3.4rem); color:var(--paper); letter-spacing:-.02em; margin-left:.3rem; }
 .mo .price-turn { margin:2.2rem 0 0; font-size:1.08rem; } .mo .price-turn b { color:var(--y); font-weight:600; }
+.mo .price-range { display:block; font-style:normal; font-size:.85rem; color:var(--mute); text-align:right; margin-top:.15rem; }
+.mo .price:nth-of-type(3) .price-clip i { background:var(--y); }
+.mo .price:nth-of-type(2) .price-clip i { background:var(--paper); }
 .mo .price-note { margin:1rem 0 0; color:var(--mute); font-size:1.08rem; line-height:1.6; max-width:38em; } .mo .price-note b { color:var(--paper); font-weight:600; }
 
 /* ---------- 08 faq ---------- */
@@ -288,7 +290,7 @@
   .mo .step::before { content:""; position:absolute; left:calc(-2.2rem + 1px); top:2px; width:16px; height:16px; background:var(--bg); border:2px solid var(--mute); transform:rotate(45deg); z-index:1; transition:background-color .3s, border-color .3s; }
   .mo .step.on::before { background:var(--y); border-color:var(--y); }
   .mo .job { grid-template-columns:30px 1fr; } .mo .job-pct { grid-column:2; text-align:left; }
-  .mo .price-txt p { white-space:normal; }
+  .mo .price-txt p { white-space:normal; } .mo .price-range { text-align:left; }
   .mo .marks { display:none; }
   .mo .faq { position:relative; } .mo .note, .mo .note:not(.on) { display:block; animation:none; position:relative; margin:0 0 12px 26px; padding:1.3rem 1.2rem; }
   .mo .note::before { content:""; position:absolute; left:-26px; top:1.5rem; width:14px; height:16px; background:var(--y); clip-path:polygon(0 0,100% 0,100% 62%,50% 100%,0 62%); transform:rotate(-90deg); }
