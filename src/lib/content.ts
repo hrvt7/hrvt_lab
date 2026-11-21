@@ -1,4 +1,4 @@
-export const EMAIL = "hrvtadam.7@icloud.com";
+export const EMAIL = "hrvthadam.7@icloud.com";
 export const PHONE = "+36 30 525 2336";
 export const PHONE_TEL = "+36305252336";
 
